@@ -97,4 +97,26 @@ router.post('/consoles', async (req, res) => {
     }
 });
 
+// Update Existing Console
+
+// Delete Console
+router.delete('/consoles/:id', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        await connection.query(`DELETE FROM Console WHERE id=${id}`, function (error, results)  {
+            if (error) throw error;
+            console.log(results);
+            if (results.affectedRows == 0) {
+                return res.status(404).json({ message: "Console Not Found. Could Not Be Deleted" });
+            }
+            return res.status(200).json({
+                message: `Successfully deleted Console with id=${id}`,
+                result: results
+            });
+        });
+    } catch (error) {
+        
+    }
+});
+
 module.exports = router;
