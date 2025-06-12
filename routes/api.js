@@ -12,15 +12,28 @@ const connection = mysql.createConnection({
 
 // CONSOLES
 
+// Get All Console Information
+router.get('/consoles', async (req, res) => {
+    try {
+        await connection.query(`SELECT * FROM Console`, function (error, results, fields)  {
+            if (error) throw error;
+            return res.status(200).json(results);
+        });
+    } catch (error) {
+        console.log(error);
+    }
+    
+});
+
 // Get Console Information
 router.get('/consoles/:id', async (req, res) => {
-    if (req.params.id == null) {
-        return res.status(400).json({ message: "Need To Include Console ID" });
-    }
     try {
         const id = parseInt(req.params.id);
         await connection.query(`SELECT * FROM Console WHERE id=${id}`, function (error, results, fields)  {
             if (error) throw error;
+            if (results.length == 0) {
+                return res.status(404).json({ message: "Console Not Found" });
+            }
             return res.status(200).json(results);
         });
     } catch (error) {
@@ -32,16 +45,9 @@ router.get('/consoles/:id', async (req, res) => {
 // Create A New Console
 router.post('/consoles', async (req, res) => {
     const bodyVal = req.body;
-    console.log(bodyVal);
-    console.log(bodyVal.name);
     if (bodyVal.name == null) {
         return res.status(400).json({ message: "Console Needs To Have A Name" });
     }
-    /*
-    if (bodyVal.name.length == 0) {
-        return res.status(400).json({ message: "Console Name Cannot Be Empty String" });
-    }
-        */
     if (bodyVal.console_type == null) {
         return res.status(400).json({ message: "console_type Must Be Defined" });
     }
@@ -89,7 +95,6 @@ router.post('/consoles', async (req, res) => {
         console.log(error)
         return res.status(500).json(error);
     }
-    res.json(req.body);
 });
 
 module.exports = router;
