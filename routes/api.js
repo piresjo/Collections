@@ -10,6 +10,52 @@ const connection = mysql.createConnection({
   database: 'video_game_collection'
 });
 
+// HELPER METHODS
+function validateConsoleEntryJSON(bodyVal, res) {
+    if (bodyVal.name == null) {
+        return res.status(400).json({ 
+            success: false,
+            message: "Console Needs To Have A Name" 
+        });
+    }
+    if (bodyVal.console_type == null) {
+        return res.status(400).json({ 
+            success: false,
+            message: "console_type Must Be Defined" 
+        });
+    }
+    if (bodyVal.region == null) {
+        return res.status(400).json({ 
+            success: false,
+            message: "region Must Be Defined" 
+        });
+    }
+    if (bodyVal.product_condition == null) {
+        return res.status(400).json({ 
+            success: false,
+            message: "product_condition Must Be Defined" 
+        });
+    }
+    if (bodyVal.has_packaging == null) {
+        return res.status(400).json({ 
+            success: false,
+            message: "has_packaging Must Be Defined" 
+        });
+    }
+    if (bodyVal.is_duplicate == null) {
+        return res.status(400).json({ 
+            success: false,
+            message: "is_duplicate Must Be Defined" 
+        });
+    }
+    if (bodyVal.has_cables == null) {
+        return res.status(400).json({ 
+            success: false,
+            message: "has_cables Must Be Defined" 
+        });
+    }
+}
+
 // CONSOLES
 
 // Get All Console Information
@@ -64,48 +110,7 @@ router.get('/consoles/:id', async (req, res) => {
 // Create A New Console
 router.post('/consoles', async (req, res) => {
     const bodyVal = req.body;
-    if (bodyVal.name == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "Console Needs To Have A Name" 
-        });
-    }
-    if (bodyVal.console_type == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "console_type Must Be Defined" 
-        });
-    }
-    if (bodyVal.region == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "region Must Be Defined" 
-        });
-    }
-    if (bodyVal.product_condition == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "product_condition Must Be Defined" 
-        });
-    }
-    if (bodyVal.has_packaging == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "has_packaging Must Be Defined" 
-        });
-    }
-    if (bodyVal.is_duplicate == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "is_duplicate Must Be Defined" 
-        });
-    }
-    if (bodyVal.has_cables == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "has_cables Must Be Defined" 
-        });
-    }
+    validateConsoleEntryJSON(bodyVal, res);
     try {
         const entry = {
             name: bodyVal.name,
@@ -145,48 +150,7 @@ router.post('/consoles', async (req, res) => {
 // Update Existing Console
 router.put('/consoles/:id', async (req, res) => {
     const bodyVal = req.body;
-    if (bodyVal.name == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "Console Needs To Have A Name" 
-        });
-    }
-    if (bodyVal.console_type == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "console_type Must Be Defined" 
-        });
-    }
-    if (bodyVal.region == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "region Must Be Defined" 
-        });
-    }
-    if (bodyVal.product_condition == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "product_condition Must Be Defined" 
-        });
-    }
-    if (bodyVal.has_packaging == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "has_packaging Must Be Defined" 
-        });
-    }
-    if (bodyVal.is_duplicate == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "is_duplicate Must Be Defined" 
-        });
-    }
-    if (bodyVal.has_cables == null) {
-        return res.status(400).json({ 
-            success: false,
-            message: "has_cables Must Be Defined" 
-        });
-    }
+    validateConsoleEntryJSON(bodyVal, res);
     try {
         const entry = {
             name: bodyVal.name,
