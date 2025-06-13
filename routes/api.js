@@ -11,49 +11,51 @@ const connection = mysql.createConnection({
 });
 
 // HELPER METHODS
-function validateConsoleEntryJSON(bodyVal, res) {
+function validateConsoleEntryJSON(bodyVal) {
+    var returnVal = null;
     if (bodyVal.name == null) {
-        return res.status(400).json({ 
+        return { 
             success: false,
             message: "Console Needs To Have A Name" 
-        });
+        };
     }
     if (bodyVal.console_type == null) {
-        return res.status(400).json({ 
+        return { 
             success: false,
             message: "console_type Must Be Defined" 
-        });
+        };
     }
     if (bodyVal.region == null) {
-        return res.status(400).json({ 
+        return { 
             success: false,
             message: "region Must Be Defined" 
-        });
+        };
     }
     if (bodyVal.product_condition == null) {
-        return res.status(400).json({ 
+        return { 
             success: false,
             message: "product_condition Must Be Defined" 
-        });
+        };
     }
     if (bodyVal.has_packaging == null) {
-        return res.status(400).json({ 
+        return { 
             success: false,
             message: "has_packaging Must Be Defined" 
-        });
+        };
     }
     if (bodyVal.is_duplicate == null) {
-        return res.status(400).json({ 
+        return { 
             success: false,
             message: "is_duplicate Must Be Defined" 
-        });
+        };
     }
     if (bodyVal.has_cables == null) {
-        return res.status(400).json({ 
+        return { 
             success: false,
             message: "has_cables Must Be Defined" 
-        });
+        };
     }
+    return returnVal;
 }
 
 // CONSOLES
@@ -110,7 +112,10 @@ router.get('/consoles/:id', async (req, res) => {
 // Create A New Console
 router.post('/consoles', async (req, res) => {
     const bodyVal = req.body;
-    validateConsoleEntryJSON(bodyVal, res);
+    const errorVal = validateConsoleEntryJSON(bodyVal);
+    if (errorVal != null) {
+        return res.status(400).json(errorVal);
+    }
     try {
         const entry = {
             name: bodyVal.name,
@@ -150,7 +155,11 @@ router.post('/consoles', async (req, res) => {
 // Update Existing Console
 router.put('/consoles/:id', async (req, res) => {
     const bodyVal = req.body;
-    validateConsoleEntryJSON(bodyVal, res);
+    const id = parseInt(req.params.id);
+    const errorVal = validateConsoleEntryJSON(bodyVal);
+    if (errorVal != null) {
+        return res.status(400).json(errorVal);
+    }
     try {
         const entry = {
             name: bodyVal.name,
@@ -171,10 +180,15 @@ router.put('/consoles/:id', async (req, res) => {
         await connection.query(
             `UPDATE Console SET ? WHERE id=${id}`, entry, function(error, results, fields) {
                 if (error) throw error;
-                console.log(results);
+                if (results.affectedRows == 0) {
+                return res.status(404).json({ 
+                    success: false,
+                    message: `Console With id=${id} Not Found. Could Not Be Updated`
+                });
+            }
                 return res.status(200).json({
                     success: true,
-                    message: "Console Updated",
+                    message: `Console With id=${id} Updated`,
                     results: results
                 });
             });
@@ -194,11 +208,10 @@ router.delete('/consoles/:id', async (req, res) => {
         const id = parseInt(req.params.id);
         await connection.query(`DELETE FROM Console WHERE id=${id}`, function (error, results)  {
             if (error) throw error;
-            console.log(results);
             if (results.affectedRows == 0) {
                 return res.status(404).json({ 
                     success: false,
-                    message: "Console Not Found. Could Not Be Deleted" 
+                    message: `Console With id=${id} Not Found. Could Not Be Deleted`
                 });
             }
             return res.status(200).json({
