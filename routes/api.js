@@ -117,6 +117,41 @@ function validateGameEntryJSON(bodyVal) {
     return returnVal;
 }
 
+function validateAccessoryEntryJSON(bodyVal) {
+    var returnVal = null;
+    if (bodyVal.name == null) {
+        return { 
+            success: false,
+            message: "Accessory Needs To Have A Name" 
+        };
+    }
+    if (bodyVal.console_id == null) {
+        return { 
+            success: false,
+            message: "console_id Must Be Defined" 
+        };
+    }
+    if (bodyVal.accessory_type == null) {
+        return { 
+            success: false,
+            message: "accessory_type Must Be Defined" 
+        };
+    }
+    if (bodyVal.product_condition == null) {
+        return { 
+            success: false,
+            message: "product_condition Must Be Defined" 
+        };
+    }
+    if (bodyVal.has_packaging == null) {
+        return { 
+            success: false,
+            message: "has_packaging Must Be Defined" 
+        };
+    }
+    return returnVal;
+}
+
 // CONSOLES
 
 // Get All Console Information
@@ -454,6 +489,174 @@ router.delete('/games/:id', async (req, res) => {
             return res.status(200).json({
                 success: true,
                 message: `Successfully deleted Game with id=${id}`,
+                results: results
+            });
+        });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ 
+            success: false,
+            message: "Unexpected error in backend. Please try again",
+            error: error
+        });
+    }
+});
+
+// ACCESSORIES
+
+// Get All Accessories
+router.get('/accessories', async (req, res) => {
+    try {
+        await connection.query(`SELECT * FROM Accessory`, function (error, results)  {
+            if (error) throw error;
+            return res.status(200).json({
+                success: true,
+                results: results
+            });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ 
+            success: false,
+            message: "Unexpected error in backend. Please try again",
+            error: error
+        });
+    }
+    
+});
+
+// Get Accessory Information
+router.get('/accessories/:id', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        await connection.query(`SELECT * FROM Accessory WHERE id=${id}`, function (error, results)  {
+            if (error) throw error;
+            if (results.length == 0) {
+                return res.status(404).json({ 
+                    success: false,
+                    message: "Accessory Not Found" 
+                });
+            }
+            return res.status(200).json({
+                success: true,
+                results: results
+            });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ 
+            success: false,
+            message: "Unexpected error in backend. Please try again",
+            error: error
+        });
+    }
+    
+});
+
+// Create A New Accessory
+router.post('/accessories', async (req, res) => {
+    const bodyVal = req.body;
+    const errorVal = validateAccessoryEntryJSON(bodyVal);
+    if (errorVal != null) {
+        return res.status(400).json(errorVal);
+    }
+    try {
+        const entry = {
+            console_id: bodyVal.console_id,
+	        name: bodyVal.name,
+	        model: bodyVal.model,
+            accessory_type: bodyVal.accessory_type,
+            release_date: bodyVal.release_date,
+            bought_date: bodyVal.bought_date,
+            company: bodyVal.company,
+	        product_condition: bodyVal.product_condition,
+            has_packaging: bodyVal.has_packaging,
+	        monetary_value: bodyVal.monetary_value,
+	        notes: bodyVal.notes,
+        };
+        
+        await connection.query(
+            "INSERT INTO Accessory SET ?", entry, function(error, results) {
+                if (error) throw error;
+                return res.status(201).json({
+                    success: true,
+                    message: "Accessory Created",
+                    results: results,
+                });
+            });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ 
+            success: false,
+            message: "Unexpected error in backend. Please try again",
+            error: error
+        });
+    }
+});
+
+// Update Existing Accessory
+router.put('/accessories/:id', async (req, res) => {
+    const bodyVal = req.body;
+    const id = parseInt(req.params.id);
+    const errorVal = validateAccessoryEntryJSON(bodyVal);
+    if (errorVal != null) {
+        return res.status(400).json(errorVal);
+    }
+    try {
+        const entry = {
+            console_id: bodyVal.console_id,
+	        name: bodyVal.name,
+	        model: bodyVal.model,
+            accessory_type: bodyVal.accessory_type,
+            release_date: bodyVal.release_date,
+            bought_date: bodyVal.bought_date,
+            company: bodyVal.company,
+	        product_condition: bodyVal.product_condition,
+            has_packaging: bodyVal.has_packaging,
+	        monetary_value: bodyVal.monetary_value,
+	        notes: bodyVal.notes,
+        };
+        
+        await connection.query(
+            `UPDATE Accessory SET ? WHERE id=${id}`, entry, function(error, results) {
+                if (error) throw error;
+                if (results.affectedRows == 0) {
+                return res.status(404).json({ 
+                    success: false,
+                    message: `Accessory With id=${id} Not Found. Could Not Be Updated`
+                });
+            }
+                return res.status(200).json({
+                    success: true,
+                    message: `Accessory With id=${id} Updated`,
+                    results: results
+                });
+            });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ 
+            success: false,
+            message: "Unexpected error in backend. Please try again",
+            error: error
+        });
+    }
+});
+
+// Delete Accessory
+router.delete('/accessories/:id', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        await connection.query(`DELETE FROM Accessory WHERE id=${id}`, function (error, results)  {
+            if (error) throw error;
+            if (results.affectedRows == 0) {
+                return res.status(404).json({ 
+                    success: false,
+                    message: `Accessory With id=${id} Not Found. Could Not Be Deleted`
+                });
+            }
+            return res.status(200).json({
+                success: true,
+                message: `Successfully deleted Accessory with id=${id}`,
                 results: results
             });
         });
