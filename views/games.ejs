@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, internal-scale=1.0">
+        <title>Collections - All Games</title>
+    </head>
+
+    <body id="app">
+        <div class="upper-container">
+            <h1>Games</h1>
+            <h3>Table of all video game games in collection</h3>
+        </div>
+        <div class="table-container">
+            <% if (games.length === 0) { %>
+                <h2>No Games To Display.</h2>
+                <h3>Please Add One.</h3>
+            <% } else { %>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Console ID</th>
+                        <th>Name</th>
+                        <th>Edition</th>
+                        <th>Release Date</th>
+                        <th>Bought Date</th>
+                        <th>Region</th>
+                        <th>Developer</th>
+                        <th>Publisher</th>
+                        <th>Digital?</th>
+                        <th>Has Game?</th>
+                        <th>Has Manual?</th>
+                        <th>Has Box?</th>
+                        <th>Is Duplicate?</th>
+                        <th>Condition</th>
+                        <th>Value (USD)</th>
+                        <th>Notes</th>
+                    </tr>
+                    <% for (var i = 0; i < games.length; i++) { %>
+                        <tr>
+                            <td>
+                               <%= games[i].id %>
+                            </td>
+                            <td>
+                                <%= games[i].console_id %>
+                            </td>
+                            <td>
+                                <%= games[i].name %>
+                            </td>
+                            <td>
+                                <%= games[i].edition !== null ? games[i].edition : "N/A" %>
+                            </td>
+                            <td>
+                                <%= games[i].release_date !== null ? games[i].release_date : "N/A" %>
+                            </td>
+                            <td>
+                                <%= games[i].bought_date !== null ? games[i].bought_date : "N/A" %>
+                            </td>
+                            <td>
+                                <%= games[i].region %>
+                            </td>
+                            <td>
+                                <%= games[i].developer !== null ? games[i].developer : "N/A" %>
+                            </td>
+                            <td>
+                                <%= games[i].publisher !== null ? games[i].publisher : "N/A" %>
+                            </td>
+                            <td>
+                                <%= games[i].digital %>
+                            </td>
+                            <td>
+                                <%= games[i].has_game %>
+                            </td>
+                            <td>
+                                <%= games[i].has_manual %>
+                            </td>
+                            <td>
+                                <%= games[i].has_box %>
+                            </td>
+                            <td>
+                                <%= games[i].is_duplicate %>
+                            </td>
+                            <td>
+                                <%= games[i].product_condition %>
+                            </td>
+                            <td>
+                                <%= games[i].monetary_value !== null ? games[i].monetary_value : "N/A" %>
+                            </td>
+                            <td>
+                                <%= games[i].notes !== null ? games[i].notes : "N/A" %>
+                            </td>
+                        </tr>
+                    <% } %>
+                </table>
+            <% } %>
+        </div>
+        <div class="lower-container">
+
+        </div>
+    </body>
+</html>
