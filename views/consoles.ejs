@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, internal-scale=1.0">
+        <title>Collections - All Consoles</title>
+    </head>
+
+    <body id="app">
+        <div class="upper-container">
+            <h1>Consoles</h1>
+            <h3>Table of all video game consoles in collection</h3>
+        </div>
+        <div class="table-container">
+            <% if (consoles.length === 0) { %>
+                <h2>No Consoles To Display.</h2>
+                <h3>Please Add One.</h3>
+            <% } else { %>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Console Type</th>
+                        <th>Model</th>
+                        <th>Region</th>
+                        <th>Release Date</th>
+                        <th>Bought Date</th>
+                        <th>Company</th>
+                        <th>Condition</th>
+                        <th>Contains Packaging?</th>
+                        <th>Is Duplicate?</th>
+                        <th>With Cables?</th>
+                        <th>Value (USD)</th>
+                        <th>Notes</th>
+                    </tr>
+                    <% for (var i = 0; i < consoles.length; i++) { %>
+                        <tr>
+                            <td>
+                               <%= consoles[i].id %>
+                            </td>
+                            <td>
+                                <%= consoles[i].name %>
+                            </td>
+                            <td>
+                                <%= consoles[i].console_type %>
+                            </td>
+                            <td>
+                                <%= consoles[i].model !== null ? consoles[i].model : "N/A" %>
+                            </td>
+                            <td>
+                                <%= consoles[i].region %>
+                            </td>
+                            <td>
+                                <%= consoles[i].release_date !== null ? consoles[i].release_date : "N/A" %>
+                            </td>
+                            <td>
+                                <%= consoles[i].bought_date !== null ? consoles[i].bought_date : "N/A" %>
+                            </td>
+                            <td>
+                                <%= consoles[i].company !== null ? consoles[i].company : "N/A" %>
+                            </td>
+                            <td>
+                                <%= consoles[i].product_condition %>
+                            </td>
+                            <td>
+                                <%= consoles[i].has_packaging %>
+                            </td>
+                            <td>
+                                <%= consoles[i].is_duplicate %>
+                            </td>
+                            <td>
+                                <%= consoles[i].has_cables %>
+                            </td>
+                            <td>
+                                <%= consoles[i].monetary_value !== null ? consoles[i].monetary_value : "N/A" %>
+                            </td>
+                            <td>
+                                <%= consoles[i].notes !== null ? consoles[i].notes : "N/A" %>
+                            </td>
+                        </tr>
+                    <% } %>
+                </table>
+            <% } %>
+        </div>
+        <div class="lower-container">
+
+        </div>
+    </body>
+</html>
