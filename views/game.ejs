@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, internal-scale=1.0">
+        <% if (games.length === 0) { %>
+            <title>No Game Found</title>
+        <% } else { %>
+            <title>Games - <%= games[0].name %></title>
+        <% } %>
+    </head>
+
+    <body id="app">
+        <div class="upper-container">
+            <h1>Game Info</h1>
+        </div>
+        <div class="table-container">
+            <% if (games.length === 0) { %>
+                <h2>No Game To Display for id=<%= id %>.</h2>
+            <% } else { %>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Console ID</th>
+                        <th>Name</th>
+                        <th>Edition</th>
+                        <th>Release Date</th>
+                        <th>Bought Date</th>
+                        <th>Region</th>
+                        <th>Developer</th>
+                        <th>Publisher</th>
+                        <th>Digital?</th>
+                        <th>Has Game?</th>
+                        <th>Has Manual?</th>
+                        <th>Has Box?</th>
+                        <th>Is Duplicate?</th>
+                        <th>Condition</th>
+                        <th>Value (USD)</th>
+                        <th>Notes</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <%= games[0].id %>
+                        </td>
+                        <td>
+                            <%= games[0].console_id %>
+                        </td>
+                        <td>
+                            <%= games[0].name %>
+                        </td>
+                        <td>
+                            <%= games[0].edition !== null ? games[0].edition : "N/A" %>
+                        </td>
+                        <td>
+                            <%= games[0].release_date !== null ? games[0].release_date : "N/A" %>
+                        </td>
+                        <td>
+                            <%= games[0].bought_date !== null ? games[0].bought_date : "N/A" %>
+                        </td>
+                        <td>
+                            <%= games[0].region %>
+                        </td>
+                        <td>
+                            <%= games[0].developer !== null ? games[0].developer : "N/A" %>
+                        </td>
+                        <td>
+                            <%= games[0].publisher !== null ? games[0].publisher : "N/A" %>
+                        </td>
+                        <td>
+                            <%= games[0].digital %>
+                        </td>
+                        <td>
+                            <%= games[0].has_game %>
+                        </td>
+                        <td>
+                            <%= games[0].has_manual %>
+                        </td>
+                        <td>
+                            <%= games[0].has_box %>
+                        </td>
+                        <td>
+                            <%= games[0].is_duplicate %>
+                        </td>
+                        <td>
+                            <%= games[0].product_condition %>
+                        </td>
+                        <td>
+                            <%= games[0].monetary_value !== null ? games[0].monetary_value : "N/A" %>
+                        </td>
+                        <td>
+                            <%= games[0].notes !== null ? games[0].notes : "N/A" %>
+                        </td>
+                    </tr>
+                </table>
+            <% } %>
+        </div>
+        <div class="lower-container">
+
+        </div>
+    </body>
+</html>

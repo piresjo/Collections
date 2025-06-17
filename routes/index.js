@@ -32,15 +32,47 @@ router.get('/consoles', async (req, res) => {
 });
 
 // Get Specific Console Information
-
 router.get('/consoles/:id', async (req, res) => {
     try {
         const id = parseInt(req.params.id);
         await connection.query(`SELECT * FROM Console WHERE id=${id}`, function (error, results)  {
             if (error) throw error;
-            console.log(results)
             return res.render("console.ejs", {
                 consoles: results,
+                id: id
+            });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.render("error.ejs", { error: error });
+    }
+    
+});
+
+// GAMES
+
+// Get All Games
+router.get('/games', async (req, res) => {
+    try {
+        await connection.query(`SELECT * FROM Game`, function (error, results)  {
+            if (error) throw error;
+            return res.render("games.ejs", { games: results });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.render("error.ejs", { error: error });
+    }
+    
+});
+
+// Get Specific Game Information
+router.get('/games/:id', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        await connection.query(`SELECT * FROM Game WHERE id=${id}`, function (error, results)  {
+            if (error) throw error;
+            return res.render("game.ejs", {
+                games: results,
                 id: id
             });
         });
