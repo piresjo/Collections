@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, internal-scale=1.0">
+        <% if (accessories.length === 0) { %>
+            <title>No Accessory Found</title>
+        <% } else { %>
+            <title>Accessories - <%= accessories[0].name %></title>
+        <% } %>
+    </head>
+
+    <body id="app">
+        <div class="upper-container">
+            <h1>Accessory Info</h1>
+        </div>
+        <div class="table-container">
+            <% if (accessories.length === 0) { %>
+                <h2>No Accessory To Display for id=<%= id %>.</h2>
+            <% } else { %>
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>Console ID</th>
+                        <th>Name</th>
+                        <th>Model</th>
+                        <th>Accessory Type</th>
+                        <th>Release Date</th>
+                        <th>Bought Date</th>
+                        <th>Company</th>
+                        <th>Condition</th>
+                        <th>Has Packaging?</th>
+                        <th>Value (USD)</th>
+                        <th>Notes</th>
+                    </tr>
+                    <tr>
+                        <td>
+                           <%= accessories[0].id %>
+                        </td>
+                        <td>
+                            <%= accessories[0].console_id %>
+                        </td>
+                        <td>
+                            <%= accessories[0].name %>
+                        </td>
+                        <td>
+                            <%= accessories[0].model !== null ? accessories[0].model : "N/A" %>
+                        </td>
+                        <td>
+                            <%= accessories[0].accessory_type %>
+                        </td>
+                        <td>
+                            <%= accessories[0].release_date !== null ? accessories[0].release_date : "N/A" %>
+                        </td>
+                        <td>
+                            <%= accessories[0].bought_date !== null ? accessories[0].bought_date : "N/A" %>
+                        </td>
+                        <td>
+                            <%= accessories[0].company !== null ? accessories[0].company : "N/A" %>
+                        </td>
+                        <td>
+                            <%= accessories[0].product_condition %>
+                        </td>
+                        <td>
+                            <%= accessories[0].has_packaging %>
+                        </td>
+                        <td>
+                            <%= accessories[0].monetary_value !== null ? accessories[0].monetary_value : "N/A" %>
+                        </td>
+                        <td>
+                            <%= accessories[0].notes !== null ? accessories[0].notes : "N/A" %>
+                        </td>
+                    </tr>
+                </table>
+            <% } %>
+        </div>
+        <div class="lower-container">
+
+        </div>
+    </body>
+</html>

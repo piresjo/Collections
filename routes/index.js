@@ -83,5 +83,38 @@ router.get('/games/:id', async (req, res) => {
     
 });
 
+// ACCESSORIES
+
+// Get All Accessories
+router.get('/accessories', async (req, res) => {
+    try {
+        await connection.query(`SELECT * FROM Accessory`, function (error, results)  {
+            if (error) throw error;
+            return res.render("accessories.ejs", { accessories: results });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.render("error.ejs", { error: error });
+    }
+    
+});
+
+// Get Specific Accessory Information
+router.get('/accessories/:id', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        await connection.query(`SELECT * FROM Accessory WHERE id=${id}`, function (error, results)  {
+            if (error) throw error;
+            return res.render("accessory.ejs", {
+                accessories: results,
+                id: id
+            });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.render("error.ejs", { error: error });
+    }
+    
+});
 
 module.exports = router;
