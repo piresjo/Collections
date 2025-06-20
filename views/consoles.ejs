@@ -3,6 +3,10 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, internal-scale=1.0">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Gugi&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
         <title>Collections - All Consoles</title>
     </head>
 
@@ -17,7 +21,7 @@
                 <h3>Please Add One.</h3>
             <% } else { %>
                 <table>
-                    <tr>
+                    <tr class="table-header-row">
                         <th>ID</th>
                         <th>Name</th>
                         <th>Console Type</th>
@@ -34,7 +38,7 @@
                         <th>Notes</th>
                     </tr>
                     <% for (var i = 0; i < consoles.length; i++) { %>
-                        <tr>
+                        <tr class="table-normal-row">
                             <td>
                                <%= consoles[i].id %>
                             </td>
