@@ -1,8 +1,99 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.gugi-regular {
+  font-family: "Gugi", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
-a {
-  color: #00B7FF;
+.dotgothic16-regular {
+  font-family: "DotGothic16", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.quantico-regular {
+  font-family: "Quantico", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.quantico-bold {
+  font-family: "Quantico", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.quantico-regular-italic {
+  font-family: "Quantico", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.quantico-bold-italic {
+  font-family: "Quantico", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+
+body {
+  background-color: #005089;
+}
+
+h1, h2, h3 {
+  color: #f9f871;
+}
+
+h1 {
+  font-family: "Gugi", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+h2, h3 {
+  font-family: "Quantico", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+table, td, th {
+  border: 1px solid;
+  border-color: #00c49d;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+tr {
+  color: #f9f871;
+  text-align: center;
+}
+
+.table-header-row {
+  font-family: "Quantico", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.table-normal-row {
+  font-family: "DotGothic16", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.table-header-row:hover {
+  background-color: #00c49d;
+  color: #005089;
+}
+
+.table-normal-row:hover {
+  background-color: #8ce380;
+  color: #005089;
+}
+
+.error-collection {
+  font-family: "DotGothic16", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
