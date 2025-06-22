@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node app.js"
   },
   "dependencies": {
     "body-parser": "^2.2.0",
@@ -16,5 +16,8 @@
     "morgan": "~1.9.1",
     "mysql": "^2.18.1"
   },
-  "type": "commonjs"
+  "type": "module",
+  "devDependencies": {
+    "prettier": "3.5.3"
+  }
 }
