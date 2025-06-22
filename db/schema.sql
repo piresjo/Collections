@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS Console (
 	has_packaging BOOL NOT NULL,
 	is_duplicate BOOL NOT NULL,
 	has_cables BOOL NOT NULL,
+	has_console BOOL NOT NULL,
 	monetary_value DECIMAL(10,2),
 	notes VARCHAR(1024)
 );

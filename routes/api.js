@@ -55,6 +55,12 @@ function validateConsoleEntryJSON(bodyVal) {
             message: "has_cables Must Be Defined" 
         };
     }
+    if (bodyVal.has_console == null) {
+        return { 
+            success: false,
+            message: "has_console Must Be Defined" 
+        };
+    }
     return returnVal;
 }
 
@@ -223,6 +229,7 @@ router.post('/consoles', async (req, res) => {
             has_packaging: bodyVal.has_packaging,
             is_duplicate: bodyVal.is_duplicate,
             has_cables: bodyVal.has_cables,
+            has_console: bodyVal.has_console,
             monetary_value: bodyVal.monetary_value,
             notes: bodyVal.notes
         };
@@ -267,6 +274,7 @@ router.put('/consoles/:id', async (req, res) => {
             has_packaging: bodyVal.has_packaging,
             is_duplicate: bodyVal.is_duplicate,
             has_cables: bodyVal.has_cables,
+            has_console: bodyVal.has_console,
             monetary_value: bodyVal.monetary_value,
             notes: bodyVal.notes
         };
