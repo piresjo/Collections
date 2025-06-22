@@ -38,6 +38,7 @@
                         <th>Contains Packaging?</th>
                         <th>Is Duplicate?</th>
                         <th>With Cables?</th>
+                        <th>With Console?</th>
                         <th>Value (USD)</th>
                         <th>Notes</th>
                     </tr>
@@ -77,6 +78,9 @@
                         </td>
                         <td>
                             <%= consoles[0].has_cables %>
+                        </td>
+                        <td>
+                            <%= consoles[0].has_console %>
                         </td>
                         <td>
                             <%= consoles[0].monetary_value !== null ? consoles[0].monetary_value : "N/A" %>
