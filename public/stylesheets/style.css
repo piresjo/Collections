@@ -34,12 +34,13 @@
   font-style: italic;
 }
 
-
 body {
   background-color: #005089;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   color: #f9f871;
 }
 
@@ -49,13 +50,16 @@ h1 {
   font-style: normal;
 }
 
-h2, h3 {
+h2,
+h3 {
   font-family: "Quantico", sans-serif;
   font-weight: 400;
   font-style: normal;
 }
 
-table, td, th {
+table,
+td,
+th {
   border: 1px solid;
   border-color: #00c49d;
 }
