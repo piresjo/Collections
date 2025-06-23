@@ -158,6 +158,22 @@ function validateAccessoryEntryJSON(bodyVal) {
   return returnVal;
 }
 
+// HEALTHCHECK
+router.get("/healthcheck", async (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unexpected error in backend. Please try again",
+      error: error,
+    });
+  }
+});
+
 // CONSOLES
 
 // Get All Console Information
