@@ -302,20 +302,10 @@ export default function makeAPI(database) {
   // Get All Games
   router.get("/games", async (req, res) => {
     try {
-      await connection.query(`SELECT * FROM Game`, function (error, results) {
-        if (error) throw error;
-        return res.status(200).json({
-          success: true,
-          results: results,
-        });
-      });
+      return res.status(200).json(GENERATE_GET_JSON(database.getGames()));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
@@ -323,29 +313,14 @@ export default function makeAPI(database) {
   router.get("/games/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      await connection.query(
-        `SELECT * FROM Game WHERE id=${id}`,
-        function (error, results) {
-          if (error) throw error;
-          if (results.length == 0) {
-            return res.status(404).json({
-              success: false,
-              message: "Game Not Found",
-            });
-          }
-          return res.status(200).json({
-            success: true,
-            results: results,
-          });
-        },
-      );
+      const results = database.getGameInformation(id);
+      if (results.length == 0) {
+        return res.status(404).json(GENERATE_GET_NOT_FOUND_JSON("Game"));
+      }
+      return res.status(200).json(GENERATE_GET_JSON(results));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
@@ -376,25 +351,12 @@ export default function makeAPI(database) {
         notes: bodyVal.notes,
       };
 
-      await connection.query(
-        "INSERT INTO Game SET ?",
-        entry,
-        function (error, results) {
-          if (error) throw error;
-          return res.status(201).json({
-            success: true,
-            message: "Game Created",
-            results: results,
-          });
-        },
-      );
+      return res
+        .status(201)
+        .json(GENERATE_CREATED_JSON("Game", database.addGame(entry)));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
@@ -426,31 +388,17 @@ export default function makeAPI(database) {
         notes: bodyVal.notes,
       };
 
-      await connection.query(
-        `UPDATE Game SET ? WHERE id=${id}`,
-        entry,
-        function (error, results) {
-          if (error) throw error;
-          if (results.affectedRows == 0) {
-            return res.status(404).json({
-              success: false,
-              message: `Game With id=${id} Not Found. Could Not Be Updated`,
-            });
-          }
-          return res.status(200).json({
-            success: true,
-            message: `Game With id=${id} Updated`,
-            results: results,
-          });
-        },
-      );
+      const results = database.updateGame(id, entry);
+
+      if (results.affectedRows == 0) {
+        return res
+          .status(404)
+          .json(GENERATE_UPDATE_DELETE_NOT_FOUND_JSON("Game", id, true));
+      }
+      return res.status(200).json(GENERATE_UPDATE_JSON("Game", id, results));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
@@ -458,30 +406,16 @@ export default function makeAPI(database) {
   router.delete("/games/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      await connection.query(
-        `DELETE FROM Game WHERE id=${id}`,
-        function (error, results) {
-          if (error) throw error;
-          if (results.affectedRows == 0) {
-            return res.status(404).json({
-              success: false,
-              message: `Game With id=${id} Not Found. Could Not Be Deleted`,
-            });
-          }
-          return res.status(200).json({
-            success: true,
-            message: `Successfully deleted Game with id=${id}`,
-            results: results,
-          });
-        },
-      );
+      const results = database.deleteGame(id);
+      if (results.affectedRows == 0) {
+        return res
+          .status(404)
+          .json(GENERATE_UPDATE_DELETE_NOT_FOUND_JSON("Game", id, false));
+      }
+      return res.status(200).json(GENERATE_DELETE_JSON("Game", id, results));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 

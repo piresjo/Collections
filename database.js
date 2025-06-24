@@ -58,6 +58,55 @@ export class Database {
       },
     );
   }
+
+  async getGames() {
+    await connection.query(`SELECT * FROM Game`, function (error, results) {
+      if (error) throw error;
+      return results;
+    });
+  }
+
+  async getGameInformation(idVal) {
+    await connection.query(
+      `SELECT * FROM Game WHERE id=${idVal}`,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
+
+  async addGame(bodyVal) {
+    await connection.query(
+      "INSERT INTO Game SET ?",
+      bodyVal,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
+
+  async updateGame(idVal, bodyVal) {
+    await connection.query(
+      `UPDATE Game SET ? WHERE id=${idVal}`,
+      bodyVal,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
+
+  async deleteGame(idVal) {
+    await connection.query(
+      `DELETE FROM Game WHERE id=${idVal}`,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
 }
 
 const connection = mysql.createConnection({
@@ -66,55 +115,6 @@ const connection = mysql.createConnection({
   password: DB_PASSWORD,
   database: "video_game_collection",
 });
-
-export async function getGames() {
-  await connection.query(`SELECT * FROM Game`, function (error, results) {
-    if (error) throw error;
-    return results;
-  });
-}
-
-export async function getGameInformation(idVal) {
-  await connection.query(
-    `SELECT * FROM Game WHERE id=${idVal}`,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
-}
-
-export async function addGame(bodyVal) {
-  await connection.query(
-    "INSERT INTO Game SET ?",
-    bodyVal,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
-}
-
-export async function updateGame(idVal, bodyVal) {
-  await connection.query(
-    `UPDATE Game SET ? WHERE id=${idVal}`,
-    bodyVal,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
-}
-
-export async function deleteGame(idVal) {
-  await connection.query(
-    `DELETE FROM Game WHERE id=${idVal}`,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
-}
 
 export async function getAccessories() {
   await connection.query(`SELECT * FROM Accessory`, function (error, results) {
