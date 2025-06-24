@@ -28,13 +28,6 @@ import {
 } from "../constants.js";
 var router = express.Router();
 
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: DB_PASSWORD,
-  database: "video_game_collection",
-});
-
 // HELPER METHODS
 function validateConsoleEntryJSON(bodyVal) {
   var returnVal = null;
@@ -150,7 +143,7 @@ export default function makeAPI(database) {
       if (results.length == 0) {
         return res.status(404).json(GENERATE_GET_NOT_FOUND_JSON("Console"));
       }
-      return res.status(200).json(GENERATE_CREATED_JSON("Console", results));
+      return res.status(200).json(GENERATE_GET_JSON(results));
     } catch (error) {
       console.log(error);
       return res.status(500).json(GENERATE_500_ERROR_JSON(error));

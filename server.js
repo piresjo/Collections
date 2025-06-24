@@ -1,4 +1,4 @@
-import Database from "./database.js";
+import {Database} from "./database.js";
 import makeApp from "./app.js";
 import { DB_PASSWORD } from "./secrets.js";
 import mysql from "mysql";
@@ -12,7 +12,7 @@ const connection = mysql.createConnection({
   database: "video_game_collection",
 });
 
-var database = Database(connection);
+var database = new Database(connection);
 
 const app = makeApp(database, true);
 
