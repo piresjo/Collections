@@ -8,10 +8,55 @@ export class Database {
 
   async getConsoles() {
     console.log("ABCD");
-    await connection.query(`SELECT * FROM Console`, function (error, results) {
-      if (error) throw error;
-      return results;
-    });
+    await this.connection.query(
+      `SELECT * FROM Console`,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
+
+  async getConsoleInformation(idVal) {
+    await connection.query(
+      `SELECT * FROM Console WHERE id=${idVal}`,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
+
+  async addConsole(bodyVal) {
+    await connection.query(
+      "INSERT INTO Console SET ?",
+      bodyVal,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
+
+  async updateConsole(idVal, bodyVal) {
+    await connection.query(
+      `UPDATE Console SET ? WHERE id=${idVal}`,
+      bodyVal,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
+
+  async deleteConsole(idVal) {
+    await connection.query(
+      `DELETE FROM Console WHERE id=${idVal}`,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
   }
 }
 
@@ -21,56 +66,6 @@ const connection = mysql.createConnection({
   password: DB_PASSWORD,
   database: "video_game_collection",
 });
-
-export async function getConsoles() {
-  console.log("ABCD");
-  await connection.query(`SELECT * FROM Console`, function (error, results) {
-    if (error) throw error;
-    return results;
-  });
-}
-
-export async function getConsoleInformation(idVal) {
-  await connection.query(
-    `SELECT * FROM Console WHERE id=${idVal}`,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
-}
-
-export async function addConsole(bodyVal) {
-  await connection.query(
-    "INSERT INTO Console SET ?",
-    bodyVal,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
-}
-
-export async function updateConsole(idVal, bodyVal) {
-  await connection.query(
-    `UPDATE Console SET ? WHERE id=${idVal}`,
-    bodyVal,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
-}
-
-export async function deleteConsole(idVal) {
-  await connection.query(
-    `DELETE FROM Console WHERE id=${idVal}`,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
-}
 
 export async function getGames() {
   await connection.query(`SELECT * FROM Game`, function (error, results) {

@@ -1,8 +1,15 @@
 import express from "express";
 import mysql from "mysql";
 import { DB_PASSWORD } from "../secrets.js";
-import { GENERATE_500_ERROR_JSON, GENERATE_GET_JSON } from "../constants.js";
-import { getConsoles } from "../database.js";
+import {
+  GENERATE_500_ERROR_JSON,
+  GENERATE_GET_JSON,
+  GENERATE_CREATED_JSON,
+  GENERATE_GET_NOT_FOUND_JSON,
+  GENERATE_UPDATE_DELETE_NOT_FOUND_JSON,
+  GENERATE_UPDATE_JSON,
+  GENERATE_DELETE_JSON,
+} from "../constants.js";
 var router = express.Router();
 
 const connection = mysql.createConnection({
@@ -189,29 +196,14 @@ export default function makeAPI(database) {
   router.get("/consoles/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      await connection.query(
-        `SELECT * FROM Console WHERE id=${id}`,
-        function (error, results) {
-          if (error) throw error;
-          if (results.length == 0) {
-            return res.status(404).json({
-              success: false,
-              message: "Console Not Found",
-            });
-          }
-          return res.status(200).json({
-            success: true,
-            results: results,
-          });
-        },
-      );
+      const results = database.getConsoleInformation(id);
+      if (results.length == 0) {
+        return res.status(404).json(GENERATE_GET_NOT_FOUND_JSON("Console"));
+      }
+      return res.status(200).json(GENERATE_CREATED_JSON("Console", results));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
@@ -240,25 +232,12 @@ export default function makeAPI(database) {
         notes: bodyVal.notes,
       };
 
-      await connection.query(
-        "INSERT INTO Console SET ?",
-        entry,
-        function (error, results) {
-          if (error) throw error;
-          return res.status(201).json({
-            success: true,
-            message: "Console Created",
-            results: results,
-          });
-        },
-      );
+      return res
+        .status(201)
+        .json(GENERATE_CREATED_JSON("Console", database.addConsole(entry)));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
@@ -288,31 +267,16 @@ export default function makeAPI(database) {
         notes: bodyVal.notes,
       };
 
-      await connection.query(
-        `UPDATE Console SET ? WHERE id=${id}`,
-        entry,
-        function (error, results) {
-          if (error) throw error;
-          if (results.affectedRows == 0) {
-            return res.status(404).json({
-              success: false,
-              message: `Console With id=${id} Not Found. Could Not Be Updated`,
-            });
-          }
-          return res.status(200).json({
-            success: true,
-            message: `Console With id=${id} Updated`,
-            results: results,
-          });
-        },
-      );
+      const results = database.updateConsole(id, entry);
+      if (results.affectedRows == 0) {
+        return res
+          .status(404)
+          .json(GENERATE_UPDATE_DELETE_NOT_FOUND_JSON("Console", id, true));
+      }
+      return res.status(200).json(GENERATE_UPDATE_JSON("Console", id, results));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
@@ -320,30 +284,16 @@ export default function makeAPI(database) {
   router.delete("/consoles/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      await connection.query(
-        `DELETE FROM Console WHERE id=${id}`,
-        function (error, results) {
-          if (error) throw error;
-          if (results.affectedRows == 0) {
-            return res.status(404).json({
-              success: false,
-              message: `Console With id=${id} Not Found. Could Not Be Deleted`,
-            });
-          }
-          return res.status(200).json({
-            success: true,
-            message: `Successfully deleted Console with id=${id}`,
-            results: results,
-          });
-        },
-      );
+      const results = database.deleteConsole(id);
+      if (results.affectedRows == 0) {
+        return res
+          .status(404)
+          .json(GENERATE_UPDATE_DELETE_NOT_FOUND_JSON("Console", id, false));
+      }
+      return res.status(200).json(GENERATE_DELETE_JSON("Console", id, results));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 

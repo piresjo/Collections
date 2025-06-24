@@ -130,7 +130,7 @@ export const GENERATE_UPDATE_JSON = function (itemType, idVal, resultsJSON) {
 export const GENERATE_DELETE_JSON = function (itemType, idVal, resultsJSON) {
   return {
     success: true,
-    message: `Successfully deleted ${itemType} with id=${idVal}`,
+    message: `Successfully Deleted ${itemType} With Id=${idVal}`,
     results: resultsJSON,
   };
 };
