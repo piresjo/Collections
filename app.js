@@ -1,6 +1,4 @@
-import { DB_PASSWORD } from "./secrets.js";
 import express from "express";
-import mysql from "mysql";
 import bodyParser from "body-parser";
 
 import createError from "http-errors";
@@ -10,12 +8,12 @@ import logger from "morgan";
 
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
-import apiRouter from "./routes/api.js";
+import makeAPI from "./routes/api.js";
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-export default function makeApp() {
+export default function makeApp(database, isProd) {
   var app = express();
   const port = process.env.PORT || 3000;
 
@@ -35,7 +33,7 @@ export default function makeApp() {
 
   app.use("/", indexRouter);
   app.use("/users", usersRouter);
-  app.use("/api", apiRouter);
+  app.use("/api", makeAPI(database));
 
   // catch 404 and forward to error handler
   app.use(function (req, res, next) {
@@ -53,24 +51,16 @@ export default function makeApp() {
     res.render("error.ejs", { error: err });
   });
 
-  const connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: DB_PASSWORD,
-    database: "video_game_collection",
-  });
-
-  connection.connect((err) => {
-    if (err) {
-      console.error("Error connecting to MySQL: " + err.stack);
-      return;
-    }
-    console.log("Connected to MySQL as ID " + connection.threadId);
-  });
-
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
-
+  if (isProd) {
+    database.connection.connect((err) => {
+      if (err) {
+        console.error("Error connecting to MySQL: " + err.stack);
+        return;
+      }
+      console.log("Connected to MySQL as ID " + database.connection.threadId);
+    });
+  } else {
+    console.log(`Running Unit Tests. No Connection`);
+  }
   return app;
 }
