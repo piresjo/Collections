@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "node server.js",
+    "test": "npx vitest"
   },
   "dependencies": {
     "body-parser": "^2.2.0",
@@ -18,6 +19,10 @@
   },
   "type": "module",
   "devDependencies": {
-    "prettier": "3.5.3"
+    "prettier": "3.5.3",
+    "supertest": "^7.1.1",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4",
+    "vitest-mock-express": "^2.2.0"
   }
 }
