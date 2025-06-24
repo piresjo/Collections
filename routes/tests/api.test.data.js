@@ -34,6 +34,20 @@ export const fullGameEntry = {
   notes: "FULL HAPPY PATH",
 };
 
+export const fullAccessoryEntry = {
+  console_id: 10,
+  name: "TEST",
+  model: "Original",
+  accessory_type: 1,
+  release_date: "1990-01-01",
+  bought_date: "1990-01-01",
+  company: "COMPANY",
+  has_packaging: true,
+  product_condition: 1,
+  monetary_value: 12.34,
+  notes: "FULL HAPPY PATH",
+};
+
 export const allConsolesResult = [
   {
     id: 10,
@@ -235,6 +249,54 @@ export const gameInfoResponse = [
     has_box: 1,
     is_duplicate: 0,
     product_condition: 1,
+    monetary_value: 12.34,
+    notes: "FULL HAPPY PATH",
+  },
+];
+
+export const allAccessoriesResult = [
+  {
+    id: 1,
+    console_id: 10,
+    name: "TEST",
+    model: "Original",
+    accessory_type: 1,
+    release_date: "1990-01-01T05:00:00.000Z",
+    bought_date: "1990-01-01T05:00:00.000Z",
+    company: "COMPANY",
+    product_condition: 1,
+    has_packaging: 1,
+    monetary_value: 12.34,
+    notes: "FULL HAPPY PATH",
+  },
+  {
+    id: 2,
+    console_id: 10,
+    name: "TEST",
+    model: null,
+    accessory_type: 1,
+    release_date: null,
+    bought_date: null,
+    company: null,
+    product_condition: 1,
+    has_packaging: 1,
+    monetary_value: null,
+    notes: null,
+  },
+];
+
+export const accessoryInfoResponse = [
+  {
+    id: 1,
+    console_id: 10,
+    name: "TEST",
+    model: "Original",
+    accessory_type: 1,
+    release_date: "1990-01-01T05:00:00.000Z",
+    bought_date: "1990-01-01T05:00:00.000Z",
+    company: "COMPANY",
+    product_condition: 1,
+    has_packaging: 1,
     monetary_value: 12.34,
     notes: "FULL HAPPY PATH",
   },

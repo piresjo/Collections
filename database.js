@@ -1,6 +1,3 @@
-import mysql from "mysql";
-import { DB_PASSWORD } from "./secrets.js";
-
 export class Database {
   constructor(connection) {
     this.connection = connection;
@@ -18,7 +15,7 @@ export class Database {
   }
 
   async getConsoleInformation(idVal) {
-    await connection.query(
+    await this.connection.query(
       `SELECT * FROM Console WHERE id=${idVal}`,
       function (error, results) {
         if (error) throw error;
@@ -28,7 +25,7 @@ export class Database {
   }
 
   async addConsole(bodyVal) {
-    await connection.query(
+    await this.connection.query(
       "INSERT INTO Console SET ?",
       bodyVal,
       function (error, results) {
@@ -39,7 +36,7 @@ export class Database {
   }
 
   async updateConsole(idVal, bodyVal) {
-    await connection.query(
+    await this.connection.query(
       `UPDATE Console SET ? WHERE id=${idVal}`,
       bodyVal,
       function (error, results) {
@@ -50,7 +47,7 @@ export class Database {
   }
 
   async deleteConsole(idVal) {
-    await connection.query(
+    await this.connection.query(
       `DELETE FROM Console WHERE id=${idVal}`,
       function (error, results) {
         if (error) throw error;
@@ -60,14 +57,17 @@ export class Database {
   }
 
   async getGames() {
-    await connection.query(`SELECT * FROM Game`, function (error, results) {
-      if (error) throw error;
-      return results;
-    });
+    await this.connection.query(
+      `SELECT * FROM Game`,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
   }
 
   async getGameInformation(idVal) {
-    await connection.query(
+    await this.connection.query(
       `SELECT * FROM Game WHERE id=${idVal}`,
       function (error, results) {
         if (error) throw error;
@@ -77,7 +77,7 @@ export class Database {
   }
 
   async addGame(bodyVal) {
-    await connection.query(
+    await this.connection.query(
       "INSERT INTO Game SET ?",
       bodyVal,
       function (error, results) {
@@ -88,7 +88,7 @@ export class Database {
   }
 
   async updateGame(idVal, bodyVal) {
-    await connection.query(
+    await this.connection.query(
       `UPDATE Game SET ? WHERE id=${idVal}`,
       bodyVal,
       function (error, results) {
@@ -99,7 +99,7 @@ export class Database {
   }
 
   async deleteGame(idVal) {
-    await connection.query(
+    await this.connection.query(
       `DELETE FROM Game WHERE id=${idVal}`,
       function (error, results) {
         if (error) throw error;
@@ -107,60 +107,56 @@ export class Database {
       },
     );
   }
-}
 
-const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: DB_PASSWORD,
-  database: "video_game_collection",
-});
+  async getAccessories() {
+    await this.connection.query(
+      `SELECT * FROM Accessory`,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
 
-export async function getAccessories() {
-  await connection.query(`SELECT * FROM Accessory`, function (error, results) {
-    if (error) throw error;
-    return results;
-  });
-}
+  async getAccessoryInformation(idVal) {
+    await this.connection.query(
+      `SELECT * FROM Accessory WHERE id=${idVal}`,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
 
-export async function getAccessoryInformation(idVal) {
-  await connection.query(
-    `SELECT * FROM Accessory WHERE id=${idVal}`,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
-}
+  async addAccessory(bodyVal) {
+    await this.connection.query(
+      "INSERT INTO Accessory SET ?",
+      bodyVal,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
 
-export async function addAccessory(bodyVal) {
-  await connection.query(
-    "INSERT INTO Accessory SET ?",
-    bodyVal,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
-}
+  async updateAccessory(idVal, bodyVal) {
+    await this.connection.query(
+      `UPDATE Accessory SET ? WHERE id=${idVal}`,
+      bodyVal,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
 
-export async function updateAccessory(idVal, bodyVal) {
-  await connection.query(
-    `UPDATE Accessory SET ? WHERE id=${idVal}`,
-    bodyVal,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
-}
-
-export async function deleteAccessory(idVal) {
-  await connection.query(
-    `DELETE FROM Accessory WHERE id=${idVal}`,
-    function (error, results) {
-      if (error) throw error;
-      return results;
-    },
-  );
+  async deleteAccessory(idVal) {
+    await this.connection.query(
+      `DELETE FROM Accessory WHERE id=${idVal}`,
+      function (error, results) {
+        if (error) throw error;
+        return results;
+      },
+    );
+  }
 }

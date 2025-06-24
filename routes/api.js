@@ -9,6 +9,22 @@ import {
   GENERATE_UPDATE_DELETE_NOT_FOUND_JSON,
   GENERATE_UPDATE_JSON,
   GENERATE_DELETE_JSON,
+  MISSING_CONSOLE_NAME,
+  MISSING_CONSOLE_TYPE,
+  MISSING_REGION,
+  MISSING_PRODUCT_CONDITION,
+  MISSING_HAS_PACKAGING,
+  MISSING_IS_DUPLICATE,
+  MISSING_HAS_CABLES,
+  MISSING_HAS_CONSOLE,
+  MISSING_GAME_NAME,
+  MISSING_CONSOLE_ID,
+  MISSING_DIGITAL,
+  MISSING_HAS_BOX,
+  MISSING_HAS_MANUAL,
+  MISSING_HAS_GAME,
+  MISSING_ACCESSORY_NAME,
+  MISSING_ACCESSORY_TYPE,
 } from "../constants.js";
 var router = express.Router();
 
@@ -23,52 +39,28 @@ const connection = mysql.createConnection({
 function validateConsoleEntryJSON(bodyVal) {
   var returnVal = null;
   if (bodyVal.name == null) {
-    return {
-      success: false,
-      message: "Console Needs To Have A Name",
-    };
+    return MISSING_CONSOLE_NAME;
   }
   if (bodyVal.console_type == null) {
-    return {
-      success: false,
-      message: "console_type Must Be Defined",
-    };
+    return MISSING_CONSOLE_TYPE;
   }
   if (bodyVal.region == null) {
-    return {
-      success: false,
-      message: "region Must Be Defined",
-    };
+    return MISSING_REGION;
   }
   if (bodyVal.product_condition == null) {
-    return {
-      success: false,
-      message: "product_condition Must Be Defined",
-    };
+    return MISSING_PRODUCT_CONDITION;
   }
   if (bodyVal.has_packaging == null) {
-    return {
-      success: false,
-      message: "has_packaging Must Be Defined",
-    };
+    return MISSING_HAS_PACKAGING;
   }
   if (bodyVal.is_duplicate == null) {
-    return {
-      success: false,
-      message: "is_duplicate Must Be Defined",
-    };
+    return MISSING_IS_DUPLICATE;
   }
   if (bodyVal.has_cables == null) {
-    return {
-      success: false,
-      message: "has_cables Must Be Defined",
-    };
+    return MISSING_HAS_CABLES;
   }
   if (bodyVal.has_console == null) {
-    return {
-      success: false,
-      message: "has_console Must Be Defined",
-    };
+    return MISSING_HAS_CONSOLE;
   }
   return returnVal;
 }
@@ -76,58 +68,31 @@ function validateConsoleEntryJSON(bodyVal) {
 function validateGameEntryJSON(bodyVal) {
   var returnVal = null;
   if (bodyVal.name == null) {
-    return {
-      success: false,
-      message: "Game Needs To Have A Name",
-    };
+    return MISSING_GAME_NAME;
   }
   if (bodyVal.console_id == null) {
-    return {
-      success: false,
-      message: "console_id Must Be Defined",
-    };
+    return MISSING_CONSOLE_ID;
   }
   if (bodyVal.digital == null) {
-    return {
-      success: false,
-      message: "digital Must Be Defined",
-    };
+    return MISSING_DIGITAL;
   }
   if (bodyVal.region == null) {
-    return {
-      success: false,
-      message: "region Must Be Defined",
-    };
+    return MISSING_REGION;
   }
   if (bodyVal.product_condition == null) {
-    return {
-      success: false,
-      message: "product_condition Must Be Defined",
-    };
+    return MISSING_PRODUCT_CONDITION;
   }
   if (bodyVal.has_box == null) {
-    return {
-      success: false,
-      message: "has_box Must Be Defined",
-    };
+    return MISSING_HAS_BOX;
   }
   if (bodyVal.is_duplicate == null) {
-    return {
-      success: false,
-      message: "is_duplicate Must Be Defined",
-    };
+    return MISSING_IS_DUPLICATE;
   }
   if (bodyVal.has_manual == null) {
-    return {
-      success: false,
-      message: "has_manual Must Be Defined",
-    };
+    return MISSING_HAS_MANUAL;
   }
   if (bodyVal.has_game == null) {
-    return {
-      success: false,
-      message: "has_game Must Be Defined",
-    };
+    return MISSING_HAS_GAME;
   }
   return returnVal;
 }
@@ -135,34 +100,19 @@ function validateGameEntryJSON(bodyVal) {
 function validateAccessoryEntryJSON(bodyVal) {
   var returnVal = null;
   if (bodyVal.name == null) {
-    return {
-      success: false,
-      message: "Accessory Needs To Have A Name",
-    };
+    return MISSING_ACCESSORY_NAME;
   }
   if (bodyVal.console_id == null) {
-    return {
-      success: false,
-      message: "console_id Must Be Defined",
-    };
+    return MISSING_CONSOLE_ID;
   }
   if (bodyVal.accessory_type == null) {
-    return {
-      success: false,
-      message: "accessory_type Must Be Defined",
-    };
+    return MISSING_ACCESSORY_TYPE;
   }
   if (bodyVal.product_condition == null) {
-    return {
-      success: false,
-      message: "product_condition Must Be Defined",
-    };
+    return MISSING_PRODUCT_CONDITION;
   }
   if (bodyVal.has_packaging == null) {
-    return {
-      success: false,
-      message: "has_packaging Must Be Defined",
-    };
+    return MISSING_HAS_PACKAGING;
   }
   return returnVal;
 }
@@ -424,23 +374,10 @@ export default function makeAPI(database) {
   // Get All Accessories
   router.get("/accessories", async (req, res) => {
     try {
-      await connection.query(
-        `SELECT * FROM Accessory`,
-        function (error, results) {
-          if (error) throw error;
-          return res.status(200).json({
-            success: true,
-            results: results,
-          });
-        },
-      );
+      return res.status(200).json(GENERATE_GET_JSON(database.getAccessories()));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
@@ -448,29 +385,14 @@ export default function makeAPI(database) {
   router.get("/accessories/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      await connection.query(
-        `SELECT * FROM Accessory WHERE id=${id}`,
-        function (error, results) {
-          if (error) throw error;
-          if (results.length == 0) {
-            return res.status(404).json({
-              success: false,
-              message: "Accessory Not Found",
-            });
-          }
-          return res.status(200).json({
-            success: true,
-            results: results,
-          });
-        },
-      );
+      const results = database.getAccessoryInformation(id);
+      if (results.length == 0) {
+        return res.status(404).json(GENERATE_GET_NOT_FOUND_JSON("Accessory"));
+      }
+      return res.status(200).json(GENERATE_GET_JSON(results));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
@@ -496,25 +418,12 @@ export default function makeAPI(database) {
         notes: bodyVal.notes,
       };
 
-      await connection.query(
-        "INSERT INTO Accessory SET ?",
-        entry,
-        function (error, results) {
-          if (error) throw error;
-          return res.status(201).json({
-            success: true,
-            message: "Accessory Created",
-            results: results,
-          });
-        },
-      );
+      return res
+        .status(201)
+        .json(GENERATE_CREATED_JSON("Accessory", database.addAccessory(entry)));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
@@ -541,31 +450,19 @@ export default function makeAPI(database) {
         notes: bodyVal.notes,
       };
 
-      await connection.query(
-        `UPDATE Accessory SET ? WHERE id=${id}`,
-        entry,
-        function (error, results) {
-          if (error) throw error;
-          if (results.affectedRows == 0) {
-            return res.status(404).json({
-              success: false,
-              message: `Accessory With id=${id} Not Found. Could Not Be Updated`,
-            });
-          }
-          return res.status(200).json({
-            success: true,
-            message: `Accessory With id=${id} Updated`,
-            results: results,
-          });
-        },
-      );
+      const results = database.updateAccessory(id, entry);
+
+      if (results.affectedRows == 0) {
+        return res
+          .status(404)
+          .json(GENERATE_UPDATE_DELETE_NOT_FOUND_JSON("Accessory", id, true));
+      }
+      return res
+        .status(200)
+        .json(GENERATE_UPDATE_JSON("Accessory", id, results));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
@@ -573,30 +470,18 @@ export default function makeAPI(database) {
   router.delete("/accessories/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      await connection.query(
-        `DELETE FROM Accessory WHERE id=${id}`,
-        function (error, results) {
-          if (error) throw error;
-          if (results.affectedRows == 0) {
-            return res.status(404).json({
-              success: false,
-              message: `Accessory With id=${id} Not Found. Could Not Be Deleted`,
-            });
-          }
-          return res.status(200).json({
-            success: true,
-            message: `Successfully deleted Accessory with id=${id}`,
-            results: results,
-          });
-        },
-      );
+      const results = database.deleteAccessory(id);
+      if (results.affectedRows == 0) {
+        return res
+          .status(404)
+          .json(GENERATE_UPDATE_DELETE_NOT_FOUND_JSON("Accessory", id, false));
+      }
+      return res
+        .status(200)
+        .json(GENERATE_DELETE_JSON("Accessory", id, results));
     } catch (error) {
       console.log(error);
-      return res.status(500).json({
-        success: false,
-        message: "Unexpected error in backend. Please try again",
-        error: error,
-      });
+      return res.status(500).json(GENERATE_500_ERROR_JSON(error));
     }
   });
 
