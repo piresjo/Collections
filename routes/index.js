@@ -1,7 +1,18 @@
 import express from "express";
 import mysql from "mysql";
 import { DB_PASSWORD } from "../secrets.js";
+import fs from "fs";
+import csv from "fast-csv";
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import multer from "multer";
 var router = express.Router();
+const upload = multer({ dest: "public/csv/" });
+
+const __filename = fileURLToPath(import.meta.url);
+console.log("MOO");
+console.log(__filename);
+const __dirname = `C:\\Users\\Pires\\OneDrive\\Documents\\GitHub\\CollectionsDB\\public\\csv\\`;
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -12,7 +23,7 @@ const connection = mysql.createConnection({
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
-  res.render("index", { title: "Express" });
+  res.render("index.ejs");
 });
 
 // CONSOLES
@@ -122,5 +133,62 @@ router.get("/accessories/:id", async (req, res) => {
     return res.render("error.ejs", { error: error });
   }
 });
+
+// Bulk Entry - Console
+router.get("/bulk_entry/consoles", async (req, res) => {
+  res.render("bulkentry.ejs");
+});
+
+router.post("/bulk_entry/consoles", async (req, res) => {
+  console.log("PONG");
+
+  // When a file has been uploaded
+  if (req.files && Object.keys(req.files).length !== 0) {
+    // Uploaded path
+    const uploadedFile = req.files.uploadFile;
+
+    // Logging uploading file
+    console.log(uploadedFile);
+
+    // Upload path
+    const uploadPath = __dirname + uploadedFile.name;
+
+    console.log(uploadPath);
+
+    fs.createReadStream(uploadPath)
+      .pipe(csv.parse({ headers: true }))
+      .on("error", (error) => console.error(error))
+      .on("data", (row) => console.log(row))
+      .on("end", (rowCount) => console.log(`Parsed ${rowCount} rows`));
+  } else res.send("No file uploaded !!");
+});
+
+// Bulk Entry - Games
+router.post("/bulk_entry/games", upload.single("file"), async (req, res) => {
+  console.log("PING");
+  const title = req.body.title;
+  const file = req.file;
+
+  console.log(title);
+  console.log(file);
+
+  res.sendStatus(200);
+});
+
+// Bulk Entry - Accessories
+router.post(
+  "/bulk_entry/accessories",
+  upload.single("file"),
+  async (req, res) => {
+    console.log("PING");
+    const title = req.body.title;
+    const file = req.file;
+
+    console.log(title);
+    console.log(file);
+
+    res.sendStatus(200);
+  },
+);
 
 export default router;
