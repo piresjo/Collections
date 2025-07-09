@@ -3,14 +3,18 @@ import mysql from "mysql";
 import { DB_PASSWORD } from "../secrets.js";
 import fs from "fs";
 import csv from "fast-csv";
-import { dirname } from "path";
 import { fileURLToPath } from "url";
 import multer from "multer";
+import {
+  DERIVE_REGION,
+  DERIVE_CONSOLE_TYPE,
+  VALIDATE_CONSOLE_ENTRY_JSON,
+  DERIVE_PRODUCT_CONDITION,
+} from "../constants.js";
 var router = express.Router();
 const upload = multer({ dest: "public/csv/" });
 
 const __filename = fileURLToPath(import.meta.url);
-console.log("MOO");
 console.log(__filename);
 const __dirname = `C:\\Users\\Pires\\OneDrive\\Documents\\GitHub\\CollectionsDB\\public\\csv\\`;
 
@@ -140,32 +144,82 @@ router.get("/bulk_entry/consoles", async (req, res) => {
 });
 
 router.post("/bulk_entry/consoles", async (req, res) => {
-  console.log("PONG");
-
   // When a file has been uploaded
   if (req.files && Object.keys(req.files).length !== 0) {
-    // Uploaded path
     const uploadedFile = req.files.uploadFile;
-
-    // Logging uploading file
-    console.log(uploadedFile);
-
-    // Upload path
     const uploadPath = __dirname + uploadedFile.name;
-
-    console.log(uploadPath);
+    var consoleList = [];
 
     fs.createReadStream(uploadPath)
       .pipe(csv.parse({ headers: true }))
       .on("error", (error) => console.error(error))
-      .on("data", (row) => console.log(row))
-      .on("end", (rowCount) => console.log(`Parsed ${rowCount} rows`));
-  } else res.send("No file uploaded !!");
+      .on("data", (row) => {
+        consoleList.push(row);
+      })
+      .on("end", (rowCount) => {
+        console.log(`Parsed ${rowCount} rows`);
+
+        var resultsList = [];
+
+        consoleList.forEach((console) => {
+          try {
+            const entry = {
+              name: console.Name,
+              console_type: DERIVE_CONSOLE_TYPE(
+                console["Console Type"].toLowerCase(),
+              ),
+              model: console.Model === "" ? null : console.Model,
+              region: DERIVE_REGION(console.Region.toUpperCase()),
+              release_date:
+                console["Release Date"] === "" ? null : console["Release Date"],
+              bought_date:
+                console["Bought Date"] === "" ? null : console["Bought Date"],
+              company: console.Company === "" ? null : console.Company,
+              product_condition: DERIVE_PRODUCT_CONDITION(
+                console["Product Condition"].toLowerCase(),
+              ),
+              has_packaging: console["Has Packaging"].toLowerCase() === "yes",
+              is_duplicate: console["Is Duplicate"].toLowerCase() === "yes",
+              has_cables: console["Has Cables"].toLowerCase() === "yes",
+              has_console: console["Has Console"].toLowerCase() === "yes",
+              monetary_value:
+                console["Monetary Value"] === ""
+                  ? null
+                  : parseFloat(console["Monetary Value"]),
+              notes: console.Notes,
+            };
+
+            const errorVal = VALIDATE_CONSOLE_ENTRY_JSON(entry);
+
+            if (errorVal != null) {
+              return res.status(400).json(errorVal);
+            }
+
+            connection.query(
+              "INSERT INTO Console SET ?",
+              entry,
+              function (error, results) {
+                if (error) throw error;
+                resultsList.push(results);
+              },
+            );
+          } catch (error) {
+            console.log(error);
+            return res.render("error.ejs", { error: error });
+          }
+        });
+        return res.render("created.ejs", {
+          object: "Console",
+          rowsAdded: rowCount,
+        });
+      });
+  } else {
+    res.send("No file uploaded !!");
+  }
 });
 
 // Bulk Entry - Games
 router.post("/bulk_entry/games", upload.single("file"), async (req, res) => {
-  console.log("PING");
   const title = req.body.title;
   const file = req.file;
 
@@ -180,7 +234,6 @@ router.post(
   "/bulk_entry/accessories",
   upload.single("file"),
   async (req, res) => {
-    console.log("PING");
     const title = req.body.title;
     const file = req.file;
 

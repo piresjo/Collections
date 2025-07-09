@@ -134,3 +134,116 @@ export const GENERATE_DELETE_JSON = function (itemType, idVal, resultsJSON) {
     results: resultsJSON,
   };
 };
+
+export const ConsoleType = Object.freeze({
+  HOME: 1,
+  COMPUTER: 2,
+  HANDHELD: 3,
+  HYBRID: 4,
+  FPGA_HOME: 5,
+  FPGA_HANDHELD: 6,
+  DEDICATED: 7,
+});
+
+export const DERIVE_CONSOLE_TYPE = function (consoleTypeString) {
+  switch (consoleTypeString) {
+    case "home":
+      return ConsoleType.HOME;
+    case "computer":
+      return ConsoleType.COMPUTER;
+    case "handheld":
+      return ConsoleType.HANDHELD;
+    case "hybrid":
+      return ConsoleType.HYBRID;
+    case "fpga home":
+      return ConsoleType.FPGA_HOME;
+    case "fpga handheld":
+      return ConsoleType.FPGA_HANDHELD;
+    case "dedicated":
+      return ConsoleType.DEDICATED;
+    default:
+      return null;
+  }
+};
+
+export const Region = Object.freeze({
+  NTSC: 1,
+  INTL: 2,
+  PAL: 3,
+  US: 4,
+  NTSC_J: 5,
+});
+
+export const DERIVE_REGION = function (regionString) {
+  switch (regionString) {
+    case "NTSC":
+      return Region.NTSC;
+    case "INTL":
+      return Region.INTL;
+    case "PAL":
+      return Region.PAL;
+    case "US":
+      return Region.US;
+    case "NTSC-J":
+      return Region.NTSC_J;
+    default:
+      return null;
+  }
+};
+
+export const ProductCondition = Object.freeze({
+  NEW: 1,
+  VERY_GOOD: 2,
+  GOOD: 3,
+  FAIR: 4,
+  OKAY: 5,
+  POOR: 6,
+});
+
+export const DERIVE_PRODUCT_CONDITION = function (productConditionString) {
+  switch (productConditionString) {
+    case "new":
+      return ProductCondition.NEW;
+    case "very good":
+      return ProductCondition.VERY_GOOD;
+    case "good":
+      return ProductCondition.GOOD;
+    case "fair":
+      return ProductCondition.FAIR;
+    case "okay":
+      return ProductCondition.OKAY;
+    case "poor":
+      return ProductCondition.POOR;
+    default:
+      return null;
+  }
+};
+
+export const VALIDATE_CONSOLE_ENTRY_JSON = function (bodyVal) {
+  var returnVal = null;
+  if (bodyVal.name == null) {
+    return MISSING_CONSOLE_NAME;
+  }
+  if (bodyVal.console_type == null) {
+    return MISSING_CONSOLE_TYPE;
+  }
+  if (bodyVal.region == null) {
+    return MISSING_REGION;
+  }
+  if (bodyVal.product_condition == null) {
+    return MISSING_PRODUCT_CONDITION;
+  }
+  if (bodyVal.has_packaging == null) {
+    return MISSING_HAS_PACKAGING;
+  }
+  if (bodyVal.is_duplicate == null) {
+    return MISSING_IS_DUPLICATE;
+  }
+  if (bodyVal.has_cables == null) {
+    return MISSING_HAS_CABLES;
+  }
+  if (bodyVal.has_console == null) {
+    return MISSING_HAS_CONSOLE;
+  }
+  return returnVal;
+};
