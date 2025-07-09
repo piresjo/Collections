@@ -1,6 +1,4 @@
 import express from "express";
-import mysql from "mysql";
-import { DB_PASSWORD } from "../secrets.js";
 import {
   GENERATE_500_ERROR_JSON,
   GENERATE_GET_JSON,
@@ -9,14 +7,10 @@ import {
   GENERATE_UPDATE_DELETE_NOT_FOUND_JSON,
   GENERATE_UPDATE_JSON,
   GENERATE_DELETE_JSON,
-  MISSING_CONSOLE_NAME,
-  MISSING_CONSOLE_TYPE,
   MISSING_REGION,
   MISSING_PRODUCT_CONDITION,
   MISSING_HAS_PACKAGING,
   MISSING_IS_DUPLICATE,
-  MISSING_HAS_CABLES,
-  MISSING_HAS_CONSOLE,
   MISSING_GAME_NAME,
   MISSING_CONSOLE_ID,
   MISSING_DIGITAL,
@@ -25,38 +19,11 @@ import {
   MISSING_HAS_GAME,
   MISSING_ACCESSORY_NAME,
   MISSING_ACCESSORY_TYPE,
+  VALIDATE_CONSOLE_ENTRY_JSON,
 } from "../constants.js";
 var router = express.Router();
 
 // HELPER METHODS
-function validateConsoleEntryJSON(bodyVal) {
-  var returnVal = null;
-  if (bodyVal.name == null) {
-    return MISSING_CONSOLE_NAME;
-  }
-  if (bodyVal.console_type == null) {
-    return MISSING_CONSOLE_TYPE;
-  }
-  if (bodyVal.region == null) {
-    return MISSING_REGION;
-  }
-  if (bodyVal.product_condition == null) {
-    return MISSING_PRODUCT_CONDITION;
-  }
-  if (bodyVal.has_packaging == null) {
-    return MISSING_HAS_PACKAGING;
-  }
-  if (bodyVal.is_duplicate == null) {
-    return MISSING_IS_DUPLICATE;
-  }
-  if (bodyVal.has_cables == null) {
-    return MISSING_HAS_CABLES;
-  }
-  if (bodyVal.has_console == null) {
-    return MISSING_HAS_CONSOLE;
-  }
-  return returnVal;
-}
 
 function validateGameEntryJSON(bodyVal) {
   var returnVal = null;
@@ -153,7 +120,7 @@ export default function makeAPI(database) {
   // Create A New Console
   router.post("/consoles", async (req, res) => {
     const bodyVal = req.body;
-    const errorVal = validateConsoleEntryJSON(bodyVal);
+    const errorVal = VALIDATE_CONSOLE_ENTRY_JSON(bodyVal);
     if (errorVal != null) {
       return res.status(400).json(errorVal);
     }
@@ -188,7 +155,7 @@ export default function makeAPI(database) {
   router.put("/consoles/:id", async (req, res) => {
     const bodyVal = req.body;
     const id = parseInt(req.params.id);
-    const errorVal = validateConsoleEntryJSON(bodyVal);
+    const errorVal = VALIDATE_CONSOLE_ENTRY_JSON(bodyVal);
     if (errorVal != null) {
       return res.status(400).json(errorVal);
     }

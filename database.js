@@ -14,11 +14,9 @@ export class Database {
   }
 
   async getConsoleInformation(idVal) {
-    console.log(this.connection);
     await this.connection.query(
       `SELECT * FROM Console WHERE id=${idVal}`,
       function (error, results) {
-        console.log(results);
         if (error) throw error;
         return results;
       },

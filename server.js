@@ -1,4 +1,4 @@
-import {Database} from "./database.js";
+import { Database } from "./database.js";
 import makeApp from "./app.js";
 import { DB_PASSWORD } from "./secrets.js";
 import mysql from "mysql";

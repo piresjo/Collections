@@ -5,6 +5,7 @@ import createError from "http-errors";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import fileUpload from "express-fileupload";
 
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
@@ -30,6 +31,7 @@ export default function makeApp(database, isProd) {
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use(express.static(path.join(__dirname, "public")));
+  app.use(fileUpload());
 
   app.use("/", indexRouter);
   app.use("/users", usersRouter);
