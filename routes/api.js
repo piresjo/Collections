@@ -7,75 +7,11 @@ import {
   GENERATE_UPDATE_DELETE_NOT_FOUND_JSON,
   GENERATE_UPDATE_JSON,
   GENERATE_DELETE_JSON,
-  MISSING_REGION,
-  MISSING_PRODUCT_CONDITION,
-  MISSING_HAS_PACKAGING,
-  MISSING_IS_DUPLICATE,
-  MISSING_GAME_NAME,
-  MISSING_CONSOLE_ID,
-  MISSING_DIGITAL,
-  MISSING_HAS_BOX,
-  MISSING_HAS_MANUAL,
-  MISSING_HAS_GAME,
-  MISSING_ACCESSORY_NAME,
-  MISSING_ACCESSORY_TYPE,
   VALIDATE_CONSOLE_ENTRY_JSON,
+  VALIDATE_GAME_ENTRY_JSON,
+  VALIDATE_ACCESSORY_ENTRY_JSON,
 } from "../constants.js";
 var router = express.Router();
-
-// HELPER METHODS
-
-function validateGameEntryJSON(bodyVal) {
-  var returnVal = null;
-  if (bodyVal.name == null) {
-    return MISSING_GAME_NAME;
-  }
-  if (bodyVal.console_id == null) {
-    return MISSING_CONSOLE_ID;
-  }
-  if (bodyVal.digital == null) {
-    return MISSING_DIGITAL;
-  }
-  if (bodyVal.region == null) {
-    return MISSING_REGION;
-  }
-  if (bodyVal.product_condition == null) {
-    return MISSING_PRODUCT_CONDITION;
-  }
-  if (bodyVal.has_box == null) {
-    return MISSING_HAS_BOX;
-  }
-  if (bodyVal.is_duplicate == null) {
-    return MISSING_IS_DUPLICATE;
-  }
-  if (bodyVal.has_manual == null) {
-    return MISSING_HAS_MANUAL;
-  }
-  if (bodyVal.has_game == null) {
-    return MISSING_HAS_GAME;
-  }
-  return returnVal;
-}
-
-function validateAccessoryEntryJSON(bodyVal) {
-  var returnVal = null;
-  if (bodyVal.name == null) {
-    return MISSING_ACCESSORY_NAME;
-  }
-  if (bodyVal.console_id == null) {
-    return MISSING_CONSOLE_ID;
-  }
-  if (bodyVal.accessory_type == null) {
-    return MISSING_ACCESSORY_TYPE;
-  }
-  if (bodyVal.product_condition == null) {
-    return MISSING_PRODUCT_CONDITION;
-  }
-  if (bodyVal.has_packaging == null) {
-    return MISSING_HAS_PACKAGING;
-  }
-  return returnVal;
-}
 
 export default function makeAPI(database) {
   // HEALTHCHECK
@@ -237,7 +173,7 @@ export default function makeAPI(database) {
   // Create A New Game
   router.post("/games", async (req, res) => {
     const bodyVal = req.body;
-    const errorVal = validateGameEntryJSON(bodyVal);
+    const errorVal = VALIDATE_GAME_ENTRY_JSON(bodyVal);
     if (errorVal != null) {
       return res.status(400).json(errorVal);
     }
@@ -274,7 +210,7 @@ export default function makeAPI(database) {
   router.put("/games/:id", async (req, res) => {
     const bodyVal = req.body;
     const id = parseInt(req.params.id);
-    const errorVal = validateGameEntryJSON(bodyVal);
+    const errorVal = VALIDATE_GAME_ENTRY_JSON(bodyVal);
     if (errorVal != null) {
       return res.status(400).json(errorVal);
     }
@@ -359,7 +295,7 @@ export default function makeAPI(database) {
   // Create A New Accessory
   router.post("/accessories", async (req, res) => {
     const bodyVal = req.body;
-    const errorVal = validateAccessoryEntryJSON(bodyVal);
+    const errorVal = VALIDATE_ACCESSORY_ENTRY_JSON(bodyVal);
     if (errorVal != null) {
       return res.status(400).json(errorVal);
     }
@@ -391,7 +327,7 @@ export default function makeAPI(database) {
   router.put("/accessories/:id", async (req, res) => {
     const bodyVal = req.body;
     const id = parseInt(req.params.id);
-    const errorVal = validateAccessoryEntryJSON(bodyVal);
+    const errorVal = VALIDATE_ACCESSORY_ENTRY_JSON(bodyVal);
     if (errorVal != null) {
       return res.status(400).json(errorVal);
     }

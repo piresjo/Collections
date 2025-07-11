@@ -247,3 +247,101 @@ export const VALIDATE_CONSOLE_ENTRY_JSON = function (bodyVal) {
   }
   return returnVal;
 };
+
+export const VALIDATE_GAME_ENTRY_JSON = function (bodyVal) {
+  var returnVal = null;
+  if (bodyVal.name == null) {
+    return MISSING_GAME_NAME;
+  }
+  if (bodyVal.console_id == null) {
+    return MISSING_CONSOLE_ID;
+  }
+  if (bodyVal.digital == null) {
+    return MISSING_DIGITAL;
+  }
+  if (bodyVal.region == null) {
+    return MISSING_REGION;
+  }
+  if (bodyVal.product_condition == null) {
+    return MISSING_PRODUCT_CONDITION;
+  }
+  if (bodyVal.has_box == null) {
+    return MISSING_HAS_BOX;
+  }
+  if (bodyVal.is_duplicate == null) {
+    return MISSING_IS_DUPLICATE;
+  }
+  if (bodyVal.has_manual == null) {
+    return MISSING_HAS_MANUAL;
+  }
+  if (bodyVal.has_game == null) {
+    return MISSING_HAS_GAME;
+  }
+  return returnVal;
+};
+
+export const ConsolesAndIds = {
+  "atari 2600": 1,
+  "atari 7800": 2,
+  "atari 8-bit": 3,
+  "ms-dos": 4,
+  "windows 9x": 5,
+  "windows nt (x86)": 6,
+  "windows nt (x64)": 7,
+  "commodore amiga 500": 8,
+  "sega master system": 9,
+  "sega genesis": 10,
+  "sega game gear": 11,
+  "nintendo entertainment system": 12,
+  "nintendo game boy": 13,
+  "super nintendo entertainment system": 14,
+  "nintendo 64": 15,
+  "nintendo gamecube": 16,
+  "nintendo game boy advance": 17,
+  "nintendo ds": 18,
+  "nintendo wii": 19,
+  "nintendo wii u": 20,
+  "nintendo 3ds xl": 21,
+  "nintendo switch": 22,
+  "sony playstation": 23,
+  "sony playstation 2": 24,
+  "sony playstation 3": 25,
+  "sony playstation 4": 26,
+  "microsoft xbox 360": 27,
+  "analogue super nt": 28,
+  "analogue mega sg": 29,
+  "analogue pocket": 30,
+};
+
+export const VALIDATE_ACCESSORY_ENTRY_JSON = function (bodyVal) {
+  var returnVal = null;
+  if (bodyVal.name == null) {
+    return MISSING_ACCESSORY_NAME;
+  }
+  if (bodyVal.console_id == null) {
+    return MISSING_CONSOLE_ID;
+  }
+  if (bodyVal.accessory_type == null) {
+    return MISSING_ACCESSORY_TYPE;
+  }
+  if (bodyVal.product_condition == null) {
+    return MISSING_PRODUCT_CONDITION;
+  }
+  if (bodyVal.has_packaging == null) {
+    return MISSING_HAS_PACKAGING;
+  }
+  return returnVal;
+};
+
+export const AccessoryType = Object.freeze({
+  CONTROLLER: 1,
+});
+
+export const DERIVE_ACCESSORY_TYPE = function (accessoryTypeString) {
+  switch (accessoryTypeString) {
+    case "controller":
+      return ProductCondition.NEW;
+    default:
+      return null;
+  }
+};
