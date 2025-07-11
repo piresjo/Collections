@@ -18,15 +18,36 @@
         <div class="upload-container">
             <h3>Upload Section</h3> <br>
         <!-- action to the /upload route-->
-        <form action="/bulk_entry/consoles" 
-              method="post"
-              enctype="multipart/form-data">
-            File to be uploaded: <input type="file" 
+        <% if (object === "Console") { %> 
+            <form action="/bulk_entry/consoles" 
+                method="post"
+                enctype="multipart/form-data">
+                File to be uploaded: <input type="file" 
                                         name="uploadFile" 
                                         id=""> 
-            <br><br>
-            <button type="submit">Upload</button>
-        </form>
+                <br><br>
+                <button type="submit">Upload</button>
+            </form>
+        <% } else if (object === "Game") { %> 
+            <form action="/bulk_entry/games" 
+                method="post"
+                enctype="multipart/form-data">
+                File to be uploaded: 
+                <input type="file" name="uploadFile" id=""> 
+                <br><br>
+                <button type="submit">Upload</button>
+            </form>
+        <% } else { %>
+            <form action="/bulk_entry/accessories" 
+                method="post"
+                enctype="multipart/form-data">
+                File to be uploaded: <input type="file" 
+                                        name="uploadFile" 
+                                        id=""> 
+                <br><br>
+                <button type="submit">Upload</button>
+            </form>
+        <% } %>
         <br>
         </div>
         <div class="lower-container">
