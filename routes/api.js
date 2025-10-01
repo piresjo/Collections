@@ -130,12 +130,14 @@ export default function makeAPI(database) {
   router.delete("/consoles/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const results = database.deleteConsole(id);
-      if (results.affectedRows == 0) {
+      const results = await database.deleteConsole(id);
+      console.log(results);
+      if (results === null) {
         return res
           .status(404)
           .json(GENERATE_UPDATE_DELETE_NOT_FOUND_JSON("Console", id, false));
       }
+      console.log(results);
       return res.status(200).json(GENERATE_DELETE_JSON("Console", id, results));
     } catch (error) {
       console.log(error);

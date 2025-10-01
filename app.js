@@ -14,7 +14,7 @@ import makeAPI from "./routes/api.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-export default function makeApp(database, isProd) {
+export default function makeApp(database) {
   var app = express();
   const port = process.env.PORT || 3000;
 
@@ -53,16 +53,13 @@ export default function makeApp(database, isProd) {
     res.render("error.ejs", { error: err });
   });
 
-  if (isProd) {
-    database.connection.connect((err) => {
-      if (err) {
-        console.error("Error connecting to MySQL: " + err.stack);
-        return;
-      }
-      console.log("Connected to MySQL as ID " + database.connection.threadId);
-    });
-  } else {
-    console.log(`Running Unit Tests. No Connection`);
-  }
+  database.connection.connect((err) => {
+    if (err) {
+      console.error("Error connecting to MySQL: " + err.stack);
+      return;
+    }
+    console.log("Connected to MySQL as ID " + database.connection.threadId);
+  });
+
   return app;
 }

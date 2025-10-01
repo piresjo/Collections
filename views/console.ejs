@@ -50,13 +50,13 @@
                             <%= consoles[0].name %>
                         </td>
                         <td>
-                            <%= consoles[0].console_type %>
+                            <%= consoles[0].console_type_string %>
                         </td>
                         <td>
                             <%= consoles[0].model !== null ? consoles[0].model : "N/A" %>
                         </td>
                         <td>
-                            <%= consoles[0].region %>
+                            <%= consoles[0].region_string %>
                         </td>
                         <td>
                             <%= consoles[0].release_date !== null ? consoles[0].release_date : "N/A" %>
@@ -68,19 +68,19 @@
                             <%= consoles[0].company !== null ? consoles[0].company : "N/A" %>
                         </td>
                         <td>
-                            <%= consoles[0].product_condition %>
+                            <%= consoles[0].condition_string %>
                         </td>
                         <td>
-                            <%= consoles[0].has_packaging %>
+                            <%= consoles[0].has_packaging ? "Yes" : "No" %>
                         </td>
                         <td>
-                            <%= consoles[0].is_duplicate %>
+                            <%= consoles[0].is_duplicate ? "Yes" : "No" %>
                         </td>
                         <td>
-                            <%= consoles[0].has_cables %>
+                            <%= consoles[0].has_cables ? "Yes" : "No" %>
                         </td>
                         <td>
-                            <%= consoles[0].has_console %>
+                            <%= consoles[0].has_console ? "Yes" : "No" %>
                         </td>
                         <td>
                             <%= consoles[0].monetary_value !== null ? consoles[0].monetary_value : "N/A" %>

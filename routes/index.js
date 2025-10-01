@@ -13,6 +13,9 @@ import {
   ConsolesAndIds,
   VALIDATE_ACCESSORY_ENTRY_JSON,
   DERIVE_ACCESSORY_TYPE,
+  DERIVE_CONSOLE_TYPE_STRING,
+  DERIVE_REGION_STRING,
+  DERIVE_CONDITION_STRING,
 } from "../constants.js";
 var router = express.Router();
 
@@ -38,6 +41,16 @@ router.get("/consoles", async (req, res) => {
   try {
     await connection.query(`SELECT * FROM Console`, function (error, results) {
       if (error) throw error;
+      for (var i = 0; i < results.length; i++) {
+        results[i].console_type_string = DERIVE_CONSOLE_TYPE_STRING(
+          results[i].console_type,
+        );
+        results[i].region_string = DERIVE_REGION_STRING(results[i].region);
+        results[i].condition_string = DERIVE_CONDITION_STRING(
+          results[i].product_condition,
+        );
+      }
+      console.log(results);
       return res.render("consoles.ejs", { consoles: results });
     });
   } catch (error) {
@@ -54,6 +67,13 @@ router.get("/consoles/:id", async (req, res) => {
       `SELECT * FROM Console WHERE id=${id}`,
       function (error, results) {
         if (error) throw error;
+        results[0].console_type_string = DERIVE_CONSOLE_TYPE_STRING(
+          results[0].console_type,
+        );
+        results[0].region_string = DERIVE_REGION_STRING(results[0].region);
+        results[0].condition_string = DERIVE_CONDITION_STRING(
+          results[0].product_condition,
+        );
         return res.render("console.ejs", {
           consoles: results,
           id: id,

@@ -145,6 +145,27 @@ export const ConsoleType = Object.freeze({
   DEDICATED: 7,
 });
 
+export const DERIVE_CONSOLE_TYPE_STRING = function (consoleTypeId) {
+  switch (consoleTypeId) {
+    case 1:
+      return "Home";
+    case 2:
+      return "Computer";
+    case 3:
+      return "Handheld";
+    case 4:
+      return "Hybrid";
+    case 5:
+      return "FPGA (Home)";
+    case 6:
+      return "FPGA (Handheld)";
+    case 7:
+      return "Dedicated";
+    default:
+      return null;
+  }
+};
+
 export const DERIVE_CONSOLE_TYPE = function (consoleTypeString) {
   switch (consoleTypeString) {
     case "home":
@@ -174,6 +195,23 @@ export const Region = Object.freeze({
   NTSC_J: 5,
 });
 
+export const DERIVE_REGION_STRING = function (regionId) {
+  switch (regionId) {
+    case 1:
+      return "NTSC";
+    case 2:
+      return "INTL";
+    case 3:
+      return "PAL";
+    case 4:
+      return "US";
+    case 5:
+      return "NTSC_J";
+    default:
+      return null;
+  }
+};
+
 export const DERIVE_REGION = function (regionString) {
   switch (regionString) {
     case "NTSC":
@@ -199,6 +237,25 @@ export const ProductCondition = Object.freeze({
   OKAY: 5,
   POOR: 6,
 });
+
+export const DERIVE_CONDITION_STRING = function (conditionId) {
+  switch (conditionId) {
+    case 1:
+      return "New";
+    case 2:
+      return "Very Good";
+    case 3:
+      return "Good";
+    case 4:
+      return "Fair";
+    case 5:
+      return "Okay";
+    case 6:
+      return "Poor";
+    default:
+      return null;
+  }
+};
 
 export const DERIVE_PRODUCT_CONDITION = function (productConditionString) {
   switch (productConditionString) {
