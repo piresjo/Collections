@@ -50,7 +50,6 @@ router.get("/consoles", async (req, res) => {
           results[i].product_condition,
         );
       }
-      console.log(results);
       return res.render("consoles.ejs", { consoles: results });
     });
   } catch (error) {

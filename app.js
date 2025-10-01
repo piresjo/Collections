@@ -9,7 +9,7 @@ import fileUpload from "express-fileupload";
 
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
-import makeAPI from "./routes/api.js";
+import apiRouter from "./routes/api.js";
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -35,7 +35,7 @@ export default function makeApp(database) {
 
   app.use("/", indexRouter);
   app.use("/users", usersRouter);
-  app.use("/api", makeAPI(database));
+  app.use("/api", apiRouter);
 
   // catch 404 and forward to error handler
   app.use(function (req, res, next) {
