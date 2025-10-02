@@ -47,13 +47,13 @@
                                 <%= consoles[i].name %>
                             </td>
                             <td>
-                                <%= consoles[i].console_type %>
+                                <%= consoles[i].console_type_string %>
                             </td>
                             <td>
                                 <%= consoles[i].model !== null ? consoles[i].model : "N/A" %>
                             </td>
                             <td>
-                                <%= consoles[i].region %>
+                                <%= consoles[i].region_string %>
                             </td>
                             <td>
                                 <%= consoles[i].release_date !== null ? consoles[i].release_date : "N/A" %>
@@ -65,19 +65,19 @@
                                 <%= consoles[i].company !== null ? consoles[i].company : "N/A" %>
                             </td>
                             <td>
-                                <%= consoles[i].product_condition %>
+                                <%= consoles[i].condition_string %>
                             </td>
                             <td>
-                                <%= consoles[i].has_packaging %>
+                                <%= consoles[i].has_packaging ? "Yes" : "No" %>
                             </td>
                             <td>
-                                <%= consoles[i].is_duplicate %>
+                                <%= consoles[i].is_duplicate ? "Yes" : "No" %>
                             </td>
                             <td>
-                                <%= consoles[i].has_cables %>
+                                <%= consoles[i].has_cables ? "Yes" : "No" %>
                             </td>
                             <td>
-                                <%= consoles[i].has_console %>
+                                <%= consoles[i].has_console ? "Yes" : "No" %>
                             </td>
                             <td>
                                 <%= consoles[i].monetary_value !== null ? consoles[i].monetary_value : "N/A" %>

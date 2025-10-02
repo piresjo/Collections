@@ -9,12 +9,12 @@ import fileUpload from "express-fileupload";
 
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
-import makeAPI from "./routes/api.js";
+import apiRouter from "./routes/api.js";
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
-export default function makeApp(database, isProd) {
+export default function makeApp(database) {
   var app = express();
   const port = process.env.PORT || 3000;
 
@@ -35,7 +35,7 @@ export default function makeApp(database, isProd) {
 
   app.use("/", indexRouter);
   app.use("/users", usersRouter);
-  app.use("/api", makeAPI(database));
+  app.use("/api", apiRouter);
 
   // catch 404 and forward to error handler
   app.use(function (req, res, next) {
@@ -53,16 +53,13 @@ export default function makeApp(database, isProd) {
     res.render("error.ejs", { error: err });
   });
 
-  if (isProd) {
-    database.connection.connect((err) => {
-      if (err) {
-        console.error("Error connecting to MySQL: " + err.stack);
-        return;
-      }
-      console.log("Connected to MySQL as ID " + database.connection.threadId);
-    });
-  } else {
-    console.log(`Running Unit Tests. No Connection`);
-  }
+  database.connection.connect((err) => {
+    if (err) {
+      console.error("Error connecting to MySQL: " + err.stack);
+      return;
+    }
+    console.log("Connected to MySQL as ID " + database.connection.threadId);
+  });
+
   return app;
 }

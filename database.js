@@ -49,6 +49,8 @@ export class Database {
     await this.connection.query(
       `DELETE FROM Console WHERE id=${idVal}`,
       function (error, results) {
+        console.log(results);
+        if (results.affectedRows === 0) return null;
         if (error) throw error;
         return results;
       },
