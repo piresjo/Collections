@@ -61,7 +61,7 @@
                                 <%= games[i].bought_date !== null ? games[i].bought_date : "N/A" %>
                             </td>
                             <td>
-                                <%= games[i].region %>
+                                <%= games[i].region_string %>
                             </td>
                             <td>
                                 <%= games[i].developer !== null ? games[i].developer : "N/A" %>
@@ -70,22 +70,22 @@
                                 <%= games[i].publisher !== null ? games[i].publisher : "N/A" %>
                             </td>
                             <td>
-                                <%= games[i].digital %>
+                                <%= games[i].digital ? "Yes" : "No" %>
                             </td>
                             <td>
-                                <%= games[i].has_game %>
+                                <%= games[i].has_game ? "Yes" : "No" %>
                             </td>
                             <td>
-                                <%= games[i].has_manual %>
+                                <%= games[i].has_manual ? "Yes" : "No" %>
                             </td>
                             <td>
-                                <%= games[i].has_box %>
+                                <%= games[i].has_box ? "Yes" : "No" %>
                             </td>
                             <td>
-                                <%= games[i].is_duplicate %>
+                                <%= games[i].is_duplicate ? "Yes" : "No" %>
                             </td>
                             <td>
-                                <%= games[i].product_condition %>
+                                <%= games[i].condition_string %>
                             </td>
                             <td>
                                 <%= games[i].monetary_value !== null ? games[i].monetary_value : "N/A" %>

@@ -92,6 +92,12 @@ router.get("/games", async (req, res) => {
   try {
     await connection.query(`SELECT * FROM Game`, function (error, results) {
       if (error) throw error;
+      for (var i = 0; i < results.length; i++) {
+        results[i].region_string = DERIVE_REGION_STRING(results[i].region);
+        results[i].condition_string = DERIVE_CONDITION_STRING(
+          results[i].product_condition,
+        );
+      }
       return res.render("games.ejs", { games: results });
     });
   } catch (error) {
@@ -108,6 +114,11 @@ router.get("/games/:id", async (req, res) => {
       `SELECT * FROM Game WHERE id=${id}`,
       function (error, results) {
         if (error) throw error;
+        results[0].region_string = DERIVE_REGION_STRING(results[0].region);
+        results[0].condition_string = DERIVE_CONDITION_STRING(
+          results[0].product_condition,
+        );
+        console.log(results);
         return res.render("game.ejs", {
           games: results,
           id: id,
