@@ -1,85 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, internal-scale=1.0">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Gugi&family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+<%- include('header.ejs') -%>
         <title>Collections - All Accessories</title>
     </head>
-
-    <body id="app">
-        <div class="upper-container">
-            <h1>Accessories</h1>
-            <h3>Table of all video game accessories in collection</h3>
-        </div>
-        <div class="table-container">
-            <% if (accessories.length === 0) { %>
-                <h2>No Accessories To Display.</h2>
-                <h3>Please Add One.</h3>
-            <% } else { %>
-                <table>
-                    <tr class="table-header-row">
-                        <th>ID</th>
-                        <th>Console ID</th>
-                        <th>Name</th>
-                        <th>Model</th>
-                        <th>Accessory Type</th>
-                        <th>Release Date</th>
-                        <th>Bought Date</th>
-                        <th>Company</th>
-                        <th>Condition</th>
-                        <th>Has Packaging?</th>
-                        <th>Value (USD)</th>
-                        <th>Notes</th>
+<body id="app">
+    <div class="upper-container">
+        <h1>Accessories</h1>
+        <h3>Table of all video game accessories in collection</h3>
+    </div>
+    <div class="table-container">
+        <% if (accessories.length === 0) { %>
+            <h2>No Accessories To Display.</h2>
+            <h3>Please Add One.</h3>
+        <% } else { %>
+            <table>
+                <tr class="table-header-row">
+                    <th>ID</th>
+                    <th>Console ID</th>
+                    <th>Name</th>
+                    <th>Model</th>
+                    <th>Accessory Type</th>
+                    <th>Release Date</th>
+                    <th>Bought Date</th>
+                    <th>Company</th>
+                    <th>Condition</th>
+                    <th>Has Packaging?</th>
+                    <th>Value (USD)</th>
+                    <th>Notes</th>
+                </tr>
+                <% for (var i = 0; i < accessories.length; i++) { %>
+                    <tr class="table-normal-row">
+                        <td>
+                            <%= accessories[i].id %>
+                        </td>
+                        <td>
+                           <%= accessories[i].console_id %>
+                        </td>
+                        <td>
+                            <%= accessories[i].name %>
+                        </td>
+                        <td>
+                            <%= accessories[i].model !== null ? accessories[i].model : "N/A" %>
+                        </td>
+                        <td>
+                            <%= accessories[i].accessory_type %>
+                        </td>
+                        <td>
+                            <%= accessories[i].release_date !== null ? accessories[i].release_date : "N/A" %>
+                        </td>
+                        <td>
+                            <%= accessories[i].bought_date !== null ? accessories[i].bought_date : "N/A" %>
+                        </td>
+                        <td>
+                            <%= accessories[i].company !== null ? accessories[i].company : "N/A" %>
+                        </td>
+                        <td>
+                            <%= accessories[i].product_condition %>
+                        </td>
+                        <td>
+                            <%= accessories[i].has_packaging %>
+                        </td>
+                        <td>
+                            <%= accessories[i].monetary_value !== null ? accessories[i].monetary_value : "N/A" %>
+                        </td>
+                        <td>
+                            <%= accessories[i].notes !== null ? accessories[i].notes : "N/A" %>
+                        </td>
                     </tr>
-                    <% for (var i = 0; i < accessories.length; i++) { %>
-                        <tr class="table-normal-row">
-                            <td>
-                               <%= accessories[i].id %>
-                            </td>
-                            <td>
-                                <%= accessories[i].console_id %>
-                            </td>
-                            <td>
-                                <%= accessories[i].name %>
-                            </td>
-                            <td>
-                                <%= accessories[i].model !== null ? accessories[i].model : "N/A" %>
-                            </td>
-                            <td>
-                                <%= accessories[i].accessory_type %>
-                            </td>
-                            <td>
-                                <%= accessories[i].release_date !== null ? accessories[i].release_date : "N/A" %>
-                            </td>
-                            <td>
-                                <%= accessories[i].bought_date !== null ? accessories[i].bought_date : "N/A" %>
-                            </td>
-                            <td>
-                                <%= accessories[i].company !== null ? accessories[i].company : "N/A" %>
-                            </td>
-                            <td>
-                                <%= accessories[i].product_condition %>
-                            </td>
-                            <td>
-                                <%= accessories[i].has_packaging %>
-                            </td>
-                            <td>
-                                <%= accessories[i].monetary_value !== null ? accessories[i].monetary_value : "N/A" %>
-                            </td>
-                            <td>
-                                <%= accessories[i].notes !== null ? accessories[i].notes : "N/A" %>
-                            </td>
-                        </tr>
-                    <% } %>
-                </table>
-            <% } %>
-        </div>
-        <div class="lower-container">
+                <% } %>
+            </table>
+        <% } %>
+    </div>
+    <div class="lower-container">
 
-        </div>
-    </body>
-</html>
+    </div>
+</body>
+<%- include('footer.ejs') -%>
