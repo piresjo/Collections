@@ -17,6 +17,7 @@ import {
   DERIVE_REGION_STRING,
   DERIVE_CONDITION_STRING,
 } from "../constants.js";
+import { body, validationResult } from "express-validator";
 var router = express.Router();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -82,6 +83,79 @@ router.get("/consoles/:id", async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.render("error.ejs", { error: error });
+  }
+});
+
+router.get("/addConsole", async (req, res) => {
+  console.log("PING");
+  return res.render("addConsole.ejs");
+});
+
+body(
+  "consoleName",
+  "Console Name Must Be At Least 3 Characters And At Most 256 Characters",
+)
+  .trim()
+  .isLength({ min: 3, max: 256 })
+  .escape();
+
+body("consoleModel", "Model Name Must Be At Most 64 Characters")
+  .trim()
+  .isLength({ max: 64 })
+  .escape();
+
+body("company", "Company Name Must Be At Most 64 Characters")
+  .trim()
+  .isLength({ max: 64 })
+  .escape();
+
+body("notes", "Notes Must Be At Most 1024 Characters")
+  .trim()
+  .isLength({ max: 1024 })
+  .escape();
+
+router.post("/consoles", async (req, res) => {
+  const validationErrors = validationResult(req);
+  const bodyVal = req.body;
+
+  if (!validationErrors.isEmpty()) {
+    console.log(validationErrors.array());
+    return res.render("error.ejs", { error: validationErrors.array() });
+  }
+
+  const entry = {
+    name: bodyVal.consoleName,
+    console_type: parseInt(bodyVal.consoleType),
+    model: "consoleModel" in bodyVal ? bodyVal.consoleModel : null,
+    region: parseInt(bodyVal.region),
+    release_date: "releaseDate" in bodyVal ? bodyVal.releaseDate : null,
+    bought_date: "boughtDate" in bodyVal ? bodyVal.boughtDate : null,
+    company: "company" in bodyVal ? bodyVal.company : null,
+    product_condition: parseInt(bodyVal.productCondition),
+    has_packaging: "hasPackaging" in bodyVal ? true : false,
+    is_duplicate: "isDuplicate" in bodyVal ? true : false,
+    has_cables: "hasCables" in bodyVal ? true : false,
+    has_console: "hasConsole" in bodyVal ? true : false,
+    monetary_value:
+      "monetaryValue" in bodyVal ? Number(bodyVal.monetaryValue) : null,
+    notes: "notes" in bodyVal ? bodyVal.notes : null,
+  };
+
+  try {
+    await connection.query(
+      "INSERT INTO Console SET ?",
+      entry,
+      function (error, results) {
+        if (error) throw error;
+        return res.render("created.ejs", {
+          object: "Console",
+          rowsAdded: 1,
+        });
+      },
+    );
+  } catch (error) {
+    console.log(error);
+    return res.render("error.ejs", { error: validationErrors.array() });
   }
 });
 
