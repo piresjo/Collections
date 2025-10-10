@@ -1,0 +1,69 @@
+<%- include('header.ejs') -%>
+<title>Add Accessory</title>
+</head>
+
+<body id="app">
+    <%- include('navbar.ejs') -%>
+    <div class="upper-container">
+        <h1>Add Accessory</h1>
+    </div>
+    <div class="form-container">
+        <form action="/consoles" 
+            method="post"
+            enctype="multipart/form-data">
+            <label>Accessory Name: <input type="text" 
+                                    name="accessoryName" 
+                                    id="accessoryName"> </label>
+            <br><br>
+            <label>Console ID: <input type="number" 
+                                    name="consoleId"
+                                    step="1" 
+                                    id="consoleId"> </label>
+            <br><br>
+            <label>Model: <input type="text" 
+                                    name="accessoryModel" 
+                                    id="accessoryModel"> </label>
+            <br><br>
+            <label>Accessory Type: <input type="number" 
+                                    name="accessoryType"
+                                    step="1" 
+                                    id="accessoryType"> </label>
+            <br><br>
+            <label>Release Date: <input type="date" 
+                                    name="releaseDate" 
+                                    id="releaseDate"> </label>
+            <br><br>
+            <label>Bought Date:  <input type="date" 
+                                    name="boughtDate" 
+                                    id="boughtDate"> </label>
+            <br><br>
+            <label>Company: <input type="text" 
+                                    name="company" 
+                                    id="company"> </label>
+            <br><br>
+            <label>Product Condition ID: <input type="number" 
+                                    name="productCondition"
+                                    step="1" 
+                                    id="productCondition"> </label>
+            <br><br>
+            <label>Has Packaging? <input type="checkbox" 
+                                    name="hasPackaging" 
+                                    id="hasPackaging"> </label>
+            <br><br>
+            <label> Value (USD): <input type="number" 
+                                    name="monetaryValue"
+                                    step="0.01" 
+                                    id="monetaryValue"> </label>
+            <br><br>
+            <label> Notes: <input type="text" 
+                                    name="notes" 
+                                    id="notes"> </label>
+            <br><br>
+            <button type="submit">Create</button>
+        </form>
+    </div>
+    <div class="lower-container">
+
+    </div>
+</body>
+<%- include('footer.ejs') -%>

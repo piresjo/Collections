@@ -1,0 +1,81 @@
+<%- include('header.ejs') -%>
+<title>Add Console</title>
+</head>
+
+<body id="app">
+    <%- include('navbar.ejs') -%>
+    <div class="upper-container">
+        <h1>Add Console</h1>
+    </div>
+    <div class="form-container">
+        <form action="/consoles" 
+            method="post"
+            enctype="multipart/form-data">
+            <label>Console Name: <input type="text" 
+                                    name="consoleName" 
+                                    id="consoleName"> </label>
+            <br><br>
+            <label>Console Type ID: <input type="number" 
+                                    name="consoleType"
+                                    step="1" 
+                                    id="consoleType"> </label>
+            <br><br>
+            <label>Model: <input type="text" 
+                                    name="consoleModel" 
+                                    id="consoleModel"> </label>
+            <br><br>
+            <label>Region ID: <input type="number" 
+                                    name="region"
+                                    step="1" 
+                                    id="region"> </label>
+            <br><br>
+            <label>Release Date: <input type="date" 
+                                    name="releaseDate" 
+                                    id="releaseDate"> </label>
+            <br><br>
+            <label>Bought Date:  <input type="date" 
+                                    name="boughtDate" 
+                                    id="boughtDate"> </label>
+            <br><br>
+            <label>Company: <input type="text" 
+                                    name="company" 
+                                    id="company"> </label>
+            <br><br>
+            <label>Product Condition ID: <input type="number" 
+                                    name="productCondition"
+                                    step="1" 
+                                    id="productCondition"> </label>
+            <br><br>
+            <label>Has Packaging? <input type="checkbox" 
+                                    name="hasPackaging" 
+                                    id="hasPackaging"> </label>
+            <br><br>
+            <label>Is Duplicate? <input type="checkbox" 
+                                    name="isDuplicate" 
+                                    id="isDuplicate"> </label>
+            <br><br>
+            <label>Has Cables? <input type="checkbox" 
+                                    name="hasCables" 
+                                    id="hasCables"> </label>
+            <br><br>
+            <label>Has Console? <input type="checkbox" 
+                                    name="hasConsole" 
+                                    id="hasConsole"> </label>
+            <br><br>
+            <label> Value (USD): <input type="number" 
+                                    name="monetaryValue"
+                                    step="0.01" 
+                                    id="monetaryValue"> </label>
+            <br><br>
+            <label> Notes: <input type="text" 
+                                    name="notes" 
+                                    id="notes"> </label>
+            <br><br>
+            <button type="submit">Create</button>
+        </form>
+    </div>
+    <div class="lower-container">
+
+    </div>
+</body>
+<%- include('footer.ejs') -%>
