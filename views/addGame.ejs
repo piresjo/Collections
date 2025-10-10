@@ -11,18 +11,18 @@
         <form action="/consoles" 
             method="post"
             enctype="multipart/form-data">
-            <label>Console Name: <input type="text" 
+            <label>Game Name: <input type="text" 
                                     name="consoleName" 
                                     id="consoleName"> </label>
             <br><br>
-            <label>Console Type ID: <input type="number" 
-                                    name="consoleType"
+            <label>Console ID: <input type="number" 
+                                    name="consoleId"
                                     step="1" 
-                                    id="consoleType"> </label>
+                                    id="consoleId"> </label>
             <br><br>
-            <label>Model: <input type="text" 
-                                    name="consoleModel" 
-                                    id="consoleModel"> </label>
+            <label>Edition: <input type="text" 
+                                    name="edition" 
+                                    id="edition"> </label>
             <br><br>
             <label>Region ID: <input type="number" 
                                     name="region"
@@ -37,30 +37,38 @@
                                     name="boughtDate" 
                                     id="boughtDate"> </label>
             <br><br>
-            <label>Company: <input type="text" 
-                                    name="company" 
-                                    id="company"> </label>
+            <label>Developer: <input type="text" 
+                                    name="developer" 
+                                    id="developer"> </label>
+            <br><br>
+            <label>Publisher: <input type="text" 
+                                    name="publisher" 
+                                    id="publisher"> </label>
             <br><br>
             <label>Product Condition ID: <input type="number" 
                                     name="productCondition"
                                     step="1" 
                                     id="productCondition"> </label>
             <br><br>
-            <label>Has Packaging? <input type="checkbox" 
-                                    name="hasPackaging" 
-                                    id="hasPackaging"> </label>
+            <label>Has Box? <input type="checkbox" 
+                                    name="hasBox" 
+                                    id="hasBox"> </label>
             <br><br>
             <label>Is Duplicate? <input type="checkbox" 
                                     name="isDuplicate" 
                                     id="isDuplicate"> </label>
             <br><br>
-            <label>Has Cables? <input type="checkbox" 
-                                    name="hasCables" 
-                                    id="hasCables"> </label>
+            <label>Digital? <input type="checkbox" 
+                                    name="digital" 
+                                    id="digital"> </label>
             <br><br>
-            <label>Has Console? <input type="checkbox" 
-                                    name="hasConsole" 
-                                    id="hasConsole"> </label>
+            <label>Has Manual? <input type="checkbox" 
+                                    name="hasManual" 
+                                    id="hasManual"> </label>
+            <br><br>
+            <label>Has Game? <input type="checkbox" 
+                                    name="hasGame" 
+                                    id="hasGame"> </label>
             <br><br>
             <label> Value (USD): <input type="number" 
                                     name="monetaryValue"

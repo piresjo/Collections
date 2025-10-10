@@ -30,6 +30,19 @@ const connection = mysql.createConnection({
   database: "video_game_collection",
 });
 
+const validate = (validations) => {
+  return async (req, res, next) => {
+    for (const validation of validations) {
+      const result = await validation.run(req);
+      if (!result.isEmpty()) {
+        return res.status(400).json({ errors: result.array() });
+      }
+    }
+
+    next();
+  };
+};
+
 /* GET home page. */
 router.get("/", function (req, res, next) {
   res.render("index.ejs");
@@ -91,73 +104,80 @@ router.get("/addConsole", async (req, res) => {
   return res.render("addConsole.ejs");
 });
 
-body(
-  "consoleName",
-  "Console Name Must Be At Least 3 Characters And At Most 256 Characters",
-)
-  .trim()
-  .isLength({ min: 3, max: 256 })
-  .escape();
+router.post(
+  "/consoles",
+  validate([
+    body(
+      "consoleName",
+      "Console Name Must Be At Least 3 Characters And At Most 256 Characters",
+    )
+      .trim()
+      .isLength({ min: 3, max: 256 })
+      .escape(),
+    body("consoleModel", "Model Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+    body("company", "Company Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+    body("notes", "Notes Must Be At Most 1024 Characters")
+      .trim()
+      .isLength({ max: 1024 })
+      .escape(),
+    body("releaseDate").optional(),
+    body("boughtDate").optional(),
+    body("region").isNumeric().toInt(),
+    body("consoleType").isNumeric().toInt(),
+    body("productCondition").isNumeric().toInt(),
+    body("hasPackaging").toBoolean(),
+    body("isDuplicate").toBoolean(),
+    body("hasCables").toBoolean(),
+    body("hasConsole").toBoolean(),
+    body("monetaryValue").isDecimal().toFloat().optional(),
+  ]),
+  async (req, res) => {
+    const bodyVal = req.body;
 
-body("consoleModel", "Model Name Must Be At Most 64 Characters")
-  .trim()
-  .isLength({ max: 64 })
-  .escape();
+    const entry = {
+      name: bodyVal.consoleName,
+      console_type: parseInt(bodyVal.consoleType),
+      model: "consoleModel" in bodyVal ? bodyVal.consoleModel : null,
+      region: bodyVal.region,
+      release_date: "releaseDate" in bodyVal ? bodyVal.releaseDate : null,
+      bought_date: "boughtDate" in bodyVal ? bodyVal.boughtDate : null,
+      company: "company" in bodyVal ? bodyVal.company : null,
+      product_condition: parseInt(bodyVal.productCondition),
+      has_packaging: "hasPackaging" in bodyVal ? true : false,
+      is_duplicate: "isDuplicate" in bodyVal ? true : false,
+      has_cables: "hasCables" in bodyVal ? true : false,
+      has_console: "hasConsole" in bodyVal ? true : false,
+      monetary_value:
+        "monetaryValue" in bodyVal ? Number(bodyVal.monetaryValue) : null,
+      notes: "notes" in bodyVal ? bodyVal.notes : null,
+    };
 
-body("company", "Company Name Must Be At Most 64 Characters")
-  .trim()
-  .isLength({ max: 64 })
-  .escape();
-
-body("notes", "Notes Must Be At Most 1024 Characters")
-  .trim()
-  .isLength({ max: 1024 })
-  .escape();
-
-router.post("/consoles", async (req, res) => {
-  const validationErrors = validationResult(req);
-  const bodyVal = req.body;
-
-  if (!validationErrors.isEmpty()) {
-    console.log(validationErrors.array());
-    return res.render("error.ejs", { error: validationErrors.array() });
-  }
-
-  const entry = {
-    name: bodyVal.consoleName,
-    console_type: parseInt(bodyVal.consoleType),
-    model: "consoleModel" in bodyVal ? bodyVal.consoleModel : null,
-    region: parseInt(bodyVal.region),
-    release_date: "releaseDate" in bodyVal ? bodyVal.releaseDate : null,
-    bought_date: "boughtDate" in bodyVal ? bodyVal.boughtDate : null,
-    company: "company" in bodyVal ? bodyVal.company : null,
-    product_condition: parseInt(bodyVal.productCondition),
-    has_packaging: "hasPackaging" in bodyVal ? true : false,
-    is_duplicate: "isDuplicate" in bodyVal ? true : false,
-    has_cables: "hasCables" in bodyVal ? true : false,
-    has_console: "hasConsole" in bodyVal ? true : false,
-    monetary_value:
-      "monetaryValue" in bodyVal ? Number(bodyVal.monetaryValue) : null,
-    notes: "notes" in bodyVal ? bodyVal.notes : null,
-  };
-
-  try {
-    await connection.query(
-      "INSERT INTO Console SET ?",
-      entry,
-      function (error, results) {
-        if (error) throw error;
-        return res.render("created.ejs", {
-          object: "Console",
-          rowsAdded: 1,
-        });
-      },
-    );
-  } catch (error) {
-    console.log(error);
-    return res.render("error.ejs", { error: validationErrors.array() });
-  }
-});
+    try {
+      await connection.query(
+        "INSERT INTO Console SET ?",
+        entry,
+        function (error, results) {
+          if (error) throw error;
+          return res.render("created.ejs", {
+            object: "Console",
+            rowsAdded: 1,
+          });
+        },
+      );
+    } catch (error) {
+      console.log(error);
+      return res.render("error.ejs", { error: error });
+    }
+  },
+);
 
 // GAMES
 
@@ -205,6 +225,95 @@ router.get("/games/:id", async (req, res) => {
   }
 });
 
+// Add Game
+
+router.get("/addGame", async (req, res) => {
+  return res.render("addGame.ejs");
+});
+
+router.post(
+  "/games",
+  validate([
+    body(
+      "gameName",
+      "Game Name Must Be At Least 3 Characters And At Most 512 Characters",
+    )
+      .trim()
+      .isLength({ min: 3, max: 512 })
+      .escape(),
+    body("edition", "Edition Must Be At Most 256 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 256 })
+      .escape(),
+    body("publisher", "Publisher Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+      body("developer", "Developer Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+    body("notes", "Notes Must Be At Most 1024 Characters")
+      .trim()
+      .isLength({ max: 1024 })
+      .escape(),
+    body("releaseDate").optional(),
+    body("boughtDate").optional(),
+    body("region").isNumeric().toInt(),
+    body("consoleId").isNumeric().toInt(),
+    body("productCondition").isNumeric().toInt(),
+    body("digital").toBoolean(),
+    body("isDuplicate").toBoolean(),
+    body("hasBox").toBoolean(),
+    body("hasManual").toBoolean(),
+    body("hasGame").toBoolean(),
+    body("monetaryValue").isDecimal().toFloat().optional(),
+  ]),
+  async (req, res) => {
+    const bodyVal = req.body;
+
+    const entry = {
+      console_id: bodyVal.consoleId,
+      name: bodyVal.gameName,
+      edition: "edition" in bodyVal ? bodyVal.edition : null,
+      release_date: "releaseDate" in bodyVal ? bodyVal.releaseDate : null,
+      bought_date: "boughtDate" in bodyVal ? bodyVal.boughtDate : null,
+      region: bodyVal.region,
+      developer: "developer" in bodyVal ? bodyVal.developer : null,
+      publisher: "publisher" in bodyVal ? bodyVal.publisher : null,
+      digital: bodyVal.digital,
+      has_game: bodyVal.hasGame,
+      has_manual: bodyVal.hasManual,
+      has_box: bodyVal.hasBox,
+      is_duplicate: bodyVal.isDuplicate,
+      product_condition: bodyVal.productCondition,
+      monetary_value:
+        "monetaryValue" in bodyVal ? bodyVal.monetaryValue : null,
+      notes: "notes" in bodyVal ? bodyVal.notes : null,
+    };
+
+    try {
+      await connection.query(
+        "INSERT INTO Game SET ?",
+        entry,
+        function (error, results) {
+          if (error) throw error;
+          return res.render("created.ejs", {
+            object: "Game",
+            rowsAdded: results.length(),
+          });
+        },
+      );
+    } catch (error) {
+      console.log(error);
+      return res.render("error.ejs", { error: error });
+    }
+  },
+);
+
 // ACCESSORIES
 
 // Get All Accessories
@@ -242,6 +351,82 @@ router.get("/accessories/:id", async (req, res) => {
     return res.render("error.ejs", { error: error });
   }
 });
+
+// Add Accessory
+
+router.get("/addAccessory", async (req, res) => {
+  return res.render("addAccessory.ejs");
+});
+
+router.post(
+  "/accessories",
+  validate([
+    body(
+      "accessoryName",
+      "Accessory Name Must Be At Least 3 Characters And At Most 256 Characters",
+    )
+      .trim()
+      .isLength({ min: 3, max: 256 })
+      .escape(),
+    body("accessoryModel", "Model Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+    body("company", "Company Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+    body("notes", "Notes Must Be At Most 1024 Characters")
+      .trim()
+      .isLength({ max: 1024 })
+      .escape(),
+    body("releaseDate").optional(),
+    body("boughtDate").optional(),
+    body("consoleId").isNumeric().toInt(),
+    body("accessoryType").isNumeric().toInt(),
+    body("productCondition").isNumeric().toInt(),
+    body("hasPackaging").toBoolean(),
+    body("monetaryValue").isDecimal().toFloat().optional(),
+  ]),
+  async (req, res) => {
+    const bodyVal = req.body;
+
+    const entry = {
+      console_id: bodyVal.consoleId,
+      name: bodyVal.consoleName,
+      model: "accessoryModel" in bodyVal ? bodyVal.accessoryModel : null,
+      accessory_type: bodyVal.accessory_type,
+      release_date: "releaseDate" in bodyVal ? bodyVal.releaseDate : null,
+      bought_date: "boughtDate" in bodyVal ? bodyVal.boughtDate : null,
+      company: "company" in bodyVal ? bodyVal.company : null,
+      product_condition: bodyVal.product_condition,
+      has_packaging: "hasPackaging" in bodyVal ? true : false,
+      monetary_value:
+        "monetaryValue" in bodyVal ? bodyVal.monetaryValue : null,
+      notes: "notes" in bodyVal ? bodyVal.notes : null,
+      
+    };
+
+    try {
+      await connection.query(
+        "INSERT INTO Accessory SET ?",
+        entry,
+        function (error, results) {
+          if (error) throw error;
+          return res.render("created.ejs", {
+            object: "Accessory",
+            rowsAdded: results.length,
+          });
+        },
+      );
+    } catch (error) {
+      console.log(error);
+      return res.render("error.ejs", { error: error });
+    }
+  },
+);
 
 // Bulk Entry - Console
 router.get("/bulk_entry/consoles", async (req, res) => {

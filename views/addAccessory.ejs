@@ -1,33 +1,33 @@
 <%- include('header.ejs') -%>
-<title>Add Console</title>
+<title>Add Accessory</title>
 </head>
 
 <body id="app">
     <%- include('navbar.ejs') -%>
     <div class="upper-container">
-        <h1>Add Console</h1>
+        <h1>Add Accessory</h1>
     </div>
     <div class="form-container">
         <form action="/consoles" 
             method="post"
             enctype="multipart/form-data">
-            <label>Console Name: <input type="text" 
-                                    name="consoleName" 
-                                    id="consoleName"> </label>
+            <label>Accessory Name: <input type="text" 
+                                    name="accessoryName" 
+                                    id="accessoryName"> </label>
             <br><br>
-            <label>Console Type ID: <input type="number" 
-                                    name="consoleType"
+            <label>Console ID: <input type="number" 
+                                    name="consoleId"
                                     step="1" 
-                                    id="consoleType"> </label>
+                                    id="consoleId"> </label>
             <br><br>
             <label>Model: <input type="text" 
-                                    name="consoleModel" 
-                                    id="consoleModel"> </label>
+                                    name="accessoryModel" 
+                                    id="accessoryModel"> </label>
             <br><br>
-            <label>Region ID: <input type="number" 
-                                    name="region"
+            <label>Accessory Type: <input type="number" 
+                                    name="accessoryType"
                                     step="1" 
-                                    id="region"> </label>
+                                    id="accessoryType"> </label>
             <br><br>
             <label>Release Date: <input type="date" 
                                     name="releaseDate" 
@@ -49,18 +49,6 @@
             <label>Has Packaging? <input type="checkbox" 
                                     name="hasPackaging" 
                                     id="hasPackaging"> </label>
-            <br><br>
-            <label>Is Duplicate? <input type="checkbox" 
-                                    name="isDuplicate" 
-                                    id="isDuplicate"> </label>
-            <br><br>
-            <label>Has Cables? <input type="checkbox" 
-                                    name="hasCables" 
-                                    id="hasCables"> </label>
-            <br><br>
-            <label>Has Console? <input type="checkbox" 
-                                    name="hasConsole" 
-                                    id="hasConsole"> </label>
             <br><br>
             <label> Value (USD): <input type="number" 
                                     name="monetaryValue"
