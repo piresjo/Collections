@@ -30,6 +30,7 @@
                     <th>With Console?</th>
                     <th>Value (USD)</th>
                     <th>Notes</th>
+                    <th>Delete?</th>
                 </tr>
                 <% for (var i = 0; i < consoles.length; i++) { %>
                     <tr class="table-normal-row">
@@ -77,6 +78,12 @@
                         </td>
                         <td>
                             <%= consoles[i].notes !== null ? consoles[i].notes : "N/A" %>
+                        </td>
+                        <td>
+                            <form action="/consoles/<%= consoles[i].id %>" method="delete">
+                                <input type="submit" value="Delete" />
+                            </form>
+
                         </td>
                     </tr>
                 <% } %>

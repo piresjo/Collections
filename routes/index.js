@@ -79,6 +79,9 @@ router.get("/consoles/:id", async (req, res) => {
     await connection.query(
       `SELECT * FROM Console WHERE id=${id}`,
       function (error, results) {
+        if (results.length === 0) {
+          return res.render("notFound.ejs", { object: "Console", idVal: id });
+        }
         if (error) throw error;
         results[0].console_type_string = DERIVE_CONSOLE_TYPE_STRING(
           results[0].console_type,
@@ -99,6 +102,7 @@ router.get("/consoles/:id", async (req, res) => {
   }
 });
 
+// Add Console
 router.get("/addConsole", async (req, res) => {
   console.log("PING");
   return res.render("addConsole.ejs");
@@ -179,6 +183,26 @@ router.post(
   },
 );
 
+// Delete Console
+router.delete("/consoles/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await connection.query(
+      `DELETE FROM Console WHERE id=${id}`,
+      function (error, results) {
+        if (error) throw error;
+        if (results.affectedRows == 0) {
+          return res.render("notFound.ejs", { object: "Console", idVal: id });
+        }
+        return res.render("deleted.ejs", { object: "Console", idVal: id });
+      },
+    );
+  } catch (error) {
+    console.log(error);
+    return res.render("error.ejs", { error: error });
+  }
+});
+
 // GAMES
 
 // Get All Games
@@ -207,6 +231,9 @@ router.get("/games/:id", async (req, res) => {
     await connection.query(
       `SELECT * FROM Game WHERE id=${id}`,
       function (error, results) {
+        if (results.length === 0) {
+          return res.render("notFound.ejs", { object: "Game", idVal: id });
+        }
         if (error) throw error;
         results[0].region_string = DERIVE_REGION_STRING(results[0].region);
         results[0].condition_string = DERIVE_CONDITION_STRING(
@@ -251,7 +278,7 @@ router.post(
       .optional()
       .isLength({ max: 64 })
       .escape(),
-      body("developer", "Developer Name Must Be At Most 64 Characters")
+    body("developer", "Developer Name Must Be At Most 64 Characters")
       .trim()
       .optional()
       .isLength({ max: 64 })
@@ -290,8 +317,7 @@ router.post(
       has_box: bodyVal.hasBox,
       is_duplicate: bodyVal.isDuplicate,
       product_condition: bodyVal.productCondition,
-      monetary_value:
-        "monetaryValue" in bodyVal ? bodyVal.monetaryValue : null,
+      monetary_value: "monetaryValue" in bodyVal ? bodyVal.monetaryValue : null,
       notes: "notes" in bodyVal ? bodyVal.notes : null,
     };
 
@@ -313,6 +339,26 @@ router.post(
     }
   },
 );
+
+// Delete Game
+router.delete("/games/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await connection.query(
+      `DELETE FROM Game WHERE id=${id}`,
+      function (error, results) {
+        if (error) throw error;
+        if (results.affectedRows == 0) {
+          return res.render("notFound.ejs", { object: "Game", idVal: id });
+        }
+        return res.render("deleted.ejs", { object: "Game", idVal: id });
+      },
+    );
+  } catch (error) {
+    console.log(error);
+    return res.render("error.ejs", { error: error });
+  }
+});
 
 // ACCESSORIES
 
@@ -340,6 +386,9 @@ router.get("/accessories/:id", async (req, res) => {
       `SELECT * FROM Accessory WHERE id=${id}`,
       function (error, results) {
         if (error) throw error;
+        if (results.length === 0) {
+          return res.render("notFound.ejs", { object: "Accessory", idVal: id });
+        }
         return res.render("accessory.ejs", {
           accessories: results,
           id: id,
@@ -403,10 +452,8 @@ router.post(
       company: "company" in bodyVal ? bodyVal.company : null,
       product_condition: bodyVal.product_condition,
       has_packaging: "hasPackaging" in bodyVal ? true : false,
-      monetary_value:
-        "monetaryValue" in bodyVal ? bodyVal.monetaryValue : null,
+      monetary_value: "monetaryValue" in bodyVal ? bodyVal.monetaryValue : null,
       notes: "notes" in bodyVal ? bodyVal.notes : null,
-      
     };
 
     try {
@@ -427,6 +474,29 @@ router.post(
     }
   },
 );
+
+// Delete Accessory
+router.delete("/accessories/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await connection.query(
+      `DELETE FROM Accessory WHERE id=${id}`,
+      function (error, results) {
+        if (results.affectedRows == 0) {
+          return res.render("notFound.ejs", {
+            object: "Accessory",
+            idVal: id,
+          });
+        }
+        if (error) throw error;
+        return res.render("deleted.ejs", { object: "Accessory", idVal: id });
+      },
+    );
+  } catch (error) {
+    console.log(error);
+    return res.render("error.ejs", { error: error });
+  }
+});
 
 // Bulk Entry - Console
 router.get("/bulk_entry/consoles", async (req, res) => {
