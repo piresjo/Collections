@@ -32,6 +32,7 @@
                     <th>Condition</th>
                     <th>Value (USD)</th>
                     <th>Notes</th>
+                    <th>Delete?</th>
                 </tr>
                 <% for (var i = 0; i < games.length; i++) { %>
                     <tr class="table-normal-row">
@@ -85,6 +86,12 @@
                         </td>
                         <td>
                             <%= games[i].notes !== null ? games[i].notes : "N/A" %>
+                        </td>
+                        <td>
+                            <form action="/deleteGame" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="id" value="<%= games[i].id  %>">
+                                <button type="submit">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 <% } %>

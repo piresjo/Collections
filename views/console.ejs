@@ -85,7 +85,10 @@
         <% } %>
     </div>
     <div class="lower-container">
-
+        <form action="/deleteConsole" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="id" value="<%= consoles[0].id  %>">
+            <button type="submit">Delete</button>
+        </form>
     </div>
 </body>
 <%- include('footer.ejs') -%>
