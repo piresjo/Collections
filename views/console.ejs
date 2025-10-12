@@ -89,6 +89,9 @@
             <input type="hidden" name="id" value="<%= consoles[0].id  %>">
             <button type="submit">Delete</button>
         </form>
+        <form action="/editConsole/<%= consoles[0].id  %>" method="get" enctype="multipart/form-data">
+            <button type="submit">Edit</button>
+        </form>
     </div>
 </body>
 <%- include('footer.ejs') -%>

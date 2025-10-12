@@ -203,6 +203,103 @@ router.post("/deleteConsole", async (req, res) => {
   }
 });
 
+// Edit Console
+router.get("/editConsole/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await connection.query(
+      `SELECT * FROM Console WHERE id=${id}`,
+      function (error, results) {
+        if (results.length === 0) {
+          return res.render("notFound.ejs", { object: "Console", idVal: id });
+        }
+        if (error) throw error;
+        console.log(results);
+        return res.render("editConsole.ejs", {
+          console: results[0],
+        });
+      },
+    );
+  } catch (error) {
+    console.log(error);
+    return res.render("error.ejs", { error: error });
+  }
+});
+
+router.post(
+  "/editConsole/:id",
+  validate([
+    body(
+      "consoleName",
+      "Console Name Must Be At Least 3 Characters And At Most 256 Characters",
+    )
+      .trim()
+      .isLength({ min: 3, max: 256 })
+      .escape(),
+    body("consoleModel", "Model Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+    body("company", "Company Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+    body("notes", "Notes Must Be At Most 1024 Characters")
+      .trim()
+      .isLength({ max: 1024 })
+      .escape(),
+    body("releaseDate").optional(),
+    body("boughtDate").optional(),
+    body("region").isNumeric().toInt(),
+    body("consoleType").isNumeric().toInt(),
+    body("productCondition").isNumeric().toInt(),
+    body("hasPackaging").toBoolean(),
+    body("isDuplicate").toBoolean(),
+    body("hasCables").toBoolean(),
+    body("hasConsole").toBoolean(),
+  ]),
+  async (req, res) => {
+    const bodyVal = req.body;
+    const id = req.params.id;
+
+    const entry = {
+      name: bodyVal.consoleName,
+      console_type: parseInt(bodyVal.consoleType),
+      model: bodyVal.consoleModel !== '' ? bodyVal.consoleModel : null,
+      region: bodyVal.region,
+      release_date: bodyVal.releaseDate !== '' ? bodyVal.releaseDate : null,
+      bought_date: bodyVal.boughtDate !== '' ? bodyVal.boughtDate : null,
+      company: bodyVal.company !== '' ? bodyVal.company : null,
+      product_condition: parseInt(bodyVal.productCondition),
+      has_packaging: bodyVal.hasPackaging,
+      is_duplicate: bodyVal.isDuplicate,
+      has_cables: bodyVal.hasCables,
+      has_console: bodyVal.hasConsole,
+      monetary_value:
+        bodyVal.monetaryValue !== '' ? Number(bodyVal.monetaryValue) : null,
+      notes: "notes" in bodyVal ? bodyVal.notes : null,
+    };
+
+    try {
+      await connection.query(
+        `UPDATE Console SET ? WHERE id=${id}`,
+        entry,
+        function (error, results) {
+          if (error) throw error;
+          return res.render("updated.ejs", {
+            object: "Console",
+          });
+        },
+      );
+    } catch (error) {
+      console.log(error);
+      return res.render("error.ejs", { error: error });
+    }
+  },
+);
+
 // GAMES
 
 // Get All Games
@@ -360,6 +457,109 @@ router.post("/deleteGame", async (req, res) => {
   }
 });
 
+//Edit Game
+router.get("/editGame/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await connection.query(
+      `SELECT * FROM Game WHERE id=${id}`,
+      function (error, results) {
+        if (results.length === 0) {
+          return res.render("notFound.ejs", { object: "Game", idVal: id });
+        }
+        if (error) throw error;
+        return res.render("editGame.ejs", {
+          game: results[0],
+        });
+      },
+    );
+  } catch (error) {
+    console.log(error);
+    return res.render("error.ejs", { error: error });
+  }
+});
+
+router.post(
+  "/editGame/:id",
+  validate([
+    body(
+      "gameName",
+      "Game Name Must Be At Least 3 Characters And At Most 512 Characters",
+    )
+      .trim()
+      .isLength({ min: 3, max: 512 })
+      .escape(),
+    body("edition", "Edition Must Be At Most 256 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 256 })
+      .escape(),
+    body("publisher", "Publisher Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+    body("developer", "Developer Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+    body("notes", "Notes Must Be At Most 1024 Characters")
+      .trim()
+      .isLength({ max: 1024 })
+      .escape(),
+    body("releaseDate").optional(),
+    body("boughtDate").optional(),
+    body("region").isNumeric().toInt(),
+    body("consoleId").isNumeric().toInt(),
+    body("productCondition").isNumeric().toInt(),
+    body("digital").toBoolean(),
+    body("isDuplicate").toBoolean(),
+    body("hasBox").toBoolean(),
+    body("hasManual").toBoolean(),
+    body("hasGame").toBoolean(),
+  ]),
+  async (req, res) => {
+    const bodyVal = req.body;
+    const id = req.params.id
+
+    const entry = {
+      console_id: bodyVal.consoleId,
+      name: bodyVal.gameName,
+      edition: bodyVal.edition !== '' ? bodyVal.edition : null,
+      release_date: bodyVal.releaseDate !== '' ? bodyVal.releaseDate : null,
+      bought_date: bodyVal.boughtDate !== '' ? bodyVal.boughtDate : null,
+      region: bodyVal.region,
+      developer: bodyVal.developer !== '' ? bodyVal.developer : null,
+      publisher: bodyVal.publisher !== '' ? bodyVal.publisher : null,
+      digital: bodyVal.digital,
+      has_game: bodyVal.hasGame,
+      has_manual: bodyVal.hasManual,
+      has_box: bodyVal.hasBox,
+      is_duplicate: bodyVal.isDuplicate,
+      product_condition: bodyVal.productCondition,
+      monetary_value: bodyVal.monetaryValue !== '' ? Number(bodyVal.monetaryValue) : null,
+      notes: bodyVal.notes !== '' ? bodyVal.notes : null,
+    };
+
+    try {
+      await connection.query(
+        `UPDATE Game SET ? WHERE id=${id}`,
+        entry,
+        function (error, results) {
+          if (error) throw error;
+          return res.render("updated.ejs", {
+            object: "Game",
+          });
+        },
+      );
+    } catch (error) {
+      console.log(error);
+      return res.render("error.ejs", { error: error });
+    }
+  },
+);
+
 // ACCESSORIES
 
 // Get All Accessories
@@ -450,7 +650,7 @@ router.post(
       release_date: "releaseDate" in bodyVal ? bodyVal.releaseDate : null,
       bought_date: "boughtDate" in bodyVal ? bodyVal.boughtDate : null,
       company: "company" in bodyVal ? bodyVal.company : null,
-      product_condition: bodyVal.product_condition,
+      product_condition: bodyVal.productCondition,
       has_packaging: "hasPackaging" in bodyVal ? true : false,
       monetary_value: "monetaryValue" in bodyVal ? bodyVal.monetaryValue : null,
       notes: "notes" in bodyVal ? bodyVal.notes : null,
@@ -497,6 +697,98 @@ router.post("/deleteAccessory", async (req, res) => {
     return res.render("error.ejs", { error: error });
   }
 });
+
+router.post(
+  "/editAccessory/:id",
+  validate([
+    body(
+      "accessoryName",
+      "Accessory Name Must Be At Least 3 Characters And At Most 256 Characters",
+    )
+      .trim()
+      .isLength({ min: 3, max: 256 })
+      .escape(),
+    body("accessoryModel", "Model Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+    body("company", "Company Name Must Be At Most 64 Characters")
+      .trim()
+      .optional()
+      .isLength({ max: 64 })
+      .escape(),
+    body("notes", "Notes Must Be At Most 1024 Characters")
+      .trim()
+      .isLength({ max: 1024 })
+      .escape(),
+    body("releaseDate").optional(),
+    body("boughtDate").optional(),
+    body("consoleId").isNumeric().toInt(),
+    body("accessoryType").isNumeric().toInt(),
+    body("productCondition").isNumeric().toInt(),
+    body("hasPackaging").toBoolean(),
+    body("monetaryValue").isDecimal().toFloat().optional(),
+  ]),
+  async (req, res) => {
+    const bodyVal = req.body;
+    const id = req.params.id;
+
+    const entry = {
+      console_id: bodyVal.consoleId,
+      name: bodyVal.consoleName,
+      model: bodyVal.accessoryModel !== '' ? bodyVal.accessoryModel : null,
+      accessory_type: bodyVal.accessoryType,
+      release_date: bodyVal.releaseDate !== '' ? bodyVal.releaseDate : null,
+      bought_date: bodyVal.boughtDate !== '' ? bodyVal.boughtDate : null,
+      company: bodyVal.company !== '' ? bodyVal.company : null,
+      product_condition: bodyVal.productCondition,
+      has_packaging: bodyVal.hasPackaging,
+      monetary_value: bodyVal.monetaryValue !== '' ? Number(bodyVal.monetaryValue) : null,
+      notes: bodyVal.notes !== '' ? bodyVal.notes : null,
+    };
+
+    try {
+      await connection.query(
+        `UPDATE Accessory SET ? WHERE id=${id}`,
+        entry,
+        function (error, results) {
+          if (error) throw error;
+          return res.render("updated.ejs", {
+            object: "Accessory",
+          });
+        },
+      );
+    } catch (error) {
+      console.log(error);
+      return res.render("error.ejs", { error: error });
+    }
+  },
+);
+
+// Edit Accessory
+router.get("/editAccessory/:id", async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await connection.query(
+      `SELECT * FROM Accessory WHERE id=${id}`,
+      function (error, results) {
+        if (results.length === 0) {
+          return res.render("notFound.ejs", { object: "Accessory", idVal: id });
+        }
+        if (error) throw error;
+        return res.render("editAccessory.ejs", {
+          accessory: results[0],
+        });
+      },
+    );
+  } catch (error) {
+    console.log(error);
+    return res.render("error.ejs", { error: error });
+  }
+});
+
+// Bulk Entry
 
 // Bulk Entry - Console
 router.get("/bulk_entry/consoles", async (req, res) => {

@@ -1,0 +1,95 @@
+<%- include('header.ejs') -%>
+<title>Edit Console</title>
+</head>
+
+<body id="app">
+    <%- include('navbar.ejs') -%>
+    <div class="upper-container">
+        <h1>Edit Console - ID:<%= console.id %></h1>
+    </div>
+    <div class="form-container">
+        <form action="/editConsole/<%=console.id%>" 
+            method="post"
+            enctype="multipart/form-data">
+            <label>Console Name: <input type="text" 
+                                    name="consoleName" 
+                                    id="consoleName"
+                                    value="<%=console.name%>"> </label>
+            <br><br>
+            <label>Console Type ID: <input type="number" 
+                                    name="consoleType"
+                                    step="1" 
+                                    id="consoleType"
+                                    value="<%=console.console_type%>"> </label>
+            <br><br>
+            <label>Model: <input type="text" 
+                                    name="consoleModel" 
+                                    id="consoleModel"
+                                    value="<%=console.model%>"> </label>
+            <br><br>
+            <label>Region ID: <input type="number" 
+                                    name="region"
+                                    step="1" 
+                                    id="region"
+                                    value="<%=console.region%>"> </label>
+            <br><br>
+            <label>Release Date: <input type="date" 
+                                    name="releaseDate" 
+                                    id="releaseDate"
+                                    value="<%=console.release_date%>"> </label>
+            <br><br>
+            <label>Bought Date:  <input type="date" 
+                                    name="boughtDate" 
+                                    id="boughtDate"
+                                    value="<%=console.bought_date%>"> </label>
+            <br><br>
+            <label>Company: <input type="text" 
+                                    name="company" 
+                                    id="company"
+                                    value="<%=console.company%>"> </label>
+            <br><br>
+            <label>Product Condition ID: <input type="number" 
+                                    name="productCondition"
+                                    step="1" 
+                                    id="productCondition"
+                                    value="<%=console.product_condition%>"> </label>
+            <br><br>
+            <label>Has Packaging? <input type="checkbox" 
+                                    name="hasPackaging" 
+                                    id="hasPackaging"
+                                    value="<%=console.has_packaging%>"> </label>
+            <br><br>
+            <label>Is Duplicate? <input type="checkbox" 
+                                    name="isDuplicate" 
+                                    id="isDuplicate"
+                                    value="<%=console.is_duplicate%>"> </label>
+            <br><br>
+            <label>Has Cables? <input type="checkbox" 
+                                    name="hasCables" 
+                                    id="hasCables"
+                                    value="<%=console.has_cables%>"> </label>
+            <br><br>
+            <label>Has Console? <input type="checkbox" 
+                                    name="hasConsole" 
+                                    id="hasConsole"
+                                    value="<%=console.has_console%>"> </label>
+            <br><br>
+            <label> Value (USD): <input type="number" 
+                                    name="monetaryValue"
+                                    step="0.01" 
+                                    id="monetaryValue"
+                                    value="<%=console.monetary_value%>"> </label>
+            <br><br>
+            <label> Notes: <input type="text" 
+                                    name="notes" 
+                                    id="notes"
+                                    value="<%=console.notes%>"> </label>
+            <br><br>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+    <div class="lower-container">
+
+    </div>
+</body>
+<%- include('footer.ejs') -%>

@@ -31,6 +31,7 @@
                     <th>Value (USD)</th>
                     <th>Notes</th>
                     <th>Delete?</th>
+                    <th>Edit?</th>
                 </tr>
                 <% for (var i = 0; i < consoles.length; i++) { %>
                     <tr class="table-normal-row">
@@ -84,6 +85,11 @@
                                 <input type="hidden" name="id" value="<%= consoles[i].id  %>">
                                 <button type="submit">Delete</button>
 
+                            </form>
+                        </td>
+                        <td>
+                            <form action="/editConsole/<%= consoles[i].id  %>" method="get" enctype="multipart/form-data">
+                                <button type="submit">Edit</button>
                             </form>
                         </td>
                     </tr>
