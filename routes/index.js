@@ -184,9 +184,9 @@ router.post(
 );
 
 // Delete Console
-router.delete("/consoles/:id", async (req, res) => {
+router.post("/deleteConsole", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.body.id);
     await connection.query(
       `DELETE FROM Console WHERE id=${id}`,
       function (error, results) {
@@ -341,9 +341,9 @@ router.post(
 );
 
 // Delete Game
-router.delete("/games/:id", async (req, res) => {
+router.post("/deleteGame", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.body.id);
     await connection.query(
       `DELETE FROM Game WHERE id=${id}`,
       function (error, results) {
@@ -476,9 +476,9 @@ router.post(
 );
 
 // Delete Accessory
-router.delete("/accessories/:id", async (req, res) => {
+router.post("/deleteAccessory", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.body.id);
     await connection.query(
       `DELETE FROM Accessory WHERE id=${id}`,
       function (error, results) {

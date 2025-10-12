@@ -80,10 +80,11 @@
                             <%= consoles[i].notes !== null ? consoles[i].notes : "N/A" %>
                         </td>
                         <td>
-                            <form action="/consoles/<%= consoles[i].id %>" method="delete">
-                                <input type="submit" value="Delete" />
-                            </form>
+                            <form action="/deleteConsole" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="id" value="<%= consoles[i].id  %>">
+                                <button type="submit">Delete</button>
 
+                            </form>
                         </td>
                     </tr>
                 <% } %>

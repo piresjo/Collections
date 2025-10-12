@@ -1,7 +1,5 @@
 import express from "express";
 import bodyParser from "body-parser";
-import { methodOverride } from "method-override";
-
 
 import createError from "http-errors";
 import path from "path";

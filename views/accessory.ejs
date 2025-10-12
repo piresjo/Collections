@@ -29,6 +29,7 @@
                     <th>Has Packaging?</th>
                     <th>Value (USD)</th>
                     <th>Notes</th>
+                    <th>Delete?</th>
                 </tr>
                 <tr class="table-normal-row">
                     <td>
@@ -66,6 +67,12 @@
                     </td>
                     <td>
                         <%= accessories[0].notes !== null ? accessories[0].notes : "N/A" %>
+                    </td>
+                    <td>
+                        <form action="/deleteAccessory" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="id" value="<%= accessories[0].id  %>">
+                                <button type="submit">Delete</button>
+                        </form>
                     </td>
                 </tr>
             </table>
