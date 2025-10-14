@@ -19,7 +19,8 @@ import {
 import { body } from 'express-validator'
 const router = express.Router()
 
-const __dirname = 'C:\\Users\\Pires\\OneDrive\\Documents\\GitHub\\CollectionsDB\\public\\csv\\'
+const __dirname =
+  'C:\\Users\\Pires\\OneDrive\\Documents\\GitHub\\CollectionsDB\\public\\csv\\'
 
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -66,7 +67,7 @@ router.get('/consoles', async (req, res) => {
     })
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { error })
+    return res.render('error.ejs', { status: res.statusCode, error })
   }
 })
 
@@ -78,7 +79,11 @@ router.get('/consoles/:id', async (req, res) => {
       `SELECT * FROM Console WHERE id=${id}`,
       function (error, results) {
         if (results.length === 0) {
-          return res.render('notFound.ejs', { object: 'Console', idVal: id })
+          return res.render('error.ejs', {
+            status: 404,
+            object: 'Console',
+            idVal: id
+          })
         }
         if (error) throw error
         results[0].console_type_string = DERIVE_CONSOLE_TYPE_STRING(
@@ -96,7 +101,7 @@ router.get('/consoles/:id', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { error })
+    return res.render('error.ejs', { status: res.statusCode, error })
   }
 })
 
@@ -168,15 +173,15 @@ router.post(
         entry,
         function (error, results) {
           if (error) throw error
-          return res.render('created.ejs', {
-            object: 'Console',
-            rowsAdded: 1
+          return res.render('status.ejs', {
+            action: 'create',
+            object: 'Console'
           })
         }
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { error })
+      return res.render('error.ejs', { status: res.statusCode, error })
     }
   }
 )
@@ -190,14 +195,22 @@ router.post('/deleteConsole', async (req, res) => {
       function (error, results) {
         if (error) throw error
         if (results.affectedRows === 0) {
-          return res.render('notFound.ejs', { object: 'Console', idVal: id })
+          return res.render('error.ejs', {
+            status: 404,
+            object: 'Console',
+            idVal: id
+          })
         }
-        return res.render('deleted.ejs', { object: 'Console', idVal: id })
+        return res.render('status.ejs', {
+          action: 'delete',
+          object: 'Console',
+          idVal: id
+        })
       }
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { error })
+    return res.render('error.ejs', { status: res.statusCode, error })
   }
 })
 
@@ -209,10 +222,13 @@ router.get('/editConsole/:id', async (req, res) => {
       `SELECT * FROM Console WHERE id=${id}`,
       function (error, results) {
         if (results.length === 0) {
-          return res.render('notFound.ejs', { object: 'Console', idVal: id })
+          return res.render('error.ejs', {
+            status: 404,
+            object: 'Console',
+            idVal: id
+          })
         }
         if (error) throw error
-        console.log(results)
         return res.render('editConsole.ejs', {
           console: results[0]
         })
@@ -220,7 +236,7 @@ router.get('/editConsole/:id', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { error })
+    return res.render('error.ejs', { status: res.statusCode, error })
   }
 })
 
@@ -286,14 +302,16 @@ router.post(
         entry,
         function (error, results) {
           if (error) throw error
-          return res.render('updated.ejs', {
-            object: 'Console'
+          return res.render('status.ejs', {
+            action: 'update',
+            object: 'Console',
+            idVal: id
           })
         }
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { error })
+      return res.render('error.ejs', { status: res.statusCode, error })
     }
   }
 )
@@ -315,7 +333,7 @@ router.get('/games', async (req, res) => {
     })
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { error })
+    return res.render('error.ejs', { status: res.statusCode, error })
   }
 })
 
@@ -327,7 +345,11 @@ router.get('/games/:id', async (req, res) => {
       `SELECT * FROM Game WHERE id=${id}`,
       function (error, results) {
         if (results.length === 0) {
-          return res.render('notFound.ejs', { object: 'Game', idVal: id })
+          return res.render('error.ejs', {
+            status: 404,
+            object: 'Game',
+            idVal: id
+          })
         }
         if (error) throw error
         results[0].region_string = DERIVE_REGION_STRING(results[0].region)
@@ -343,7 +365,7 @@ router.get('/games/:id', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { error })
+    return res.render('error.ejs', { status: res.statusCode, error })
   }
 })
 
@@ -422,15 +444,15 @@ router.post(
         entry,
         function (error, results) {
           if (error) throw error
-          return res.render('created.ejs', {
-            object: 'Game',
-            rowsAdded: results.length()
+          return res.render('status.ejs', {
+            action: 'create',
+            object: 'Game'
           })
         }
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { error })
+      return res.render('error.ejs', { status: res.statusCode, error })
     }
   }
 )
@@ -444,14 +466,22 @@ router.post('/deleteGame', async (req, res) => {
       function (error, results) {
         if (error) throw error
         if (results.affectedRows === 0) {
-          return res.render('notFound.ejs', { object: 'Game', idVal: id })
+          return res.render('error.ejs', {
+            status: 404,
+            object: 'Game',
+            idVal: id
+          })
         }
-        return res.render('deleted.ejs', { object: 'Game', idVal: id })
+        return res.render('status.ejs', {
+          action: 'delete',
+          object: 'Game',
+          idVal: id
+        })
       }
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { error })
+    return res.render('error.ejs', { status: res.statusCode, error })
   }
 })
 
@@ -463,7 +493,11 @@ router.get('/editGame/:id', async (req, res) => {
       `SELECT * FROM Game WHERE id=${id}`,
       function (error, results) {
         if (results.length === 0) {
-          return res.render('notFound.ejs', { object: 'Game', idVal: id })
+          return res.render('error.ejs', {
+            status: 404,
+            object: 'Game',
+            idVal: id
+          })
         }
         if (error) throw error
         return res.render('editGame.ejs', {
@@ -473,7 +507,7 @@ router.get('/editGame/:id', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { error })
+    return res.render('error.ejs', { status: res.statusCode, error })
   }
 })
 
@@ -536,7 +570,8 @@ router.post(
       has_box: bodyVal.hasBox,
       is_duplicate: bodyVal.isDuplicate,
       product_condition: bodyVal.productCondition,
-      monetary_value: bodyVal.monetaryValue !== '' ? Number(bodyVal.monetaryValue) : null,
+      monetary_value:
+        bodyVal.monetaryValue !== '' ? Number(bodyVal.monetaryValue) : null,
       notes: bodyVal.notes !== '' ? bodyVal.notes : null
     }
 
@@ -546,14 +581,16 @@ router.post(
         entry,
         function (error, results) {
           if (error) throw error
-          return res.render('updated.ejs', {
-            object: 'Game'
+          return res.render('status.ejs', {
+            action: 'update',
+            object: 'Game',
+            idVal: id
           })
         }
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { error })
+      return res.render('error.ejs', { status: res.statusCode, error })
     }
   }
 )
@@ -572,7 +609,7 @@ router.get('/accessories', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { error })
+    return res.render('error.ejs', { status: res.statusCode, error })
   }
 })
 
@@ -585,7 +622,11 @@ router.get('/accessories/:id', async (req, res) => {
       function (error, results) {
         if (error) throw error
         if (results.length === 0) {
-          return res.render('notFound.ejs', { object: 'Accessory', idVal: id })
+          return res.render('error.ejs', {
+            status: 404,
+            object: 'Accessory',
+            idVal: id
+          })
         }
         return res.render('accessory.ejs', {
           accessories: results,
@@ -595,7 +636,7 @@ router.get('/accessories/:id', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { error })
+    return res.render('error.ejs', { status: res.statusCode, error })
   }
 })
 
@@ -660,15 +701,15 @@ router.post(
         entry,
         function (error, results) {
           if (error) throw error
-          return res.render('created.ejs', {
-            object: 'Accessory',
-            rowsAdded: results.length
+          return res.render('status.ejs', {
+            action: 'create',
+            object: 'Accessory'
           })
         }
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { error })
+      return res.render('error.ejs', { status: res.statusCode, error })
     }
   }
 )
@@ -681,18 +722,49 @@ router.post('/deleteAccessory', async (req, res) => {
       `DELETE FROM Accessory WHERE id=${id}`,
       function (error, results) {
         if (results.affectedRows === 0) {
-          return res.render('notFound.ejs', {
+          return res.render('error.ejs', {
+            status: 404,
             object: 'Accessory',
             idVal: id
           })
         }
         if (error) throw error
-        return res.render('deleted.ejs', { object: 'Accessory', idVal: id })
+        return res.render('status.ejs', {
+          action: 'delete',
+          object: 'Accessory',
+          idVal: id
+        })
       }
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { error })
+    return res.render('error.ejs', { status: res.statusCode, error })
+  }
+})
+
+// Edit Accessory
+router.get('/editAccessory/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id)
+    await connection.query(
+      `SELECT * FROM Accessory WHERE id=${id}`,
+      function (error, results) {
+        if (results.length === 0) {
+          return res.render('error.ejs', {
+            status: 404,
+            object: 'Accessory',
+            idVal: id
+          })
+        }
+        if (error) throw error
+        return res.render('editAccessory.ejs', {
+          accessory: results[0]
+        })
+      }
+    )
+  } catch (error) {
+    console.log(error)
+    return res.render('error.ejs', { status: res.statusCode, error })
   }
 })
 
@@ -742,7 +814,8 @@ router.post(
       company: bodyVal.company !== '' ? bodyVal.company : null,
       product_condition: bodyVal.productCondition,
       has_packaging: bodyVal.hasPackaging,
-      monetary_value: bodyVal.monetaryValue !== '' ? Number(bodyVal.monetaryValue) : null,
+      monetary_value:
+        bodyVal.monetaryValue !== '' ? Number(bodyVal.monetaryValue) : null,
       notes: bodyVal.notes !== '' ? bodyVal.notes : null
     }
 
@@ -752,39 +825,19 @@ router.post(
         entry,
         function (error, results) {
           if (error) throw error
-          return res.render('updated.ejs', {
-            object: 'Accessory'
+          return res.render('status.ejs', {
+            action: 'delete',
+            object: 'Console',
+            idVal: id
           })
         }
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { error })
+      return res.render('error.ejs', { status: res.statusCode, error })
     }
   }
 )
-
-// Edit Accessory
-router.get('/editAccessory/:id', async (req, res) => {
-  try {
-    const id = parseInt(req.params.id)
-    await connection.query(
-      `SELECT * FROM Accessory WHERE id=${id}`,
-      function (error, results) {
-        if (results.length === 0) {
-          return res.render('notFound.ejs', { object: 'Accessory', idVal: id })
-        }
-        if (error) throw error
-        return res.render('editAccessory.ejs', {
-          accessory: results[0]
-        })
-      }
-    )
-  } catch (error) {
-    console.log(error)
-    return res.render('error.ejs', { error })
-  }
-})
 
 // Bulk Entry
 
@@ -854,12 +907,12 @@ router.post('/bulk_entry/consoles', async (req, res) => {
             )
           } catch (error) {
             console.log(error)
-            return res.render('error.ejs', { error })
+            return res.render('error.ejs', { status: res.statusCode, error })
           }
         })
-        return res.render('created.ejs', {
-          object: 'Console',
-          rowsAdded: rowCount
+        return res.render('status.ejs', {
+          action: 'create',
+          object: 'Console'
         })
       })
   } else {
@@ -934,12 +987,12 @@ router.post('/bulk_entry/games', async (req, res) => {
             )
           } catch (error) {
             console.log(error)
-            return res.render('error.ejs', { error })
+            return res.render('error.ejs', { status: res.statusCode, error })
           }
         })
-        return res.render('created.ejs', {
-          object: 'Game',
-          rowsAdded: rowCount
+        return res.render('status.ejs', {
+          action: 'create',
+          object: 'Game'
         })
       })
   } else {
@@ -1018,12 +1071,12 @@ router.post('/bulk_entry/accessories', async (req, res) => {
             )
           } catch (error) {
             console.log(error)
-            return res.render('error.ejs', { error })
+            return res.render('error.ejs', { status: res.statusCode, error })
           }
         })
-        return res.render('created.ejs', {
-          object: 'Accessory',
-          rowsAdded: rowCount
+        return res.render('status.ejs', {
+          action: 'create',
+          object: 'Accessory'
         })
       })
   } else {

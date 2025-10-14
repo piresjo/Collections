@@ -1,0 +1,24 @@
+<%- include('header.ejs') -%>
+<%= if (action === 'update') { %>
+<title>Updated <%= object %> With ID <%= idVal %> </title>
+<%= } else if (action === 'create') { %>
+<title>Uploaded <%= object %></title>
+<%= } else { %>
+<title>Deleted <%= object %> With ID <%= idVal %> </title>
+<%= } %>
+</head>
+<body id="app">
+    <%- include('navbar.ejs') -%>
+    <div class="upper-container">
+        <%= if (action === 'update') { %>
+        <h1>Updated <%= object %> With ID <%= idVal %> </h1>
+        <%= } else if (action === 'create') { %>
+        <h1>Created <%= object %></h1>
+        <%= } else { %>
+        <h1>Deleted <%= object %> With ID <%= idVal %></h1>
+        <%= } %>
+    </div>
+    <div class="info-container">
+    </div>
+</body>
+<%- include('footer.ejs') -%>
