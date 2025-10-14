@@ -1,163 +1,163 @@
 export class Database {
-  constructor(connection) {
-    this.connection = connection;
+  constructor (connection) {
+    this.connection = connection
   }
 
-  async getConsoles() {
+  async getConsoles () {
     await this.connection.query(
-      `SELECT * FROM Console`,
+      'SELECT * FROM Console',
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async getConsoleInformation(idVal) {
+  async getConsoleInformation (idVal) {
     await this.connection.query(
       `SELECT * FROM Console WHERE id=${idVal}`,
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async addConsole(bodyVal) {
+  async addConsole (bodyVal) {
     await this.connection.query(
-      "INSERT INTO Console SET ?",
+      'INSERT INTO Console SET ?',
       bodyVal,
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async updateConsole(idVal, bodyVal) {
+  async updateConsole (idVal, bodyVal) {
     await this.connection.query(
       `UPDATE Console SET ? WHERE id=${idVal}`,
       bodyVal,
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async deleteConsole(idVal) {
+  async deleteConsole (idVal) {
     await this.connection.query(
       `DELETE FROM Console WHERE id=${idVal}`,
       function (error, results) {
-        console.log(results);
-        if (results.affectedRows === 0) return null;
-        if (error) throw error;
-        return results;
-      },
-    );
+        console.log(results)
+        if (results.affectedRows === 0) return null
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async getGames() {
+  async getGames () {
     await this.connection.query(
-      `SELECT * FROM Game`,
+      'SELECT * FROM Game',
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async getGameInformation(idVal) {
+  async getGameInformation (idVal) {
     await this.connection.query(
       `SELECT * FROM Game WHERE id=${idVal}`,
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async addGame(bodyVal) {
+  async addGame (bodyVal) {
     await this.connection.query(
-      "INSERT INTO Game SET ?",
+      'INSERT INTO Game SET ?',
       bodyVal,
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async updateGame(idVal, bodyVal) {
+  async updateGame (idVal, bodyVal) {
     await this.connection.query(
       `UPDATE Game SET ? WHERE id=${idVal}`,
       bodyVal,
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async deleteGame(idVal) {
+  async deleteGame (idVal) {
     await this.connection.query(
       `DELETE FROM Game WHERE id=${idVal}`,
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async getAccessories() {
+  async getAccessories () {
     await this.connection.query(
-      `SELECT * FROM Accessory`,
+      'SELECT * FROM Accessory',
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async getAccessoryInformation(idVal) {
+  async getAccessoryInformation (idVal) {
     await this.connection.query(
       `SELECT * FROM Accessory WHERE id=${idVal}`,
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async addAccessory(bodyVal) {
+  async addAccessory (bodyVal) {
     await this.connection.query(
-      "INSERT INTO Accessory SET ?",
+      'INSERT INTO Accessory SET ?',
       bodyVal,
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async updateAccessory(idVal, bodyVal) {
+  async updateAccessory (idVal, bodyVal) {
     await this.connection.query(
       `UPDATE Accessory SET ? WHERE id=${idVal}`,
       bodyVal,
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 
-  async deleteAccessory(idVal) {
+  async deleteAccessory (idVal) {
     await this.connection.query(
       `DELETE FROM Accessory WHERE id=${idVal}`,
       function (error, results) {
-        if (error) throw error;
-        return results;
-      },
-    );
+        if (error) throw error
+        return results
+      }
+    )
   }
 }
