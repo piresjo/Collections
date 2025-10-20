@@ -1,11 +1,20 @@
 <%- include('header.ejs') -%>
-        <title>Error Encountered</title>
-    </head>
+<%= if (status === 404) { %>
+<title><%= object %> Not Found</title>
+<%= } else { %>
+<title>Error Encountered</title>
+<%= } %>
+</head>
 <body id="app">
     <%- include('navbar.ejs') -%>
     <div class="upper-container">
-        <h1>Error</h1>
-        <h3>Unexpected error in backend. Please try again</h3>
+        <%= if (status === 404) { %>
+            <h1>Not Found</h1>
+            <h3><%= object %> With ID <%= idVal %> Not Found</h3>
+        <%= } else { %>
+            <h1>Error</h1>
+            <h3>Unexpected error in backend. Please try again</h3>
+        <%= } %>
     </div>
     <div class="error-container">
         <p>
