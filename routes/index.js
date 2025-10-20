@@ -108,7 +108,7 @@ router.get('/consoles/:id', async (req, res) => {
 // Add Console
 router.get('/addConsole', async (req, res) => {
   console.log('PING')
-  return res.render('addConsole.ejs')
+  return res.render('addEditConsole.ejs', { action: 'add' })
 })
 
 router.post(
@@ -229,8 +229,9 @@ router.get('/editConsole/:id', async (req, res) => {
           })
         }
         if (error) throw error
-        return res.render('editConsole.ejs', {
-          console: results[0]
+        return res.render('addEditConsole.ejs', {
+          console: results[0],
+          action: 'edit'
         })
       }
     )
@@ -372,7 +373,7 @@ router.get('/games/:id', async (req, res) => {
 // Add Game
 
 router.get('/addGame', async (req, res) => {
-  return res.render('addGame.ejs')
+  return res.render('addEditGame.ejs', { action: 'add' })
 })
 
 router.post(
@@ -500,8 +501,9 @@ router.get('/editGame/:id', async (req, res) => {
           })
         }
         if (error) throw error
-        return res.render('editGame.ejs', {
-          game: results[0]
+        return res.render('addEditGame.ejs', {
+          game: results[0],
+          action: 'edit'
         })
       }
     )
@@ -643,7 +645,7 @@ router.get('/accessories/:id', async (req, res) => {
 // Add Accessory
 
 router.get('/addAccessory', async (req, res) => {
-  return res.render('addAccessory.ejs')
+  return res.render('addEditAccessory.ejs', { action: 'add' })
 })
 
 router.post(
@@ -757,8 +759,9 @@ router.get('/editAccessory/:id', async (req, res) => {
           })
         }
         if (error) throw error
-        return res.render('editAccessory.ejs', {
-          accessory: results[0]
+        return res.render('addEditAccessory.ejs', {
+          accessory: results[0],
+          action: 'edit'
         })
       }
     )
