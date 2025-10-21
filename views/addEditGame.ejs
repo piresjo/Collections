@@ -1,5 +1,5 @@
 <%- include('header.ejs') -%>
-<% if action == "add" { %>
+<% if (action === "add") { %>
     <title>Add Game</title>
 <% } else { %>
     <title>Edit Game</title>
@@ -10,7 +10,7 @@
 <body id="app">
     <%- include('navbar.ejs') -%>
     <div class="upper-container">
-    <% if action == "add" { %>
+    <% if (action === "add") { %>
         <h1>Add Game</h1>
     <% } else { %>
         <h1>Edit Game - ID:<%= game.id %></h1>
@@ -18,7 +18,7 @@
         
     </div>
     <div class="form-container">
-    <% if action == "add" { %>
+    <% if (action === "add") { %>
         <form action="/games" 
             method="post"
             enctype="multipart/form-data">

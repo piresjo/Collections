@@ -67,7 +67,7 @@ router.get('/consoles', async (req, res) => {
     })
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
@@ -101,13 +101,12 @@ router.get('/consoles/:id', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
 // Add Console
 router.get('/addConsole', async (req, res) => {
-  console.log('PING')
   return res.render('addEditConsole.ejs', { action: 'add' })
 })
 
@@ -181,7 +180,7 @@ router.post(
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { status: res.statusCode, error })
+      return res.render('error.ejs', { status: 500, error: error })
     }
   }
 )
@@ -210,7 +209,7 @@ router.post('/deleteConsole', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
@@ -237,7 +236,7 @@ router.get('/editConsole/:id', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
@@ -312,7 +311,7 @@ router.post(
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { status: res.statusCode, error })
+      return res.render('error.ejs', { status: 500, error: error })
     }
   }
 )
@@ -334,7 +333,7 @@ router.get('/games', async (req, res) => {
     })
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
@@ -366,7 +365,7 @@ router.get('/games/:id', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
@@ -453,7 +452,7 @@ router.post(
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { status: res.statusCode, error })
+      return res.render('error.ejs', { status: 500, error: error })
     }
   }
 )
@@ -482,7 +481,7 @@ router.post('/deleteGame', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
@@ -509,7 +508,7 @@ router.get('/editGame/:id', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
@@ -592,7 +591,7 @@ router.post(
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { status: res.statusCode, error })
+      return res.render('error.ejs', { status: 500, error: error })
     }
   }
 )
@@ -611,7 +610,7 @@ router.get('/accessories', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
@@ -638,7 +637,7 @@ router.get('/accessories/:id', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
@@ -711,7 +710,7 @@ router.post(
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { status: res.statusCode, error })
+      return res.render('error.ejs', { status: 500, error: error })
     }
   }
 )
@@ -740,7 +739,7 @@ router.post('/deleteAccessory', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
@@ -767,7 +766,7 @@ router.get('/editAccessory/:id', async (req, res) => {
     )
   } catch (error) {
     console.log(error)
-    return res.render('error.ejs', { status: res.statusCode, error })
+    return res.render('error.ejs', { status: 500, error: error })
   }
 })
 
@@ -837,7 +836,7 @@ router.post(
       )
     } catch (error) {
       console.log(error)
-      return res.render('error.ejs', { status: res.statusCode, error })
+      return res.render('error.ejs', { status: 500, error: error })
     }
   }
 )
@@ -910,7 +909,7 @@ router.post('/bulk_entry/consoles', async (req, res) => {
             )
           } catch (error) {
             console.log(error)
-            return res.render('error.ejs', { status: res.statusCode, error })
+            return res.render('error.ejs', { status: 500, error: error })
           }
         })
         return res.render('status.ejs', {
@@ -990,7 +989,7 @@ router.post('/bulk_entry/games', async (req, res) => {
             )
           } catch (error) {
             console.log(error)
-            return res.render('error.ejs', { status: res.statusCode, error })
+            return res.render('error.ejs', { status: 500, error: error })
           }
         })
         return res.render('status.ejs', {
@@ -1074,7 +1073,7 @@ router.post('/bulk_entry/accessories', async (req, res) => {
             )
           } catch (error) {
             console.log(error)
-            return res.render('error.ejs', { status: res.statusCode, error })
+            return res.render('error.ejs', { status: 500, error: error })
           }
         })
         return res.render('status.ejs', {

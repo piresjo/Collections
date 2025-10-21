@@ -48,7 +48,7 @@ export default function makeApp (database) {
 
     // render the error page
     res.status(err.status || 500)
-    res.render('error.ejs', { error: err })
+    res.render('error.ejs', { status: 500, error: err })
   })
 
   database.connection.connect((err) => {
