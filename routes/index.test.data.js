@@ -1,0 +1,46 @@
+export const FULL_CONSOLE_SITE_ENTRY = {
+    consoleName: 'Test',
+    consoleType: '1',
+    consoleModel: 'TEST',
+    region: 1,
+    releaseDate: '1990-01-01',
+    boughtDate: '1990-01-01',
+    company: 'TEST',
+    productCondition: '1',
+    hasConsole: 'on',
+    monetaryValue: '10.35',
+    notes: 'TEST',
+}
+
+export const FULL_GAME_SITE_ENTRY = {
+    consoleId: 10,
+    gameName: 'TEST',
+    edition: 'Original',
+    releaseDate: '1990-01-01',
+    boughtDate: '1990-01-01',
+    region: 1,
+    developer: 'DEVELOPER',
+    publisher: 'PUBLISHER',
+    digital: false,
+    hasGame: true,
+    hasManual: true,
+    hasBox: true,
+    isDuplicate: false,
+    productCondition: 1,
+    monetaryValue: 12.34,
+    notes: 'FULL HAPPY PATH',
+}
+
+export const FULL_ACCESSORY_SITE_ENTRY = {
+    consoleId: 10,
+    accessoryName: 'TEST',
+    accessoryModel: 'Original',
+    accessoryType: 1,
+    releaseDate: '1990-01-01',
+    boughtDate: '1990-01-01',
+    company: 'COMPANY',
+    productCondition: 1,
+    hasPackaging: 'on',
+    monetaryValue: 12.34,
+    notes: 'FULL HAPPY PATH',
+}
