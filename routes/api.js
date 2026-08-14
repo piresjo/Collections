@@ -1,5 +1,4 @@
 import express from 'express'
-import mysql from 'mysql'
 import {
     GENERATE_500_ERROR_JSON,
     GENERATE_GET_JSON,
@@ -12,18 +11,9 @@ import {
     VALIDATE_GAME_ENTRY_JSON,
     VALIDATE_ACCESSORY_ENTRY_JSON,
 } from '../constants.js'
-import { DB_PASSWORD } from '../secrets.js'
-const router = express.Router()
-
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: DB_PASSWORD,
-    database: 'video_game_collection',
-})
 
 // HEALTHCHECK
-router.get('/healthcheck', async (req, res) => {
+export const getHealthCheck = async (req, res) => {
     try {
         return res.status(200).json({
             success: true,
@@ -32,14 +22,14 @@ router.get('/healthcheck', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
 // CONSOLES
 
 // Get All Console Information
-router.get('/consoles', async (req, res) => {
+export const getAllConsoles = (database) => async (req, res) => {
     try {
-        await connection.query(
+        await database.connection.query(
             'SELECT * FROM Console',
             function (error, results) {
                 if (error) throw error
@@ -50,13 +40,13 @@ router.get('/consoles', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
 // Get Console Information
-router.get('/consoles/:id', async (req, res) => {
+export const getConsoleInformation = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await connection.query(
+        await database.connection.query(
             `SELECT * FROM Console WHERE id=${id}`,
             function (error, results) {
                 if (error) throw error
@@ -72,10 +62,10 @@ router.get('/consoles/:id', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
 // Create A New Console
-router.post('/consoles', async (req, res) => {
+export const addConsole = (database) => async (req, res) => {
     const bodyVal = req.body
     const errorVal = VALIDATE_CONSOLE_ENTRY_JSON(bodyVal)
     if (errorVal != null) {
@@ -99,7 +89,7 @@ router.post('/consoles', async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await connection.query(
+        await database.connection.query(
             'INSERT INTO Console SET ?',
             entry,
             function (error, results) {
@@ -113,10 +103,10 @@ router.post('/consoles', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
 // Update Existing Console
-router.put('/consoles/:id', async (req, res) => {
+export const updateConsole = (database) => async (req, res) => {
     const bodyVal = req.body
     const id = parseInt(req.params.id)
     const errorVal = VALIDATE_CONSOLE_ENTRY_JSON(bodyVal)
@@ -141,7 +131,7 @@ router.put('/consoles/:id', async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await connection.query(
+        await database.connection.query(
             `UPDATE Console SET ? WHERE id=${id}`,
             entry,
             function (error, results) {
@@ -166,13 +156,12 @@ router.put('/consoles/:id', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-// Delete Console
-router.delete('/consoles/:id', async (req, res) => {
+export const deleteConsole = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await connection.query(
+        await database.connection.query(
             `DELETE FROM Console WHERE id=${id}`,
             function (error, results) {
                 if (results.affectedRows === 0) {
@@ -196,28 +185,27 @@ router.delete('/consoles/:id', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-// GAMES
-
-// Get All Games
-router.get('/games', async (req, res) => {
+export const getAllGames = (database) => async (req, res) => {
     try {
-        await connection.query('SELECT * FROM Game', function (error, results) {
-            if (error) throw error
-            return res.status(200).json(GENERATE_GET_JSON(results))
-        })
+        await database.connection.query(
+            'SELECT * FROM Game',
+            function (error, results) {
+                if (error) throw error
+                return res.status(200).json(GENERATE_GET_JSON(results))
+            }
+        )
     } catch (error) {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-// Get Game Information
-router.get('/games/:id', async (req, res) => {
+export const getGameInformation = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await connection.query(
+        await database.connection.query(
             `SELECT * FROM Game WHERE id=${id}`,
             function (error, results) {
                 if (error) throw error
@@ -233,10 +221,9 @@ router.get('/games/:id', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-// Create A New Game
-router.post('/games', async (req, res) => {
+export const addGame = (database) => async (req, res) => {
     const bodyVal = req.body
     const errorVal = VALIDATE_GAME_ENTRY_JSON(bodyVal)
     if (errorVal != null) {
@@ -262,7 +249,7 @@ router.post('/games', async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await connection.query(
+        await database.connection.query(
             'INSERT INTO Game SET ?',
             entry,
             function (error, results) {
@@ -276,10 +263,9 @@ router.post('/games', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-// Update Existing Game
-router.put('/games/:id', async (req, res) => {
+export const updateGame = (database) => async (req, res) => {
     const bodyVal = req.body
     const id = parseInt(req.params.id)
     const errorVal = VALIDATE_GAME_ENTRY_JSON(bodyVal)
@@ -306,7 +292,7 @@ router.put('/games/:id', async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await connection.query(
+        await database.connection.query(
             `UPDATE Game SET ? WHERE id=${id}`,
             entry,
             function (error, results) {
@@ -331,13 +317,12 @@ router.put('/games/:id', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-// Delete Game
-router.delete('/games/:id', async (req, res) => {
+export const deleteGame = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await connection.query(
+        await database.connection.query(
             `DELETE FROM Game WHERE id=${id}`,
             function (error, results) {
                 if (error) throw error
@@ -361,14 +346,11 @@ router.delete('/games/:id', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-// ACCESSORIES
-
-// Get All Accessories
-router.get('/accessories', async (req, res) => {
+export const getAllAccessories = (database) => async (req, res) => {
     try {
-        await connection.query(
+        await database.connection.query(
             'SELECT * FROM Accessory',
             function (error, results) {
                 if (error) throw error
@@ -379,13 +361,12 @@ router.get('/accessories', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-// Get Accessory Information
-router.get('/accessories/:id', async (req, res) => {
+export const getAccessoryInformation = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await connection.query(
+        await database.connection.query(
             `SELECT * FROM Accessory WHERE id=${id}`,
             function (error, results) {
                 if (error) throw error
@@ -401,10 +382,9 @@ router.get('/accessories/:id', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-// Create A New Accessory
-router.post('/accessories', async (req, res) => {
+export const addAccessory = (database) => async (req, res) => {
     const bodyVal = req.body
     const errorVal = VALIDATE_ACCESSORY_ENTRY_JSON(bodyVal)
     if (errorVal != null) {
@@ -425,7 +405,7 @@ router.post('/accessories', async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await connection.query(
+        await database.connection.query(
             'INSERT INTO Accessory SET ?',
             entry,
             function (error, results) {
@@ -439,10 +419,9 @@ router.post('/accessories', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-// Update Existing Accessory
-router.put('/accessories/:id', async (req, res) => {
+export const updateAccessory = (database) => async (req, res) => {
     const bodyVal = req.body
     const id = parseInt(req.params.id)
     const errorVal = VALIDATE_ACCESSORY_ENTRY_JSON(bodyVal)
@@ -464,7 +443,7 @@ router.put('/accessories/:id', async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await connection.query(
+        await database.connection.query(
             `UPDATE Accessory SET ? WHERE id=${id}`,
             entry,
             function (error, results) {
@@ -489,13 +468,12 @@ router.put('/accessories/:id', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-// Delete Accessory
-router.delete('/accessories/:id', async (req, res) => {
+export const deleteAccessory = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await connection.query(
+        await database.connection.query(
             `DELETE FROM Accessory WHERE id=${id}`,
             function (error, results) {
                 if (error) throw error
@@ -519,6 +497,27 @@ router.delete('/accessories/:id', async (req, res) => {
         console.log(error)
         return res.status(500).json(GENERATE_500_ERROR_JSON(error))
     }
-})
+}
 
-export default router
+export default function makeApiRouter(database) {
+    const router = express.Router()
+
+    router.get('/healthcheck', getHealthCheck)
+    router.get('/consoles', getAllConsoles)
+    router.get('/consoles/:id', getConsoleInformation)
+    router.post('/consoles', addConsole)
+    router.put('/consoles/:id', updateConsole)
+    router.delete('/consoles/:id', deleteConsole)
+    router.get('/games', getAllGames)
+    router.get('/games/:id', getGameInformation)
+    router.post('/games', addGame)
+    router.put('/games/:id', updateGame)
+    router.delete('/games/:id', deleteGame)
+    router.get('/accessories', getAllAccessories)
+    router.get('/accessories/:id', getAccessoryInformation)
+    router.post('/accessories', addAccessory)
+    router.put('/accessories/:id', updateAccessory)
+    router.delete('/accessories/:id', deleteAccessory)
+
+    return router
+}

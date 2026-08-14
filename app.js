@@ -9,9 +9,9 @@ import fileUpload from 'express-fileupload'
 
 import indexRouter from './routes/index.js'
 import usersRouter from './routes/users.js'
-import apiRouter from './routes/api.js'
 
 import { fileURLToPath } from 'url'
+import makeApiRouter from './routes/api.js'
 
 export default function makeApp(database) {
     const app = express()
@@ -33,7 +33,7 @@ export default function makeApp(database) {
 
     app.use('/', indexRouter)
     app.use('/users', usersRouter)
-    app.use('/api', apiRouter)
+    app.use('/api', makeApiRouter(database))
 
     // catch 404 and forward to error handler
     app.use(function (req, res, next) {
