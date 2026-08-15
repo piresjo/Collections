@@ -46,6 +46,7 @@ import {
 import {
     FULL_ACCESSORY_SITE_ENTRY,
     FULL_CONSOLE_SITE_ENTRY,
+    FULL_CONSOLE_SITE_ENTRY_EDIT,
     FULL_GAME_SITE_ENTRY,
 } from './index.test.data.js'
 
@@ -234,7 +235,7 @@ describe('Get Edit Console Information Page Test', () => {
     })
 })
 
-describe.skip('Edit Console Test', () => {
+describe('Edit Console Test', () => {
     test('happy path', async () => {
         const database = {
             connection: {
@@ -252,7 +253,7 @@ describe.skip('Edit Console Test', () => {
             params: {
                 id: 1,
             },
-            body: FULL_CONSOLE_SITE_ENTRY,
+            body: FULL_CONSOLE_SITE_ENTRY_EDIT,
         })
         const { res } = getMockRes()
 
@@ -459,7 +460,7 @@ describe('Get Edit Game Information Page Test', () => {
     })
 })
 
-describe.skip('Edit Game Test', () => {
+describe('Edit Game Test', () => {
     test('happy path', async () => {
         const database = {
             connection: {
@@ -672,7 +673,7 @@ describe('Get Edit Accessory Information Page Test', () => {
     })
 })
 
-describe.skip('Edit Accessory Test', () => {
+describe('Edit Accessory Test', () => {
     test('happy path', async () => {
         const database = {
             connection: {

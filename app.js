@@ -6,7 +6,6 @@ import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import fileUpload from 'express-fileupload'
 
-import indexRouter from './routes/index.js'
 import usersRouter from './routes/users.js'
 
 import { fileURLToPath } from 'url'

@@ -169,7 +169,7 @@ export const getEditConsolePage = (database) => async (req, res) => {
 
 export const editConsole = (database) => async (req, res) => {
     const bodyVal = req.body
-    const id = req.params.id
+    const id = parseInt(req.params.id)
 
     try {
         const entry = {
@@ -391,7 +391,7 @@ export const getEditGamePage = (database) => async (req, res) => {
 
 export const editGame = (database) => async (req, res) => {
     const bodyVal = req.body
-    const id = req.params.id
+    const id = parseInt(req.params.id)
 
     try {
         const entry = {
@@ -578,7 +578,7 @@ export const getEditAccessoryPage = (database) => async (req, res) => {
 
 export const editAccessory = (database) => async (req, res) => {
     const bodyVal = req.body
-    const id = req.params.id
+    const id = parseInt(req.params.id)
 
     try {
         const entry = {

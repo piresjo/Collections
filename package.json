@@ -11,7 +11,6 @@
     "dependencies": {
         "@vitest/coverage-v8": "^4.1.10",
         "autoprefixer": "^10.4.21",
-        "body-parser": "^2.2.0",
         "bootstrap": "^5.3.8",
         "cookie-parser": "~1.4.4",
         "debug": "~2.6.9",
@@ -41,7 +40,7 @@
         }
     },
     "lint-staged": {
-        "*.{ts,tsx}": "eslint . --ext ts,tsx --fix",
+        "*.{js,jsx}": "eslint . --ext js,jsx --fix",
         "*.{json,js,ts,jsx,tsx,html}": "prettier --write --ignore-unknown"
     },
     "license": "ISC",

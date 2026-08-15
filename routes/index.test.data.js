@@ -7,7 +7,24 @@ export const FULL_CONSOLE_SITE_ENTRY = {
     boughtDate: '1990-01-01',
     company: 'TEST',
     productCondition: '1',
-    hasConsole: 'on',
+    hasConsole: true,
+    monetaryValue: '10.35',
+    notes: 'TEST',
+}
+
+export const FULL_CONSOLE_SITE_ENTRY_EDIT = {
+    consoleName: 'Test',
+    consoleType: '1',
+    consoleModel: 'TEST',
+    region: 1,
+    releaseDate: '1990-01-01',
+    boughtDate: '1990-01-01',
+    company: 'TEST',
+    productCondition: '1',
+    hasPackaging: false,
+    isDuplicate: false,
+    hasCables: false,
+    hasConsole: true,
     monetaryValue: '10.35',
     notes: 'TEST',
 }
@@ -40,7 +57,7 @@ export const FULL_ACCESSORY_SITE_ENTRY = {
     boughtDate: '1990-01-01',
     company: 'COMPANY',
     productCondition: 1,
-    hasPackaging: 'on',
+    hasPackaging: true,
     monetaryValue: 12.34,
     notes: 'FULL HAPPY PATH',
 }
