@@ -331,9 +331,7 @@ describe('Get All Games Page Test', () => {
         const expectedGames = ALL_GAMES_RESPONSE.map((game) => ({
             ...game,
             region_string: DERIVE_REGION_STRING(game.region),
-            condition_string: DERIVE_CONDITION_STRING(
-                game.product_condition
-            ),
+            condition_string: DERIVE_CONDITION_STRING(game.product_condition),
         }))
 
         expect(res.render).toHaveBeenCalledWith('games.ejs', {
@@ -371,11 +369,8 @@ describe('Get Game Information Page Test', () => {
         const expectedGames = GAME_INFO_RESPONSE.map((game) => ({
             ...game,
             region_string: DERIVE_REGION_STRING(game.region),
-            condition_string: DERIVE_CONDITION_STRING(
-                game.product_condition
-            ),
+            condition_string: DERIVE_CONDITION_STRING(game.product_condition),
         }))
-
 
         expect(res.render).toHaveBeenCalledWith('game.ejs', {
             games: expectedGames,
@@ -425,12 +420,11 @@ describe('Add Game Test', () => {
         )
 
         expect(res.render).toHaveBeenCalledWith('status.ejs', {
-                    action: 'create',
-                    object: 'Game',
-                })
+            action: 'create',
+            object: 'Game',
+        })
     })
 })
-
 
 describe('Get Edit Game Information Page Test', () => {
     test('happy path', async () => {
@@ -446,8 +440,8 @@ describe('Get Edit Game Information Page Test', () => {
         const handler = getEditGamePage(database)
         const req = getMockReq({
             params: {
-                id: 1
-            }
+                id: 1,
+            },
         })
         const { res } = getMockRes()
 
@@ -459,9 +453,9 @@ describe('Get Edit Game Information Page Test', () => {
         )
 
         expect(res.render).toHaveBeenCalledWith('addEditGame.ejs', {
-                    game: GAME_INFO_RESPONSE[0],
-                    action: 'edit',
-                })
+            game: GAME_INFO_RESPONSE[0],
+            action: 'edit',
+        })
     })
 })
 
@@ -472,16 +466,18 @@ describe.skip('Edit Game Test', () => {
                 query: vi.fn(),
             },
         }
-        database.connection.query.mockImplementation((sql, bodyVal, callback) => {
-            callback(null, UPDATE_RESPONSE)
-        })
+        database.connection.query.mockImplementation(
+            (sql, bodyVal, callback) => {
+                callback(null, UPDATE_RESPONSE)
+            }
+        )
 
         const handler = editGame(database)
         const req = getMockReq({
             params: {
-                id: 1
+                id: 1,
             },
-            body: FULL_GAME_SITE_ENTRY
+            body: FULL_GAME_SITE_ENTRY,
         })
         const { res } = getMockRes()
 
@@ -494,10 +490,10 @@ describe.skip('Edit Game Test', () => {
         )
 
         expect(res.render).toHaveBeenCalledWith('status.ejs', {
-                    action: 'update',
-                    object: 'Game',
-                    idVal: 1,
-                })
+            action: 'update',
+            object: 'Game',
+            idVal: 1,
+        })
     })
 })
 
@@ -515,8 +511,8 @@ describe('Delete Game Test', () => {
         const handler = deleteGame(database)
         const req = getMockReq({
             body: {
-                id: 1
-            }
+                id: 1,
+            },
         })
         const { res } = getMockRes()
 
@@ -528,10 +524,10 @@ describe('Delete Game Test', () => {
         )
 
         expect(res.render).toHaveBeenCalledWith('status.ejs', {
-                    action: 'delete',
-                    object: 'Game',
-                    idVal: 1,
-                })
+            action: 'delete',
+            object: 'Game',
+            idVal: 1,
+        })
     })
 })
 
@@ -556,8 +552,6 @@ describe('Get All Accessories Page Test', () => {
             'SELECT * FROM Accessory',
             expect.any(Function)
         )
-
-        
 
         expect(res.render).toHaveBeenCalledWith('accessories.ejs', {
             accessories: ALL_ACCESSORIES_RESPONSE,
@@ -590,7 +584,6 @@ describe('Get Accessory Information Page Test', () => {
             'SELECT * FROM Accessory WHERE id=1',
             expect.any(Function)
         )
-
 
         expect(res.render).toHaveBeenCalledWith('accessory.ejs', {
             accessories: ACCESSORY_INFO_RESPONSE,
@@ -640,12 +633,11 @@ describe('Add Accessory Test', () => {
         )
 
         expect(res.render).toHaveBeenCalledWith('status.ejs', {
-                    action: 'create',
-                    object: 'Accessory',
-                })
+            action: 'create',
+            object: 'Accessory',
+        })
     })
 })
-
 
 describe('Get Edit Accessory Information Page Test', () => {
     test('happy path', async () => {
@@ -661,8 +653,8 @@ describe('Get Edit Accessory Information Page Test', () => {
         const handler = getEditAccessoryPage(database)
         const req = getMockReq({
             params: {
-                id: 1
-            }
+                id: 1,
+            },
         })
         const { res } = getMockRes()
 
@@ -674,9 +666,9 @@ describe('Get Edit Accessory Information Page Test', () => {
         )
 
         expect(res.render).toHaveBeenCalledWith('addEditAccessory.ejs', {
-                    accessory: ACCESSORY_INFO_RESPONSE[0],
-                    action: 'edit',
-                })
+            accessory: ACCESSORY_INFO_RESPONSE[0],
+            action: 'edit',
+        })
     })
 })
 
@@ -687,16 +679,18 @@ describe.skip('Edit Accessory Test', () => {
                 query: vi.fn(),
             },
         }
-        database.connection.query.mockImplementation((sql, bodyVal, callback) => {
-            callback(null, UPDATE_RESPONSE)
-        })
+        database.connection.query.mockImplementation(
+            (sql, bodyVal, callback) => {
+                callback(null, UPDATE_RESPONSE)
+            }
+        )
 
         const handler = editAccessory(database)
         const req = getMockReq({
             params: {
-                id: 1
+                id: 1,
             },
-            body: FULL_ACCESSORY_SITE_ENTRY
+            body: FULL_ACCESSORY_SITE_ENTRY,
         })
         const { res } = getMockRes()
 
@@ -709,10 +703,10 @@ describe.skip('Edit Accessory Test', () => {
         )
 
         expect(res.render).toHaveBeenCalledWith('status.ejs', {
-                    action: 'update',
-                    object: 'Accessory',
-                    idVal: 1,
-                })
+            action: 'update',
+            object: 'Accessory',
+            idVal: 1,
+        })
     })
 })
 
@@ -730,8 +724,8 @@ describe('Delete Accessory Test', () => {
         const handler = deleteAccessory(database)
         const req = getMockReq({
             body: {
-                id: 1
-            }
+                id: 1,
+            },
         })
         const { res } = getMockRes()
 
@@ -743,10 +737,9 @@ describe('Delete Accessory Test', () => {
         )
 
         expect(res.render).toHaveBeenCalledWith('status.ejs', {
-                    action: 'delete',
-                    object: 'Accessory',
-                    idVal: 1,
-                })
+            action: 'delete',
+            object: 'Accessory',
+            idVal: 1,
+        })
     })
 })
-

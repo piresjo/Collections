@@ -28,40 +28,36 @@ export const getHealthCheck = async (req, res) => {
 
 // Get All Console Information
 export const getAllConsoles = (database) => async (req, res) => {
-    try {
-        await database.connection.query(
-            'SELECT * FROM Console',
-            function (error, results) {
-                if (error) throw error
-                return res.status(200).json(GENERATE_GET_JSON(results))
+    database.connection.query(
+        'SELECT * FROM Console',
+        function (error, results) {
+            if (error) {
+                console.log(error)
+                return res.status(500).json(GENERATE_500_ERROR_JSON(error))
             }
-        )
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(GENERATE_500_ERROR_JSON(error))
-    }
+            return res.status(200).json(GENERATE_GET_JSON(results))
+        }
+    )
 }
 
 // Get Console Information
 export const getConsoleInformation = (database) => async (req, res) => {
-    try {
-        const id = parseInt(req.params.id)
-        await database.connection.query(
-            `SELECT * FROM Console WHERE id=${id}`,
-            function (error, results) {
-                if (error) throw error
-                if (results.length === 0) {
-                    return res
-                        .status(404)
-                        .json(GENERATE_GET_NOT_FOUND_JSON('Console'))
-                }
-                return res.status(200).json(GENERATE_GET_JSON(results))
+    const id = parseInt(req.params.id)
+    database.connection.query(
+        `SELECT * FROM Console WHERE id=${id}`,
+        function (error, results) {
+            if (error) {
+                console.log(error)
+                return res.status(500).json(GENERATE_500_ERROR_JSON(error))
             }
-        )
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(GENERATE_500_ERROR_JSON(error))
-    }
+            if (results.length === 0) {
+                return res
+                    .status(404)
+                    .json(GENERATE_GET_NOT_FOUND_JSON('Console'))
+            }
+            return res.status(200).json(GENERATE_GET_JSON(results))
+        }
+    )
 }
 
 // Create A New Console
@@ -89,11 +85,14 @@ export const addConsole = (database) => async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await database.connection.query(
+        database.connection.query(
             'INSERT INTO Console SET ?',
             entry,
             function (error, results) {
-                if (error) throw error
+                if (error) {
+                    console.log(error)
+                    return res.status(500).json(GENERATE_500_ERROR_JSON(error))
+                }
                 return res
                     .status(201)
                     .json(GENERATE_CREATED_JSON('Console', results))
@@ -131,11 +130,14 @@ export const updateConsole = (database) => async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await database.connection.query(
+        database.connection.query(
             `UPDATE Console SET ? WHERE id=${id}`,
             entry,
             function (error, results) {
-                if (error) throw error
+                if (error) {
+                    console.log(error)
+                    return res.status(500).json(GENERATE_500_ERROR_JSON(error))
+                }
                 if (results.affectedRows === 0) {
                     return res
                         .status(404)
@@ -159,68 +161,57 @@ export const updateConsole = (database) => async (req, res) => {
 }
 
 export const deleteConsole = (database) => async (req, res) => {
-    try {
-        const id = parseInt(req.params.id)
-        await database.connection.query(
-            `DELETE FROM Console WHERE id=${id}`,
-            function (error, results) {
-                if (results.affectedRows === 0) {
-                    return res
-                        .status(404)
-                        .json(
-                            GENERATE_UPDATE_DELETE_NOT_FOUND_JSON(
-                                'Console',
-                                id,
-                                false
-                            )
-                        )
-                }
-                if (error) throw error
-                return res
-                    .status(200)
-                    .json(GENERATE_DELETE_JSON('Console', id, results))
+    const id = parseInt(req.params.id)
+    database.connection.query(
+        `DELETE FROM Console WHERE id=${id}`,
+        function (error, results) {
+            if (error) {
+                console.log(error)
+                return res.status(500).json(GENERATE_500_ERROR_JSON(error))
             }
-        )
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(GENERATE_500_ERROR_JSON(error))
-    }
+            if (results.affectedRows === 0) {
+                return res
+                    .status(404)
+                    .json(
+                        GENERATE_UPDATE_DELETE_NOT_FOUND_JSON(
+                            'Console',
+                            id,
+                            false
+                        )
+                    )
+            }
+            return res
+                .status(200)
+                .json(GENERATE_DELETE_JSON('Console', id, results))
+        }
+    )
 }
 
 export const getAllGames = (database) => async (req, res) => {
-    try {
-        await database.connection.query(
-            'SELECT * FROM Game',
-            function (error, results) {
-                if (error) throw error
-                return res.status(200).json(GENERATE_GET_JSON(results))
-            }
-        )
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(GENERATE_500_ERROR_JSON(error))
-    }
+    database.connection.query('SELECT * FROM Game', function (error, results) {
+        if (error) {
+            console.log(error)
+            return res.status(500).json(GENERATE_500_ERROR_JSON(error))
+        }
+        return res.status(200).json(GENERATE_GET_JSON(results))
+    })
 }
 
 export const getGameInformation = (database) => async (req, res) => {
-    try {
-        const id = parseInt(req.params.id)
-        await database.connection.query(
-            `SELECT * FROM Game WHERE id=${id}`,
-            function (error, results) {
-                if (error) throw error
-                if (results.length === 0) {
-                    return res
-                        .status(404)
-                        .json(GENERATE_GET_NOT_FOUND_JSON('Game'))
-                }
-                return res.status(200).json(GENERATE_GET_JSON(results))
+    const id = parseInt(req.params.id)
+    database.connection.query(
+        `SELECT * FROM Game WHERE id=${id}`,
+        function (error, results) {
+            if (error) {
+                console.log(error)
+                return res.status(500).json(GENERATE_500_ERROR_JSON(error))
             }
-        )
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(GENERATE_500_ERROR_JSON(error))
-    }
+            if (results.length === 0) {
+                return res.status(404).json(GENERATE_GET_NOT_FOUND_JSON('Game'))
+            }
+            return res.status(200).json(GENERATE_GET_JSON(results))
+        }
+    )
 }
 
 export const addGame = (database) => async (req, res) => {
@@ -249,11 +240,14 @@ export const addGame = (database) => async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await database.connection.query(
+        database.connection.query(
             'INSERT INTO Game SET ?',
             entry,
             function (error, results) {
-                if (error) throw error
+                if (error) {
+                    console.log(error)
+                    return res.status(500).json(GENERATE_500_ERROR_JSON(error))
+                }
                 return res
                     .status(201)
                     .json(GENERATE_CREATED_JSON('Game', results))
@@ -292,11 +286,14 @@ export const updateGame = (database) => async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await database.connection.query(
+        database.connection.query(
             `UPDATE Game SET ? WHERE id=${id}`,
             entry,
             function (error, results) {
-                if (error) throw error
+                if (error) {
+                    console.log(error)
+                    return res.status(500).json(GENERATE_500_ERROR_JSON(error))
+                }
                 if (results.affectedRows === 0) {
                     return res
                         .status(404)
@@ -320,68 +317,58 @@ export const updateGame = (database) => async (req, res) => {
 }
 
 export const deleteGame = (database) => async (req, res) => {
-    try {
-        const id = parseInt(req.params.id)
-        await database.connection.query(
-            `DELETE FROM Game WHERE id=${id}`,
-            function (error, results) {
-                if (error) throw error
-                if (results.affectedRows === 0) {
-                    return res
-                        .status(404)
-                        .json(
-                            GENERATE_UPDATE_DELETE_NOT_FOUND_JSON(
-                                'Game',
-                                id,
-                                false
-                            )
-                        )
-                }
-                return res
-                    .status(200)
-                    .json(GENERATE_DELETE_JSON('Game', id, results))
+    const id = parseInt(req.params.id)
+    database.connection.query(
+        `DELETE FROM Game WHERE id=${id}`,
+        function (error, results) {
+            if (error) {
+                console.log(error)
+                return res.status(500).json(GENERATE_500_ERROR_JSON(error))
             }
-        )
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(GENERATE_500_ERROR_JSON(error))
-    }
+            if (results.affectedRows === 0) {
+                return res
+                    .status(404)
+                    .json(
+                        GENERATE_UPDATE_DELETE_NOT_FOUND_JSON('Game', id, false)
+                    )
+            }
+            return res
+                .status(200)
+                .json(GENERATE_DELETE_JSON('Game', id, results))
+        }
+    )
 }
 
 export const getAllAccessories = (database) => async (req, res) => {
-    try {
-        await database.connection.query(
-            'SELECT * FROM Accessory',
-            function (error, results) {
-                if (error) throw error
-                return res.status(200).json(GENERATE_GET_JSON(results))
+    database.connection.query(
+        'SELECT * FROM Accessory',
+        function (error, results) {
+            if (error) {
+                console.log(error)
+                return res.status(500).json(GENERATE_500_ERROR_JSON(error))
             }
-        )
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(GENERATE_500_ERROR_JSON(error))
-    }
+            return res.status(200).json(GENERATE_GET_JSON(results))
+        }
+    )
 }
 
 export const getAccessoryInformation = (database) => async (req, res) => {
-    try {
-        const id = parseInt(req.params.id)
-        await database.connection.query(
-            `SELECT * FROM Accessory WHERE id=${id}`,
-            function (error, results) {
-                if (error) throw error
-                if (results.length === 0) {
-                    return res
-                        .status(404)
-                        .json(GENERATE_GET_NOT_FOUND_JSON('Accessory'))
-                }
-                return res.status(200).json(GENERATE_GET_JSON(results))
+    const id = parseInt(req.params.id)
+    database.connection.query(
+        `SELECT * FROM Accessory WHERE id=${id}`,
+        function (error, results) {
+            if (error) {
+                console.log(error)
+                return res.status(500).json(GENERATE_500_ERROR_JSON(error))
             }
-        )
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(GENERATE_500_ERROR_JSON(error))
-    }
+            if (results.length === 0) {
+                return res
+                    .status(404)
+                    .json(GENERATE_GET_NOT_FOUND_JSON('Accessory'))
+            }
+            return res.status(200).json(GENERATE_GET_JSON(results))
+        }
+    )
 }
 
 export const addAccessory = (database) => async (req, res) => {
@@ -405,11 +392,14 @@ export const addAccessory = (database) => async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await database.connection.query(
+        database.connection.query(
             'INSERT INTO Accessory SET ?',
             entry,
             function (error, results) {
-                if (error) throw error
+                if (error) {
+                    console.log(error)
+                    return res.status(500).json(GENERATE_500_ERROR_JSON(error))
+                }
                 return res
                     .status(201)
                     .json(GENERATE_CREATED_JSON('Accessory', results))
@@ -443,11 +433,14 @@ export const updateAccessory = (database) => async (req, res) => {
             notes: bodyVal.notes,
         }
 
-        await database.connection.query(
+        database.connection.query(
             `UPDATE Accessory SET ? WHERE id=${id}`,
             entry,
             function (error, results) {
-                if (error) throw error
+                if (error) {
+                    console.log(error)
+                    return res.status(500).json(GENERATE_500_ERROR_JSON(error))
+                }
                 if (results.affectedRows === 0) {
                     return res
                         .status(404)
@@ -471,32 +464,30 @@ export const updateAccessory = (database) => async (req, res) => {
 }
 
 export const deleteAccessory = (database) => async (req, res) => {
-    try {
-        const id = parseInt(req.params.id)
-        await database.connection.query(
-            `DELETE FROM Accessory WHERE id=${id}`,
-            function (error, results) {
-                if (error) throw error
-                if (results.affectedRows === 0) {
-                    return res
-                        .status(404)
-                        .json(
-                            GENERATE_UPDATE_DELETE_NOT_FOUND_JSON(
-                                'Accessory',
-                                id,
-                                false
-                            )
-                        )
-                }
-                return res
-                    .status(200)
-                    .json(GENERATE_DELETE_JSON('Accessory', id, results))
+    const id = parseInt(req.params.id)
+    database.connection.query(
+        `DELETE FROM Accessory WHERE id=${id}`,
+        function (error, results) {
+            if (error) {
+                console.log(error)
+                return res.status(500).json(GENERATE_500_ERROR_JSON(error))
             }
-        )
-    } catch (error) {
-        console.log(error)
-        return res.status(500).json(GENERATE_500_ERROR_JSON(error))
-    }
+            if (results.affectedRows === 0) {
+                return res
+                    .status(404)
+                    .json(
+                        GENERATE_UPDATE_DELETE_NOT_FOUND_JSON(
+                            'Accessory',
+                            id,
+                            false
+                        )
+                    )
+            }
+            return res
+                .status(200)
+                .json(GENERATE_DELETE_JSON('Accessory', id, results))
+        }
+    )
 }
 
 export default function makeApiRouter(database) {

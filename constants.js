@@ -305,6 +305,7 @@ export const VALIDATE_CONSOLE_ENTRY_JSON = function (bodyVal) {
     return returnVal
 }
 
+// ToDo - Need check to make sure console_id is valid
 export const VALIDATE_GAME_ENTRY_JSON = function (bodyVal) {
     const returnVal = null
     if (bodyVal.name == null) {
@@ -370,6 +371,7 @@ export const ConsolesAndIds = {
     'analogue pocket': 30,
 }
 
+// ToDo - More validation for console id
 export const VALIDATE_ACCESSORY_ENTRY_JSON = function (bodyVal) {
     const returnVal = null
     if (bodyVal.name == null) {

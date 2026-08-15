@@ -12,6 +12,7 @@ import usersRouter from './routes/users.js'
 
 import { fileURLToPath } from 'url'
 import makeApiRouter from './routes/api.js'
+import makeSiteRouter from './routes/index.js'
 
 export default function makeApp(database) {
     const app = express()
@@ -31,7 +32,7 @@ export default function makeApp(database) {
     app.use(express.static(path.join(__dirname, 'public')))
     app.use(fileUpload())
 
-    app.use('/', indexRouter)
+    app.use('/', makeSiteRouter(database))
     app.use('/users', usersRouter)
     app.use('/api', makeApiRouter(database))
 

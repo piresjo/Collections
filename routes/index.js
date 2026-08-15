@@ -1,5 +1,4 @@
 import express from 'express'
-import mysql from 'mysql'
 import fs from 'fs'
 import csv from 'fast-csv'
 import {
@@ -39,7 +38,7 @@ export const getHomePage = function (req, res, next) {
 
 export const getAllConsoles = (database) => async (req, res) => {
     try {
-        await database.connection.query(
+        database.connection.query(
             'SELECT * FROM Console',
             function (error, results) {
                 if (error) throw error
@@ -66,7 +65,7 @@ export const getAllConsoles = (database) => async (req, res) => {
 export const getConsoleInformation = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await database.connection.query(
+        database.connection.query(
             `SELECT * FROM Console WHERE id=${id}`,
             function (error, results) {
                 if (results.length === 0) {
@@ -124,7 +123,7 @@ export const addConsole = (database) => async (req, res) => {
     }
 
     try {
-        await database.connection.query(
+        database.connection.query(
             'INSERT INTO Console SET ?',
             entry,
             function (error, results) {
@@ -144,7 +143,7 @@ export const addConsole = (database) => async (req, res) => {
 export const getEditConsolePage = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await database.connection.query(
+        database.connection.query(
             `SELECT * FROM Console WHERE id=${id}`,
             function (error, results) {
                 if (results.length === 0) {
@@ -190,7 +189,7 @@ export const editConsole = (database) => async (req, res) => {
     }
 
     try {
-        await database.connection.query(
+        database.connection.query(
             `UPDATE Console SET ? WHERE id=${id}`,
             entry,
             function (error, results) {
@@ -211,7 +210,7 @@ export const editConsole = (database) => async (req, res) => {
 export const deleteConsole = (database) => async (req, res) => {
     try {
         const id = parseInt(req.body.id)
-        await database.connection.query(
+        database.connection.query(
             `DELETE FROM Console WHERE id=${id}`,
             function (error, results) {
                 if (error) throw error
@@ -237,7 +236,7 @@ export const deleteConsole = (database) => async (req, res) => {
 
 export const getAllGames = (database) => async (req, res) => {
     try {
-        await database.connection.query(
+        database.connection.query(
             'SELECT * FROM Game',
             function (error, results) {
                 if (error) throw error
@@ -261,7 +260,7 @@ export const getAllGames = (database) => async (req, res) => {
 export const getGameInformation = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await database.connection.query(
+        database.connection.query(
             `SELECT * FROM Game WHERE id=${id}`,
             function (error, results) {
                 if (results.length === 0) {
@@ -319,7 +318,7 @@ export const addGame = (database) => async (req, res) => {
     }
 
     try {
-        await database.connection.query(
+        database.connection.query(
             'INSERT INTO Game SET ?',
             entry,
             function (error, results) {
@@ -339,7 +338,7 @@ export const addGame = (database) => async (req, res) => {
 export const deleteGame = (database) => async (req, res) => {
     try {
         const id = parseInt(req.body.id)
-        await database.connection.query(
+        database.connection.query(
             `DELETE FROM Game WHERE id=${id}`,
             function (error, results) {
                 if (error) throw error
@@ -366,7 +365,7 @@ export const deleteGame = (database) => async (req, res) => {
 export const getEditGamePage = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await database.connection.query(
+        database.connection.query(
             `SELECT * FROM Game WHERE id=${id}`,
             function (error, results) {
                 if (results.length === 0) {
@@ -414,7 +413,7 @@ export const editGame = (database) => async (req, res) => {
     }
 
     try {
-        await database.connection.query(
+        database.connection.query(
             `UPDATE Game SET ? WHERE id=${id}`,
             entry,
             function (error, results) {
@@ -434,7 +433,7 @@ export const editGame = (database) => async (req, res) => {
 
 export const getAllAccessories = (database) => async (req, res) => {
     try {
-        await database.connection.query(
+        database.connection.query(
             'SELECT * FROM Accessory',
             function (error, results) {
                 if (error) throw error
@@ -450,7 +449,7 @@ export const getAllAccessories = (database) => async (req, res) => {
 export const getAccessoryInformation = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await database.connection.query(
+        database.connection.query(
             `SELECT * FROM Accessory WHERE id=${id}`,
             function (error, results) {
                 if (error) throw error
@@ -496,7 +495,7 @@ export const addAccessory = (database) => async (req, res) => {
     }
 
     try {
-        await database.connection.query(
+        database.connection.query(
             'INSERT INTO Accessory SET ?',
             entry,
             function (error, results) {
@@ -516,7 +515,7 @@ export const addAccessory = (database) => async (req, res) => {
 export const deleteAccessory = (database) => async (req, res) => {
     try {
         const id = parseInt(req.body.id)
-        await database.connection.query(
+        database.connection.query(
             `DELETE FROM Accessory WHERE id=${id}`,
             function (error, results) {
                 if (results.affectedRows === 0) {
@@ -543,7 +542,7 @@ export const deleteAccessory = (database) => async (req, res) => {
 export const getEditAccessoryPage = (database) => async (req, res) => {
     try {
         const id = parseInt(req.params.id)
-        await database.connection.query(
+        database.connection.query(
             `SELECT * FROM Accessory WHERE id=${id}`,
             function (error, results) {
                 if (results.length === 0) {
@@ -586,7 +585,7 @@ export const editAccessory = (database) => async (req, res) => {
     }
 
     try {
-        await database.connection.query(
+        database.connection.query(
             `UPDATE Accessory SET ? WHERE id=${id}`,
             entry,
             function (error, results) {
