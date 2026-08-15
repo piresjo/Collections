@@ -1,5 +1,4 @@
 import express from 'express'
-import bodyParser from 'body-parser'
 
 import createError from 'http-errors'
 import path, { dirname } from 'path'
@@ -24,10 +23,9 @@ export default function makeApp(database) {
     app.set('views', path.join(__dirname, 'views'))
     app.set('view engine', 'jade')
 
-    app.use(bodyParser.urlencoded({ extended: true }))
     app.use(logger('dev'))
     app.use(express.json())
-    app.use(express.urlencoded({ extended: false }))
+    app.use(express.urlencoded({ extended: true }))
     app.use(cookieParser())
     app.use(express.static(path.join(__dirname, 'public')))
     app.use(fileUpload())
