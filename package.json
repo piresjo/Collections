@@ -1,42 +1,56 @@
 {
-  "name": "collectionsdb",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "start": "node server.js",
-    "test": "npx vitest"
-  },
-  "dependencies": {
-    "autoprefixer": "^10.4.21",
-    "axios": "^1.10.0",
-    "body-parser": "^2.2.0",
-    "bootstrap": "^5.3.8",
-    "cookie-parser": "~1.4.4",
-    "csv-parser": "^3.2.0",
-    "debug": "~2.6.9",
-    "ejs": "^3.1.10",
-    "express": "^4.21.2",
-    "express-fileupload": "^1.5.2",
-    "express-validator": "^7.2.1",
-    "fast-csv": "^5.0.2",
-    "form-data": "^4.0.3",
-    "http-errors": "~1.6.3",
-    "jade": "^1.9.2",
-    "method-override": "^3.0.0",
-    "morgan": "~1.9.1",
-    "multer": "^2.0.1",
-    "mysql": "^2.18.1",
-    "papaparse": "^5.5.3",
-    "postcss": "^8.5.6",
-    "postcss-cli": "^11.0.1",
-    "sass": "^1.93.2"
-  },
-  "type": "module",
-  "devDependencies": {
-    "prettier": "3.5.3",
-    "supertest": "^7.1.1",
-    "vite": "^6.3.5",
-    "vitest": "^3.2.4",
-    "vitest-mock-express": "^2.2.0"
-  }
+    "name": "collectionsdb",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "start": "node server.js",
+        "test": "npx vitest run --coverage",
+        "format": "npx prettier . --write",
+        "prepare": "husky install"
+    },
+    "dependencies": {
+        "@vitest/coverage-v8": "^4.1.10",
+        "autoprefixer": "^10.4.21",
+        "bootstrap": "^5.3.8",
+        "cookie-parser": "~1.4.4",
+        "debug": "~2.6.9",
+        "ejs": "^3.1.10",
+        "express": "^4.21.2",
+        "express-fileupload": "^1.5.2",
+        "express-validator": "^7.2.1",
+        "fast-csv": "^5.0.2",
+        "form-data": "^4.0.3",
+        "http-errors": "~1.6.3",
+        "husky": "^9.1.7",
+        "jade": "^1.9.2",
+        "method-override": "^3.0.0",
+        "morgan": "^1.11.0",
+        "mysql2": "^3.23.3",
+        "postcss": "^8.5.6",
+        "postcss-cli": "^11.0.1",
+        "prettier": "^3.5.3",
+        "sass": "^1.93.2",
+        "vite": "^6.3.5",
+        "vitest-mock-express": "^2.2.0"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged",
+            "pre-push": "test"
+        }
+    },
+    "lint-staged": {
+        "*.{js,jsx}": "eslint . --ext js,jsx --fix",
+        "*.{json,js,ts,jsx,tsx,html}": "prettier --write --ignore-unknown"
+    },
+    "license": "ISC",
+    "author": "",
+    "type": "module",
+    "main": "server.js",
+    "devDependencies": {
+        "@eslint/js": "^10.0.1",
+        "eslint": "^10.8.1",
+        "globals": "^17.11.0",
+        "vitest": "^4.1.10"
+    }
 }

@@ -1,5 +1,4 @@
 import express from 'express'
-import bodyParser from 'body-parser'
 
 import createError from 'http-errors'
 import path, { dirname } from 'path'
@@ -7,57 +6,56 @@ import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import fileUpload from 'express-fileupload'
 
-import indexRouter from './routes/index.js'
 import usersRouter from './routes/users.js'
-import apiRouter from './routes/api.js'
 
 import { fileURLToPath } from 'url'
+import makeApiRouter from './routes/api.js'
+import makeSiteRouter from './routes/index.js'
 
-export default function makeApp (database) {
-  const app = express()
+export default function makeApp(database) {
+    const app = express()
 
-  const __filename = fileURLToPath(import.meta.url)
-  const __dirname = dirname(__filename)
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = dirname(__filename)
 
-  // view engine setup
-  app.set('views', path.join(__dirname, 'views'))
-  app.set('view engine', 'jade')
+    // view engine setup
+    app.set('views', path.join(__dirname, 'views'))
+    app.set('view engine', 'jade')
 
-  app.use(bodyParser.urlencoded({ extended: true }))
-  app.use(logger('dev'))
-  app.use(express.json())
-  app.use(express.urlencoded({ extended: false }))
-  app.use(cookieParser())
-  app.use(express.static(path.join(__dirname, 'public')))
-  app.use(fileUpload())
+    app.use(logger('dev'))
+    app.use(express.json())
+    app.use(express.urlencoded({ extended: true }))
+    app.use(cookieParser())
+    app.use(express.static(path.join(__dirname, 'public')))
+    app.use(fileUpload())
 
-  app.use('/', indexRouter)
-  app.use('/users', usersRouter)
-  app.use('/api', apiRouter)
+    app.use('/', makeSiteRouter(database))
+    app.use('/users', usersRouter)
+    app.use('/api', makeApiRouter(database))
 
-  // catch 404 and forward to error handler
-  app.use(function (req, res, next) {
-    next(createError(404))
-  })
+    // catch 404 and forward to error handler
+    app.use(function (req, res, next) {
+        next(createError(404))
+    })
 
-  // error handler
-  app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message
-    res.locals.error = req.app.get('env') === 'development' ? err : {}
+    // error handler
+    app.use(function (err, req, res, next) {
+        // set locals, only providing error in development
+        res.locals.message = err.message
+        res.locals.error = req.app.get('env') === 'development' ? err : {}
 
-    // render the error page
-    res.status(err.status || 500)
-    res.render('error.ejs', { status: 500, error: err })
-  })
+        // render the error page
+        res.status(err.status || 500)
+        res.render('error.ejs', { status: 500, error: err })
+    })
 
-  database.connection.connect((err) => {
-    if (err) {
-      console.error('Error connecting to MySQL: ' + err.stack)
-      return
-    }
-    console.log('Connected to MySQL as ID ' + database.connection.threadId)
-  })
+    database.connection.connect((err) => {
+        if (err) {
+            console.error('Error connecting to MySQL: ' + err.stack)
+            return
+        }
+        console.log('Connected to MySQL as ID ' + database.connection.threadId)
+    })
 
-  return app
+    return app
 }
