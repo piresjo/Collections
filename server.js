@@ -5,7 +5,7 @@ import mysql from 'mysql2'
 
 const port = process.env.PORT || 3000
 
-const connection = mysql.createConnection({
+const connection = await mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: DB_PASSWORD,

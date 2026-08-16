@@ -206,7 +206,7 @@ export const DERIVE_REGION_STRING = function (regionId) {
         case 4:
             return 'US'
         case 5:
-            return 'NTSC_J'
+            return 'NTSC-J'
         default:
             return null
     }
@@ -399,7 +399,7 @@ export const AccessoryType = Object.freeze({
 export const DERIVE_ACCESSORY_TYPE = function (accessoryTypeString) {
     switch (accessoryTypeString) {
         case 'controller':
-            return ProductCondition.NEW
+            return AccessoryType.CONTROLLER
         default:
             return null
     }
