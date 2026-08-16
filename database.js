@@ -116,8 +116,6 @@ export class Database {
             `DELETE FROM Accessory WHERE id=?`,
             [idVal]
         )
-        console.log([results])
-        console.log(results)
         if (results.affectedRows === 0) return null
         return results
     }

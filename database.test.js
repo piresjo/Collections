@@ -231,9 +231,9 @@ describe('Add Accessory DB Call', () => {
     test('Encountered DB Failure', async () => {
         database.connection.query.mockRejectedValueOnce(DB_ERROR)
 
-        await expect(database.addAccessory(FULL_ACCESSORY_ENTRY)).rejects.toThrow(
-            DB_ERROR_CONNECTION_LOST
-        )
+        await expect(
+            database.addAccessory(FULL_ACCESSORY_ENTRY)
+        ).rejects.toThrow(DB_ERROR_CONNECTION_LOST)
     })
 })
 
@@ -255,9 +255,9 @@ describe('Update Console DB Call', () => {
     test('Encountered DB Failure', async () => {
         database.connection.query.mockRejectedValueOnce(DB_ERROR)
 
-        await expect(database.updateConsole(1, FULL_CONSOLE_ENTRY)).rejects.toThrow(
-            DB_ERROR_CONNECTION_LOST
-        )
+        await expect(
+            database.updateConsole(1, FULL_CONSOLE_ENTRY)
+        ).rejects.toThrow(DB_ERROR_CONNECTION_LOST)
     })
 
     test('Console Does Not Exist', async () => {
@@ -331,9 +331,9 @@ describe('Update Accessory DB Call', () => {
     test('Encountered DB Failure', async () => {
         database.connection.query.mockRejectedValueOnce(DB_ERROR)
 
-        await expect(database.updateAccessory(1, FULL_ACCESSORY_ENTRY)).rejects.toThrow(
-            DB_ERROR_CONNECTION_LOST
-        )
+        await expect(
+            database.updateAccessory(1, FULL_ACCESSORY_ENTRY)
+        ).rejects.toThrow(DB_ERROR_CONNECTION_LOST)
     })
 
     test('Accessory Does Not Exist', async () => {
