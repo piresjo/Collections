@@ -15,6 +15,7 @@ import {
     DERIVE_CONDITION_STRING,
 } from '../constants.js'
 import { body } from 'express-validator'
+import { data } from 'autoprefixer'
 
 const __dirname =
     'C:\\Users\\Pires\\OneDrive\\Documents\\GitHub\\CollectionsDB\\public\\csv\\'
@@ -37,58 +38,55 @@ export const getHomePage = function (req, res, next) {
 }
 
 export const getAllConsoles = (database) => async (req, res) => {
-    database.connection.query(
-        'SELECT * FROM Console',
-        function (error, results) {
-            if (error) {
-                console.log(error)
-                return res.render('error.ejs', { status: 500, error: error })
-            }
-            for (let i = 0; i < results.length; i++) {
-                results[i].console_type_string = DERIVE_CONSOLE_TYPE_STRING(
-                    results[i].console_type
-                )
-                results[i].region_string = DERIVE_REGION_STRING(
-                    results[i].region
-                )
-                results[i].condition_string = DERIVE_CONDITION_STRING(
-                    results[i].product_condition
-                )
-            }
-            return res.render('consoles.ejs', { consoles: results })
+    try {
+        const consoles = await database.getConsoles()
+
+        for (let i = 0; i < consoles.length; i++) {
+            consoles[i].console_type_string = DERIVE_CONSOLE_TYPE_STRING(
+                consoles[i].console_type
+            )
+            consoles[i].region_string = DERIVE_REGION_STRING(consoles[i].region)
+            consoles[i].condition_string = DERIVE_CONDITION_STRING(
+                consoles[i].product_condition
+            )
         }
-    )
+        return res.render('consoles.ejs', { consoles: consoles })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const getConsoleInformation = (database) => async (req, res) => {
     const id = parseInt(req.params.id)
-    database.connection.query(
-        `SELECT * FROM Console WHERE id=${id}`,
-        function (error, results) {
-            if (error) {
-                console.log(error)
-                return res.render('error.ejs', { status: 500, error: error })
-            }
-            if (results.length === 0) {
-                return res.render('error.ejs', {
-                    status: 404,
-                    object: 'Console',
-                    idVal: id,
-                })
-            }
-            results[0].console_type_string = DERIVE_CONSOLE_TYPE_STRING(
-                results[0].console_type
-            )
-            results[0].region_string = DERIVE_REGION_STRING(results[0].region)
-            results[0].condition_string = DERIVE_CONDITION_STRING(
-                results[0].product_condition
-            )
-            return res.render('console.ejs', {
-                consoles: results,
-                id,
+
+    try {
+        const consoleInfo = await database.getConsoleInformation(id)
+
+        if (consoleInfo.length === 0) {
+            return res.render('error.ejs', {
+                status: 404,
+                object: 'Console',
+                idVal: id,
             })
         }
-    )
+        consoleInfo[0].console_type_string = DERIVE_CONSOLE_TYPE_STRING(
+            consoleInfo[0].console_type
+        )
+        consoleInfo[0].region_string = DERIVE_REGION_STRING(
+            consoleInfo[0].region
+        )
+        consoleInfo[0].condition_string = DERIVE_CONDITION_STRING(
+            consoleInfo[0].product_condition
+        )
+        return res.render('console.ejs', {
+            consoles: consoleInfo,
+            id,
+        })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const getAddConsolePage = async (req, res) => {
@@ -119,23 +117,13 @@ export const addConsole = (database) => async (req, res) => {
                     : null,
             notes: 'notes' in bodyVal ? bodyVal.notes : null,
         }
-        database.connection.query(
-            'INSERT INTO Console SET ?',
-            entry,
-            function (error, results) {
-                if (error) {
-                    console.log(error)
-                    return res.render('error.ejs', {
-                        status: 500,
-                        error: error,
-                    })
-                }
-                return res.render('status.ejs', {
-                    action: 'create',
-                    object: 'Console',
-                })
-            }
-        )
+
+        const addResponse = await database.addConsole(entry)
+
+        return res.render('status.ejs', {
+            action: 'create',
+            object: 'Console',
+        })
     } catch (error) {
         console.log(error)
         return res.render('error.ejs', { status: 500, error: error })
@@ -144,27 +132,26 @@ export const addConsole = (database) => async (req, res) => {
 
 export const getEditConsolePage = (database) => async (req, res) => {
     const id = parseInt(req.params.id)
-    database.connection.query(
-        `SELECT * FROM Console WHERE id=${id}`,
-        function (error, results) {
-            if (error) {
-                console.log(error)
-                return res.render('error.ejs', { status: 500, error: error })
-            }
-            if (results.length === 0) {
-                return res.render('error.ejs', {
-                    status: 404,
-                    object: 'Console',
-                    idVal: id,
-                })
-            }
 
-            return res.render('addEditConsole.ejs', {
-                console: results[0],
-                action: 'edit',
+    try {
+        const readResponse = await database.getConsoleInformation(id)
+
+        if (readResponse.length === 0) {
+            return res.render('error.ejs', {
+                status: 404,
+                object: 'Console',
+                idVal: id,
             })
         }
-    )
+
+        return res.render('addEditConsole.ejs', {
+            console: readResponse[0],
+            action: 'edit',
+        })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const editConsole = (database) => async (req, res) => {
@@ -192,24 +179,22 @@ export const editConsole = (database) => async (req, res) => {
                     : null,
             notes: 'notes' in bodyVal ? bodyVal.notes : null,
         }
-        database.connection.query(
-            `UPDATE Console SET ? WHERE id=${id}`,
-            entry,
-            function (error, results) {
-                if (error) {
-                    console.log(error)
-                    return res.render('error.ejs', {
-                        status: 500,
-                        error: error,
-                    })
-                }
-                return res.render('status.ejs', {
-                    action: 'update',
-                    object: 'Console',
-                    idVal: id,
-                })
-            }
-        )
+
+        const editResponse = await database.updateConsole(id, entry)
+
+        if (editResponse === null) {
+            return res.render('error.ejs', {
+                status: 404,
+                object: 'Console',
+                idVal: id,
+            })
+        }
+
+        return res.render('status.ejs', {
+            action: 'update',
+            object: 'Console',
+            idVal: id,
+        })
     } catch (error) {
         console.log(error)
         return res.render('error.ejs', { status: 500, error: error })
@@ -218,72 +203,70 @@ export const editConsole = (database) => async (req, res) => {
 
 export const deleteConsole = (database) => async (req, res) => {
     const id = parseInt(req.body.id)
-    database.connection.query(
-        `DELETE FROM Console WHERE id=${id}`,
-        function (error, results) {
-            if (error) {
-                console.log(error)
-                return res.render('error.ejs', { status: 500, error: error })
-            }
-            if (results.affectedRows === 0) {
-                return res.render('error.ejs', {
-                    status: 404,
-                    object: 'Console',
-                    idVal: id,
-                })
-            }
-            return res.render('status.ejs', {
-                action: 'delete',
+
+    try {
+        const deleteResponse = await database.deleteConsole(id)
+
+        if (deleteResponse === null) {
+            return res.render('error.ejs', {
+                status: 404,
                 object: 'Console',
                 idVal: id,
             })
         }
-    )
+        return res.render('status.ejs', {
+            action: 'delete',
+            object: 'Console',
+            idVal: id,
+        })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const getAllGames = (database) => async (req, res) => {
-    database.connection.query('SELECT * FROM Game', function (error, results) {
-        if (error) {
-            console.log(error)
-            return res.render('error.ejs', { status: 500, error: error })
-        }
-        for (let i = 0; i < results.length; i++) {
-            results[i].region_string = DERIVE_REGION_STRING(results[i].region)
-            results[i].condition_string = DERIVE_CONDITION_STRING(
-                results[i].product_condition
+    try {
+        const games = await database.getGames()
+
+        for (let i = 0; i < games.length; i++) {
+            games[i].region_string = DERIVE_REGION_STRING(games[i].region)
+            games[i].condition_string = DERIVE_CONDITION_STRING(
+                games[i].product_condition
             )
         }
-        return res.render('games.ejs', { games: results })
-    })
+        return res.render('games.ejs', { games: games })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const getGameInformation = (database) => async (req, res) => {
     const id = parseInt(req.params.id)
-    database.connection.query(
-        `SELECT * FROM Game WHERE id=${id}`,
-        function (error, results) {
-            if (error) {
-                console.log(error)
-                return res.render('error.ejs', { status: 500, error: error })
-            }
-            if (results.length === 0) {
-                return res.render('error.ejs', {
-                    status: 404,
-                    object: 'Game',
-                    idVal: id,
-                })
-            }
+    try {
+        const game = await database.getGameInformation(id)
 
-            results[0].region_string = DERIVE_REGION_STRING(results[0].region)
-            results[0].condition_string = DERIVE_CONDITION_STRING(
-                results[0].product_condition
-            )
-            return res.render('game.ejs', {
-                games: results,
-                id,
+        if (game.length === 0) {
+            return res.render('error.ejs', {
+                status: 404,
+                object: 'Game',
+                idVal: id,
             })
         }
-    )
+
+        game[0].region_string = DERIVE_REGION_STRING(game[0].region)
+        game[0].condition_string = DERIVE_CONDITION_STRING(
+            game[0].product_condition
+        )
+        return res.render('game.ejs', {
+            games: game,
+            id,
+        })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const getAddGamePage = async (req, res) => {
@@ -316,23 +299,13 @@ export const addGame = (database) => async (req, res) => {
                     : null,
             notes: 'notes' in bodyVal ? bodyVal.notes : null,
         }
-        database.connection.query(
-            'INSERT INTO Game SET ?',
-            entry,
-            function (error, results) {
-                if (error) {
-                    console.log(error)
-                    return res.render('error.ejs', {
-                        status: 500,
-                        error: error,
-                    })
-                }
-                return res.render('status.ejs', {
-                    action: 'create',
-                    object: 'Game',
-                })
-            }
-        )
+
+        const addResponse = await database.addGame(entry)
+
+        return res.render('status.ejs', {
+            action: 'create',
+            object: 'Game',
+        })
     } catch (error) {
         console.log(error)
         return res.render('error.ejs', { status: 500, error: error })
@@ -341,52 +314,48 @@ export const addGame = (database) => async (req, res) => {
 
 export const deleteGame = (database) => async (req, res) => {
     const id = parseInt(req.body.id)
-    database.connection.query(
-        `DELETE FROM Game WHERE id=${id}`,
-        function (error, results) {
-            if (error) {
-                console.log(error)
-                return res.render('error.ejs', { status: 500, error: error })
-            }
-            if (results.affectedRows === 0) {
-                return res.render('error.ejs', {
-                    status: 404,
-                    object: 'Game',
-                    idVal: id,
-                })
-            }
-            return res.render('status.ejs', {
-                action: 'delete',
+    try {
+        const deleteResponse = await database.deleteGame(id)
+
+        if (deleteResponse === null) {
+            return res.render('error.ejs', {
+                status: 404,
                 object: 'Game',
                 idVal: id,
             })
         }
-    )
+        return res.render('status.ejs', {
+            action: 'delete',
+            object: 'Game',
+            idVal: id,
+        })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const getEditGamePage = (database) => async (req, res) => {
     const id = parseInt(req.params.id)
-    database.connection.query(
-        `SELECT * FROM Game WHERE id=${id}`,
-        function (error, results) {
-            if (error) {
-                console.log(error)
-                return res.render('error.ejs', { status: 500, error: error })
-            }
-            if (results.length === 0) {
-                return res.render('error.ejs', {
-                    status: 404,
-                    object: 'Game',
-                    idVal: id,
-                })
-            }
+    try {
+        const readResponse = await database.getGameInformation(id)
 
-            return res.render('addEditGame.ejs', {
-                game: results[0],
-                action: 'edit',
+        if (readResponse.length === 0) {
+            return res.render('error.ejs', {
+                status: 404,
+                object: 'Game',
+                idVal: id,
             })
         }
-    )
+
+        return res.render('addEditGame.ejs', {
+            game: readResponse[0],
+            action: 'edit',
+        })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const editGame = (database) => async (req, res) => {
@@ -416,24 +385,22 @@ export const editGame = (database) => async (req, res) => {
                     : null,
             notes: bodyVal.notes !== '' ? bodyVal.notes : null,
         }
-        database.connection.query(
-            `UPDATE Game SET ? WHERE id=${id}`,
-            entry,
-            function (error, results) {
-                if (error) {
-                    console.log(error)
-                    return res.render('error.ejs', {
-                        status: 500,
-                        error: error,
-                    })
-                }
-                return res.render('status.ejs', {
-                    action: 'update',
-                    object: 'Game',
-                    idVal: id,
-                })
-            }
-        )
+
+        const updateResponse = await database.updateGame(id, entry)
+
+        if (updateResponse === null) {
+            return res.render('error.ejs', {
+                status: 404,
+                object: 'Game',
+                idVal: id,
+            })
+        }
+
+        return res.render('status.ejs', {
+            action: 'update',
+            object: 'Game',
+            idVal: id,
+        })
     } catch (error) {
         console.log(error)
         return res.render('error.ejs', { status: 500, error: error })
@@ -441,40 +408,37 @@ export const editGame = (database) => async (req, res) => {
 }
 
 export const getAllAccessories = (database) => async (req, res) => {
-    database.connection.query(
-        'SELECT * FROM Accessory',
-        function (error, results) {
-            if (error) {
-                console.log(error)
-                return res.render('error.ejs', { status: 500, error: error })
-            }
-            return res.render('accessories.ejs', { accessories: results })
-        }
-    )
+    try {
+        const accessories = await database.getAccessories()
+
+        return res.render('accessories.ejs', { accessories: accessories })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const getAccessoryInformation = (database) => async (req, res) => {
     const id = parseInt(req.params.id)
-    database.connection.query(
-        `SELECT * FROM Accessory WHERE id=${id}`,
-        function (error, results) {
-            if (error) {
-                console.log(error)
-                return res.render('error.ejs', { status: 500, error: error })
-            }
-            if (results.length === 0) {
-                return res.render('error.ejs', {
-                    status: 404,
-                    object: 'Accessory',
-                    idVal: id,
-                })
-            }
-            return res.render('accessory.ejs', {
-                accessories: results,
-                id,
+
+    try {
+        const accessory = await database.getAccessoryInformation(id)
+
+        if (accessory.length === 0) {
+            return res.render('error.ejs', {
+                status: 404,
+                object: 'Accessory',
+                idVal: id,
             })
         }
-    )
+        return res.render('accessory.ejs', {
+            accessories: accessory,
+            id,
+        })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const getAddAccessoryPage = async (req, res) => {
@@ -502,23 +466,13 @@ export const addAccessory = (database) => async (req, res) => {
                     : null,
             notes: 'notes' in bodyVal ? bodyVal.notes : null,
         }
-        database.connection.query(
-            'INSERT INTO Accessory SET ?',
-            entry,
-            function (error, results) {
-                if (error) {
-                    console.log(error)
-                    return res.render('error.ejs', {
-                        status: 500,
-                        error: error,
-                    })
-                }
-                return res.render('status.ejs', {
-                    action: 'create',
-                    object: 'Accessory',
-                })
-            }
-        )
+
+        const addResponse = await database.addAccessory(entry)
+
+        return res.render('status.ejs', {
+            action: 'create',
+            object: 'Accessory',
+        })
     } catch (error) {
         console.log(error)
         return res.render('error.ejs', { status: 500, error: error })
@@ -527,53 +481,49 @@ export const addAccessory = (database) => async (req, res) => {
 
 export const deleteAccessory = (database) => async (req, res) => {
     const id = parseInt(req.body.id)
-    database.connection.query(
-        `DELETE FROM Accessory WHERE id=${id}`,
-        function (error, results) {
-            if (error) {
-                console.log(error)
-                return res.render('error.ejs', { status: 500, error: error })
-            }
-            if (results.affectedRows === 0) {
-                return res.render('error.ejs', {
-                    status: 404,
-                    object: 'Accessory',
-                    idVal: id,
-                })
-            }
+    try {
+        const deleteResponse = await database.deleteAccessory(id)
 
-            return res.render('status.ejs', {
-                action: 'delete',
+        if (deleteResponse === null) {
+            return res.render('error.ejs', {
+                status: 404,
                 object: 'Accessory',
                 idVal: id,
             })
         }
-    )
+
+        return res.render('status.ejs', {
+            action: 'delete',
+            object: 'Accessory',
+            idVal: id,
+        })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const getEditAccessoryPage = (database) => async (req, res) => {
     const id = parseInt(req.params.id)
-    database.connection.query(
-        `SELECT * FROM Accessory WHERE id=${id}`,
-        function (error, results) {
-            if (error) {
-                console.log(error)
-                return res.render('error.ejs', { status: 500, error: error })
-            }
-            if (results.length === 0) {
-                return res.render('error.ejs', {
-                    status: 404,
-                    object: 'Accessory',
-                    idVal: id,
-                })
-            }
+    try {
+        const readResponse = await database.getAccessoryInformation(id)
 
-            return res.render('addEditAccessory.ejs', {
-                accessory: results[0],
-                action: 'edit',
+        if (readResponse.length === 0) {
+            return res.render('error.ejs', {
+                status: 404,
+                object: 'Accessory',
+                idVal: id,
             })
         }
-    )
+
+        return res.render('addEditAccessory.ejs', {
+            accessory: readResponse[0],
+            action: 'edit',
+        })
+    } catch (error) {
+        console.log(error)
+        return res.render('error.ejs', { status: 500, error: error })
+    }
 }
 
 export const editAccessory = (database) => async (req, res) => {
@@ -599,24 +549,22 @@ export const editAccessory = (database) => async (req, res) => {
                     : null,
             notes: bodyVal.notes !== '' ? bodyVal.notes : null,
         }
-        database.connection.query(
-            `UPDATE Accessory SET ? WHERE id=${id}`,
-            entry,
-            function (error, results) {
-                if (error) {
-                    console.log(error)
-                    return res.render('error.ejs', {
-                        status: 500,
-                        error: error,
-                    })
-                }
-                return res.render('status.ejs', {
-                    action: 'update',
-                    object: 'Accessory',
-                    idVal: id,
-                })
-            }
-        )
+
+        const editResponse = await database.updateAccessory(id, entry)
+
+        if (editResponse === null) {
+            return res.render('error.ejs', {
+                status: 404,
+                object: 'Accessory',
+                idVal: id,
+            })
+        }
+
+        return res.render('status.ejs', {
+            action: 'update',
+            object: 'Accessory',
+            idVal: id,
+        })
     } catch (error) {
         console.log(error)
         return res.render('error.ejs', { status: 500, error: error })
@@ -880,6 +828,8 @@ export default function makeSiteRouter(database) {
         ]),
         editAccessory(database)
     )
+
+    // ToDo - In another branch, fix the below code and add tests
     // Bulk Entry - Console
     router.get('/bulk_entry/consoles', async (req, res) => {
         res.render('bulkentry.ejs', { object: 'Console' })

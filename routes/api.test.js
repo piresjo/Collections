@@ -42,20 +42,20 @@ import {
     GENERATE_GET_JSON,
     GENERATE_GET_NOT_FOUND_JSON,
     GENERATE_UPDATE_JSON,
-    GENERATE_UPDATE_DELETE_NOT_FOUND_JSON
+    GENERATE_UPDATE_DELETE_NOT_FOUND_JSON,
 } from '../constants.js'
 
 const DB_ERROR_CONNECTION_LOST = 'Connection Lost'
 const DB_ERROR = new Error(DB_ERROR_CONNECTION_LOST)
 
 const MISSING_CONSOLE_NAME_ERROR = {
-    "message": "Console Needs To Have A Name",
-    "success": false,
+    message: 'Console Needs To Have A Name',
+    success: false,
 }
 
 const MISSING_CONSOLE_ID_ERROR = {
-    "message": "console_id Must Be Defined",
-    "success": false,
+    message: 'console_id Must Be Defined',
+    success: false,
 }
 
 describe('Healthcheck API Call', () => {
@@ -234,9 +234,7 @@ describe('Add Console API Call', () => {
         await handler(req, res)
 
         expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith(
-            MISSING_CONSOLE_NAME_ERROR
-        )
+        expect(res.json).toHaveBeenCalledWith(MISSING_CONSOLE_NAME_ERROR)
     })
 })
 
@@ -299,7 +297,7 @@ describe('Update Console API Call', () => {
         const handler = updateConsole(database)
         const req = getMockReq({
             params: {
-                id: '1'
+                id: '1',
             },
             body: INVALID_CONSOLE_ENTRY,
         })
@@ -308,9 +306,7 @@ describe('Update Console API Call', () => {
         await handler(req, res)
 
         expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith(
-            MISSING_CONSOLE_NAME_ERROR
-        )
+        expect(res.json).toHaveBeenCalledWith(MISSING_CONSOLE_NAME_ERROR)
     })
 
     test('Console Not Found', async () => {
@@ -574,9 +570,7 @@ describe('Add Game API Call', () => {
         await handler(req, res)
 
         expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith(
-            MISSING_CONSOLE_ID_ERROR
-        )
+        expect(res.json).toHaveBeenCalledWith(MISSING_CONSOLE_ID_ERROR)
     })
 })
 
@@ -636,7 +630,7 @@ describe('Update Game API Call', () => {
         const handler = updateGame(database)
         const req = getMockReq({
             params: {
-                id: '1'
+                id: '1',
             },
             body: INVALID_GAME_ENTRY,
         })
@@ -645,9 +639,7 @@ describe('Update Game API Call', () => {
         await handler(req, res)
 
         expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith(
-            MISSING_CONSOLE_ID_ERROR
-        )
+        expect(res.json).toHaveBeenCalledWith(MISSING_CONSOLE_ID_ERROR)
     })
 
     test('Game Not Found', async () => {
@@ -667,10 +659,7 @@ describe('Update Game API Call', () => {
 
         await handler(req, res)
 
-        expect(database.updateGame).toHaveBeenCalledWith(
-            1,
-            FULL_GAME_ENTRY
-        )
+        expect(database.updateGame).toHaveBeenCalledWith(1, FULL_GAME_ENTRY)
 
         expect(res.status).toHaveBeenCalledWith(404)
         expect(res.json).toHaveBeenCalledWith(
@@ -915,9 +904,7 @@ describe('Add Accessory API Call', () => {
         await handler(req, res)
 
         expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith(
-            MISSING_CONSOLE_ID_ERROR
-        )
+        expect(res.json).toHaveBeenCalledWith(MISSING_CONSOLE_ID_ERROR)
     })
 })
 
@@ -980,7 +967,7 @@ describe('Update Accessory API Call', () => {
         const handler = updateAccessory(database)
         const req = getMockReq({
             params: {
-                id: '1'
+                id: '1',
             },
             body: INVALID_ACCESSORY_ENTRY,
         })
@@ -989,9 +976,7 @@ describe('Update Accessory API Call', () => {
         await handler(req, res)
 
         expect(res.status).toHaveBeenCalledWith(400)
-        expect(res.json).toHaveBeenCalledWith(
-            MISSING_CONSOLE_ID_ERROR
-        )
+        expect(res.json).toHaveBeenCalledWith(MISSING_CONSOLE_ID_ERROR)
     })
 
     test('Accessory Not Found', async () => {
