@@ -15,7 +15,6 @@ import {
     DERIVE_CONDITION_STRING,
 } from '../constants.js'
 import { body } from 'express-validator'
-import { data } from 'autoprefixer'
 
 const __dirname =
     'C:\\Users\\Pires\\OneDrive\\Documents\\GitHub\\CollectionsDB\\public\\csv\\'
@@ -28,7 +27,6 @@ const validate = (validations) => {
                 return res.status(400).json({ errors: result.array() })
             }
         }
-
         next()
     }
 }
@@ -112,13 +110,13 @@ export const addConsole = (database) => async (req, res) => {
             has_cables: 'hasCables' in bodyVal,
             has_console: 'hasConsole' in bodyVal,
             monetary_value:
-                bodyVal.monetaryValue !== ''
+                bodyVal.monetaryValue != null && bodyVal.monetaryValue !== ''
                     ? Number(bodyVal.monetaryValue)
                     : null,
             notes: 'notes' in bodyVal ? bodyVal.notes : null,
         }
 
-        const addResponse = await database.addConsole(entry)
+        await database.addConsole(entry)
 
         return res.render('status.ejs', {
             action: 'create',
@@ -174,7 +172,7 @@ export const editConsole = (database) => async (req, res) => {
             has_cables: bodyVal.hasCables,
             has_console: bodyVal.hasConsole,
             monetary_value:
-                bodyVal.monetaryValue !== ''
+                bodyVal.monetaryValue != null && bodyVal.monetaryValue !== ''
                     ? Number(bodyVal.monetaryValue)
                     : null,
             notes: 'notes' in bodyVal ? bodyVal.notes : null,
@@ -294,13 +292,13 @@ export const addGame = (database) => async (req, res) => {
             is_duplicate: bodyVal.isDuplicate,
             product_condition: bodyVal.productCondition,
             monetary_value:
-                bodyVal.monetaryValue !== ''
+                bodyVal.monetaryValue != null && bodyVal.monetaryValue !== ''
                     ? Number(bodyVal.monetaryValue)
                     : null,
             notes: 'notes' in bodyVal ? bodyVal.notes : null,
         }
 
-        const addResponse = await database.addGame(entry)
+        await database.addGame(entry)
 
         return res.render('status.ejs', {
             action: 'create',
@@ -380,7 +378,7 @@ export const editGame = (database) => async (req, res) => {
             is_duplicate: bodyVal.isDuplicate,
             product_condition: bodyVal.productCondition,
             monetary_value:
-                bodyVal.monetaryValue !== ''
+                bodyVal.monetaryValue != null && bodyVal.monetaryValue !== ''
                     ? Number(bodyVal.monetaryValue)
                     : null,
             notes: bodyVal.notes !== '' ? bodyVal.notes : null,
@@ -461,13 +459,13 @@ export const addAccessory = (database) => async (req, res) => {
             product_condition: bodyVal.productCondition,
             has_packaging: 'hasPackaging' in bodyVal,
             monetary_value:
-                bodyVal.monetaryValue !== ''
+                bodyVal.monetaryValue != null && bodyVal.monetaryValue !== ''
                     ? Number(bodyVal.monetaryValue)
                     : null,
             notes: 'notes' in bodyVal ? bodyVal.notes : null,
         }
 
-        const addResponse = await database.addAccessory(entry)
+        await database.addAccessory(entry)
 
         return res.render('status.ejs', {
             action: 'create',
@@ -544,7 +542,7 @@ export const editAccessory = (database) => async (req, res) => {
             product_condition: bodyVal.productCondition,
             has_packaging: bodyVal.hasPackaging,
             monetary_value:
-                bodyVal.monetaryValue !== ''
+                bodyVal.monetaryValue != null && bodyVal.monetaryValue !== ''
                     ? Number(bodyVal.monetaryValue)
                     : null,
             notes: bodyVal.notes !== '' ? bodyVal.notes : null,
