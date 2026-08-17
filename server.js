@@ -1,11 +1,11 @@
 import { Database } from './database.js'
 import makeApp from './app.js'
 import { DB_PASSWORD } from './secrets.js'
-import mysql from 'mysql2'
+import mysql from 'mysql2/promise'
 
 const port = process.env.PORT || 3000
 
-const connection = mysql.createConnection({
+const connection = await mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: DB_PASSWORD,

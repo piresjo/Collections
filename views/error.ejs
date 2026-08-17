@@ -16,10 +16,12 @@
             <h3>Unexpected error in backend. Please try again</h3>
         <% } %>
     </div>
+    <% if (status !== 404) { %>
     <div class="error-container">
         <p>
             <%= error %>
         </p>
     </div>
+    <% } %>
 </body>
 <%- include('footer.ejs') -%>

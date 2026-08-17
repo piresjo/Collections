@@ -12,7 +12,11 @@ import {
     FULL_GAME_ENTRY,
     FULL_ACCESSORY_ENTRY,
     DELETE_RESPONSE,
+    UPDATE_RESPONSE,
 } from './database.test.data'
+
+const DB_ERROR_CONNECTION_LOST = 'Connection Lost'
+const DB_ERROR = new Error(DB_ERROR_CONNECTION_LOST)
 
 let database
 
@@ -22,258 +26,463 @@ beforeAll(async () => {
 
 describe('Get Console DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, callback) => {
-            callback(null, CONSOLE_INFO_RESPONSE)
+        database.connection.query.mockImplementation(() => {
+            return [CONSOLE_INFO_RESPONSE]
         })
 
         const result = await database.getConsoleInformation(1)
         expect(database.connection.query).toHaveBeenCalledWith(
-            'SELECT * FROM Console WHERE id=1',
-            expect.any(Function)
+            'SELECT * FROM Console WHERE id=?',
+            [1]
         )
 
         expect(result).toEqual(CONSOLE_INFO_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.getConsoleInformation(1)).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
     })
 })
 
 describe('Get Game DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, callback) => {
-            callback(null, GAME_INFO_RESPONSE)
+        database.connection.query.mockImplementation(() => {
+            return [GAME_INFO_RESPONSE]
         })
 
         const result = await database.getGameInformation(1)
         expect(database.connection.query).toHaveBeenCalledWith(
-            'SELECT * FROM Game WHERE id=1',
-            expect.any(Function)
+            'SELECT * FROM Game WHERE id=?',
+            [1]
         )
 
         expect(result).toEqual(GAME_INFO_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.getGameInformation(1)).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
     })
 })
 
 describe('Get Accessory DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, callback) => {
-            callback(null, ACCESSORY_INFO_RESPONSE)
+        database.connection.query.mockImplementation(() => {
+            return [ACCESSORY_INFO_RESPONSE]
         })
 
         const result = await database.getAccessoryInformation(1)
         expect(database.connection.query).toHaveBeenCalledWith(
-            'SELECT * FROM Accessory WHERE id=1',
-            expect.any(Function)
+            'SELECT * FROM Accessory WHERE id=?',
+            [1]
         )
 
         expect(result).toEqual(ACCESSORY_INFO_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.getAccessoryInformation(1)).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
     })
 })
 
 describe('Get All Consoles DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, callback) => {
-            callback(null, ALL_CONSOLES_RESPONSE)
+        database.connection.query.mockImplementation((sql) => {
+            return [ALL_CONSOLES_RESPONSE]
         })
 
         const result = await database.getConsoles()
         expect(database.connection.query).toHaveBeenCalledWith(
-            'SELECT * FROM Console',
-            expect.any(Function)
+            'SELECT * FROM Console'
         )
 
         expect(result).toEqual(ALL_CONSOLES_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.getConsoles()).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
     })
 })
 
 describe('Get All Games DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, callback) => {
-            callback(null, ALL_GAMES_RESPONSE)
+        database.connection.query.mockImplementation((sql) => {
+            return [ALL_GAMES_RESPONSE]
         })
 
         const result = await database.getGames()
         expect(database.connection.query).toHaveBeenCalledWith(
-            'SELECT * FROM Game',
-            expect.any(Function)
+            'SELECT * FROM Game'
         )
 
         expect(result).toEqual(ALL_GAMES_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.getGames()).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
     })
 })
 
 describe('Get All Accessories DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, callback) => {
-            callback(null, ALL_ACCESSORIES_RESPONSE)
+        database.connection.query.mockImplementation((sql) => {
+            return [ALL_ACCESSORIES_RESPONSE]
         })
 
         const result = await database.getAccessories()
         expect(database.connection.query).toHaveBeenCalledWith(
-            'SELECT * FROM Accessory',
-            expect.any(Function)
+            'SELECT * FROM Accessory'
         )
 
         expect(result).toEqual(ALL_ACCESSORIES_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.getAccessories()).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
     })
 })
 
 describe('Add Console DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation(
-            (sql, bodyVal, callback) => {
-                callback(null, CREATE_RESPONSE)
-            }
-        )
+        database.connection.query.mockImplementation(() => {
+            return [CREATE_RESPONSE]
+        })
 
         const result = await database.addConsole(FULL_CONSOLE_ENTRY)
         expect(database.connection.query).toHaveBeenCalledWith(
             'INSERT INTO Console SET ?',
-            FULL_CONSOLE_ENTRY,
-            expect.any(Function)
+            [FULL_CONSOLE_ENTRY]
         )
 
         expect(result).toEqual(CREATE_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.addConsole(FULL_CONSOLE_ENTRY)).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
     })
 })
 
 describe('Add Game DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation(
-            (sql, bodyVal, callback) => {
-                callback(null, CREATE_RESPONSE)
-            }
-        )
+        database.connection.query.mockImplementation(() => {
+            return [CREATE_RESPONSE]
+        })
 
         const result = await database.addGame(FULL_GAME_ENTRY)
         expect(database.connection.query).toHaveBeenCalledWith(
             'INSERT INTO Game SET ?',
-            FULL_GAME_ENTRY,
-            expect.any(Function)
+            [FULL_GAME_ENTRY]
         )
 
         expect(result).toEqual(CREATE_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.addGame(FULL_GAME_ENTRY)).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
     })
 })
 
 describe('Add Accessory DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation(
-            (sql, bodyVal, callback) => {
-                callback(null, CREATE_RESPONSE)
-            }
-        )
+        database.connection.query.mockImplementation(() => {
+            return [CREATE_RESPONSE]
+        })
 
         const result = await database.addAccessory(FULL_ACCESSORY_ENTRY)
         expect(database.connection.query).toHaveBeenCalledWith(
             'INSERT INTO Accessory SET ?',
-            FULL_ACCESSORY_ENTRY,
-            expect.any(Function)
+            [FULL_ACCESSORY_ENTRY]
         )
 
         expect(result).toEqual(CREATE_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(
+            database.addAccessory(FULL_ACCESSORY_ENTRY)
+        ).rejects.toThrow(DB_ERROR_CONNECTION_LOST)
     })
 })
 
 describe('Update Console DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation(
-            (sql, bodyVal, callback) => {
-                callback(null, CREATE_RESPONSE)
-            }
-        )
+        database.connection.query.mockImplementation(() => {
+            return [UPDATE_RESPONSE]
+        })
 
         const result = await database.updateConsole(1, FULL_CONSOLE_ENTRY)
         expect(database.connection.query).toHaveBeenCalledWith(
-            'UPDATE Console SET ? WHERE id=1',
-            FULL_CONSOLE_ENTRY,
-            expect.any(Function)
+            'UPDATE Console SET ? WHERE id=?',
+            [FULL_CONSOLE_ENTRY, 1]
         )
 
-        expect(result).toEqual(CREATE_RESPONSE)
+        expect(result).toEqual(UPDATE_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(
+            database.updateConsole(1, FULL_CONSOLE_ENTRY)
+        ).rejects.toThrow(DB_ERROR_CONNECTION_LOST)
+    })
+
+    test('Console Does Not Exist', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [{ affectedRows: 0 }]
+        })
+
+        const result = await database.updateConsole(1, FULL_CONSOLE_ENTRY)
+        expect(database.connection.query).toHaveBeenCalledWith(
+            'UPDATE Console SET ? WHERE id=?',
+            [FULL_CONSOLE_ENTRY, 1]
+        )
+
+        expect(result).toEqual(null)
     })
 })
 
 describe('Update Game DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation(
-            (sql, bodyVal, callback) => {
-                callback(null, CREATE_RESPONSE)
-            }
+        database.connection.query.mockImplementation(() => {
+            return [UPDATE_RESPONSE]
+        })
+
+        const result = await database.updateGame(1, FULL_CONSOLE_ENTRY)
+        expect(database.connection.query).toHaveBeenCalledWith(
+            'UPDATE Game SET ? WHERE id=?',
+            [FULL_CONSOLE_ENTRY, 1]
         )
+
+        expect(result).toEqual(UPDATE_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.updateGame(1, FULL_GAME_ENTRY)).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
+    })
+
+    test('Game Does Not Exist', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [{ affectedRows: 0 }]
+        })
 
         const result = await database.updateGame(1, FULL_GAME_ENTRY)
         expect(database.connection.query).toHaveBeenCalledWith(
-            'UPDATE Game SET ? WHERE id=1',
-            FULL_GAME_ENTRY,
-            expect.any(Function)
+            'UPDATE Game SET ? WHERE id=?',
+            [FULL_GAME_ENTRY, 1]
         )
 
-        expect(result).toEqual(CREATE_RESPONSE)
+        expect(result).toEqual(null)
     })
 })
 
 describe('Update Accessory DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation(
-            (sql, bodyVal, callback) => {
-                callback(null, CREATE_RESPONSE)
-            }
-        )
+        database.connection.query.mockImplementation(() => {
+            return [UPDATE_RESPONSE]
+        })
 
         const result = await database.updateAccessory(1, FULL_ACCESSORY_ENTRY)
         expect(database.connection.query).toHaveBeenCalledWith(
-            'UPDATE Accessory SET ? WHERE id=1',
-            FULL_ACCESSORY_ENTRY,
-            expect.any(Function)
+            'UPDATE Accessory SET ? WHERE id=?',
+            [FULL_ACCESSORY_ENTRY, 1]
         )
 
-        expect(result).toEqual(CREATE_RESPONSE)
+        expect(result).toEqual(UPDATE_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(
+            database.updateAccessory(1, FULL_ACCESSORY_ENTRY)
+        ).rejects.toThrow(DB_ERROR_CONNECTION_LOST)
+    })
+
+    test('Accessory Does Not Exist', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [{ affectedRows: 0 }]
+        })
+
+        const result = await database.updateAccessory(1, FULL_ACCESSORY_ENTRY)
+        expect(database.connection.query).toHaveBeenCalledWith(
+            'UPDATE Accessory SET ? WHERE id=?',
+            [FULL_ACCESSORY_ENTRY, 1]
+        )
+
+        expect(result).toEqual(null)
     })
 })
 
 describe('Delete Console DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, callback) => {
-            callback(null, DELETE_RESPONSE)
+        database.connection.query.mockImplementation(() => {
+            return [DELETE_RESPONSE]
         })
 
         const result = await database.deleteConsole(1)
         expect(database.connection.query).toHaveBeenCalledWith(
-            'DELETE FROM Console WHERE id=1',
-            expect.any(Function)
+            'DELETE FROM Console WHERE id=?',
+            [1]
         )
 
         expect(result).toEqual(DELETE_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.deleteConsole(1)).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
+    })
+
+    test('Console Does Not Exist', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [{ affectedRows: 0 }]
+        })
+
+        const result = await database.deleteConsole(1)
+        expect(database.connection.query).toHaveBeenCalledWith(
+            'DELETE FROM Console WHERE id=?',
+            [1]
+        )
+
+        expect(result).toEqual(null)
     })
 })
 
 describe('Delete Game DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, callback) => {
-            callback(null, DELETE_RESPONSE)
+        database.connection.query.mockImplementation(() => {
+            return [DELETE_RESPONSE]
         })
 
         const result = await database.deleteGame(1)
         expect(database.connection.query).toHaveBeenCalledWith(
-            'DELETE FROM Game WHERE id=1',
-            expect.any(Function)
+            'DELETE FROM Game WHERE id=?',
+            [1]
         )
 
         expect(result).toEqual(DELETE_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.deleteGame(1)).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
+    })
+
+    test('Game Does Not Exist', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [{ affectedRows: 0 }]
+        })
+
+        const result = await database.deleteGame(1)
+        expect(database.connection.query).toHaveBeenCalledWith(
+            'DELETE FROM Game WHERE id=?',
+            [1]
+        )
+
+        expect(result).toEqual(null)
     })
 })
 
 describe('Delete Accessory DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, callback) => {
-            callback(null, DELETE_RESPONSE)
+        database.connection.query.mockImplementation(() => {
+            return [DELETE_RESPONSE]
         })
 
         const result = await database.deleteAccessory(1)
         expect(database.connection.query).toHaveBeenCalledWith(
-            'DELETE FROM Accessory WHERE id=1',
-            expect.any(Function)
+            'DELETE FROM Accessory WHERE id=?',
+            [1]
         )
 
         expect(result).toEqual(DELETE_RESPONSE)
+    })
+
+    test('Encountered DB Failure', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+
+        await expect(database.deleteAccessory(1)).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
+    })
+
+    test('Accessory Does Not Exist', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [{ affectedRows: 0 }]
+        })
+
+        const result = await database.deleteAccessory(1)
+        expect(database.connection.query).toHaveBeenCalledWith(
+            'DELETE FROM Accessory WHERE id=?',
+            [1]
+        )
+
+        expect(result).toEqual(null)
+    })
+})
+
+describe('Console Exists DB Call', () => {
+    test('Console Exists', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [CONSOLE_INFO_RESPONSE]
+        })
+
+        const result = await database.consoleExists(1)
+
+        expect(result).toBe(true)
+    })
+
+    test('Console Does Not Exist', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [{ affectedRows: 0 }]
+        })
+
+        const result = await database.consoleExists(1)
+
+        expect(result).toBe(false)
     })
 })

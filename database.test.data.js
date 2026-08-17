@@ -15,6 +15,22 @@ export const FULL_CONSOLE_ENTRY = {
     notes: 'TEST',
 }
 
+export const INVALID_CONSOLE_ENTRY = {
+    console_type: 1,
+    model: 'TEST',
+    region: 1,
+    release_date: '1990-01-01',
+    bought_date: '1990-01-01',
+    company: 'TEST',
+    product_condition: 1,
+    has_packaging: false,
+    is_duplicate: false,
+    has_cables: false,
+    has_console: true,
+    monetary_value: 10.35,
+    notes: 'INVALID',
+}
+
 export const FULL_GAME_ENTRY = {
     console_id: 10,
     name: 'TEST',
@@ -34,6 +50,24 @@ export const FULL_GAME_ENTRY = {
     notes: 'FULL HAPPY PATH',
 }
 
+export const INVALID_GAME_ENTRY = {
+    name: 'TEST',
+    edition: 'Original',
+    release_date: '1990-01-01',
+    bought_date: '1990-01-01',
+    region: 1,
+    developer: 'DEVELOPER',
+    publisher: 'PUBLISHER',
+    digital: false,
+    has_game: true,
+    has_manual: true,
+    has_box: true,
+    is_duplicate: false,
+    product_condition: 1,
+    monetary_value: 12.34,
+    notes: 'INVALID',
+}
+
 export const FULL_ACCESSORY_ENTRY = {
     console_id: 10,
     name: 'TEST',
@@ -46,6 +80,19 @@ export const FULL_ACCESSORY_ENTRY = {
     product_condition: 1,
     monetary_value: 12.34,
     notes: 'FULL HAPPY PATH',
+}
+
+export const INVALID_ACCESSORY_ENTRY = {
+    name: 'TEST',
+    model: 'Original',
+    accessory_type: 1,
+    release_date: '1990-01-01',
+    bought_date: '1990-01-01',
+    company: 'COMPANY',
+    has_packaging: true,
+    product_condition: 1,
+    monetary_value: 12.34,
+    notes: 'INVALID',
 }
 
 export const ALL_CONSOLES_RESPONSE = [

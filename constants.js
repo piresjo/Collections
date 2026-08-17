@@ -77,6 +77,11 @@ export const MISSING_ACCESSORY_TYPE = {
     message: 'accessory_type Must Be Defined',
 }
 
+export const CONSOLE_DOES_NOT_EXIST = {
+    success: false,
+    message: 'Console Does Not Exist',
+}
+
 export const GENERATE_500_ERROR_JSON = function (errorJSON) {
     return {
         success: false,
@@ -206,7 +211,7 @@ export const DERIVE_REGION_STRING = function (regionId) {
         case 4:
             return 'US'
         case 5:
-            return 'NTSC_J'
+            return 'NTSC-J'
         default:
             return null
     }
@@ -399,7 +404,7 @@ export const AccessoryType = Object.freeze({
 export const DERIVE_ACCESSORY_TYPE = function (accessoryTypeString) {
     switch (accessoryTypeString) {
         case 'controller':
-            return ProductCondition.NEW
+            return AccessoryType.CONTROLLER
         default:
             return null
     }

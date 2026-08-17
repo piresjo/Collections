@@ -6,8 +6,6 @@ import cookieParser from 'cookie-parser'
 import logger from 'morgan'
 import fileUpload from 'express-fileupload'
 
-import usersRouter from './routes/users.js'
-
 import { fileURLToPath } from 'url'
 import makeApiRouter from './routes/api.js'
 import makeSiteRouter from './routes/index.js'
@@ -20,7 +18,6 @@ export default function makeApp(database) {
 
     // view engine setup
     app.set('views', path.join(__dirname, 'views'))
-    app.set('view engine', 'jade')
 
     app.use(logger('dev'))
     app.use(express.json())
@@ -30,7 +27,6 @@ export default function makeApp(database) {
     app.use(fileUpload())
 
     app.use('/', makeSiteRouter(database))
-    app.use('/users', usersRouter)
     app.use('/api', makeApiRouter(database))
 
     // catch 404 and forward to error handler
@@ -47,14 +43,6 @@ export default function makeApp(database) {
         // render the error page
         res.status(err.status || 500)
         res.render('error.ejs', { status: 500, error: err })
-    })
-
-    database.connection.connect((err) => {
-        if (err) {
-            console.error('Error connecting to MySQL: ' + err.stack)
-            return
-        }
-        console.log('Connected to MySQL as ID ' + database.connection.threadId)
     })
 
     return app
