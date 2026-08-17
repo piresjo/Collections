@@ -26,7 +26,7 @@ beforeAll(async () => {
 
 describe('Get Console DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [CONSOLE_INFO_RESPONSE]
         })
 
@@ -50,7 +50,7 @@ describe('Get Console DB Call', () => {
 
 describe('Get Game DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [GAME_INFO_RESPONSE]
         })
 
@@ -74,7 +74,7 @@ describe('Get Game DB Call', () => {
 
 describe('Get Accessory DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [ACCESSORY_INFO_RESPONSE]
         })
 
@@ -167,7 +167,7 @@ describe('Get All Accessories DB Call', () => {
 
 describe('Add Console DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [CREATE_RESPONSE]
         })
 
@@ -191,7 +191,7 @@ describe('Add Console DB Call', () => {
 
 describe('Add Game DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [CREATE_RESPONSE]
         })
 
@@ -215,7 +215,7 @@ describe('Add Game DB Call', () => {
 
 describe('Add Accessory DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [CREATE_RESPONSE]
         })
 
@@ -239,7 +239,7 @@ describe('Add Accessory DB Call', () => {
 
 describe('Update Console DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [UPDATE_RESPONSE]
         })
 
@@ -261,7 +261,7 @@ describe('Update Console DB Call', () => {
     })
 
     test('Console Does Not Exist', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [{ affectedRows: 0 }]
         })
 
@@ -277,7 +277,7 @@ describe('Update Console DB Call', () => {
 
 describe('Update Game DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [UPDATE_RESPONSE]
         })
 
@@ -299,7 +299,7 @@ describe('Update Game DB Call', () => {
     })
 
     test('Game Does Not Exist', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [{ affectedRows: 0 }]
         })
 
@@ -315,7 +315,7 @@ describe('Update Game DB Call', () => {
 
 describe('Update Accessory DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [UPDATE_RESPONSE]
         })
 
@@ -337,7 +337,7 @@ describe('Update Accessory DB Call', () => {
     })
 
     test('Accessory Does Not Exist', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [{ affectedRows: 0 }]
         })
 
@@ -353,7 +353,7 @@ describe('Update Accessory DB Call', () => {
 
 describe('Delete Console DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [DELETE_RESPONSE]
         })
 
@@ -375,7 +375,7 @@ describe('Delete Console DB Call', () => {
     })
 
     test('Console Does Not Exist', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [{ affectedRows: 0 }]
         })
 
@@ -391,7 +391,7 @@ describe('Delete Console DB Call', () => {
 
 describe('Delete Game DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [DELETE_RESPONSE]
         })
 
@@ -413,7 +413,7 @@ describe('Delete Game DB Call', () => {
     })
 
     test('Game Does Not Exist', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [{ affectedRows: 0 }]
         })
 
@@ -429,7 +429,7 @@ describe('Delete Game DB Call', () => {
 
 describe('Delete Accessory DB Call', () => {
     test('happy path', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [DELETE_RESPONSE]
         })
 
@@ -451,7 +451,7 @@ describe('Delete Accessory DB Call', () => {
     })
 
     test('Accessory Does Not Exist', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [{ affectedRows: 0 }]
         })
 
@@ -467,7 +467,7 @@ describe('Delete Accessory DB Call', () => {
 
 describe('Console Exists DB Call', () => {
     test('Console Exists', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [CONSOLE_INFO_RESPONSE]
         })
 
@@ -477,7 +477,7 @@ describe('Console Exists DB Call', () => {
     })
 
     test('Console Does Not Exist', async () => {
-        database.connection.query.mockImplementation((sql, values) => {
+        database.connection.query.mockImplementation(() => {
             return [{ affectedRows: 0 }]
         })
 

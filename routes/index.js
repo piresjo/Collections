@@ -13,6 +13,7 @@ import {
     DERIVE_CONSOLE_TYPE_STRING,
     DERIVE_REGION_STRING,
     DERIVE_CONDITION_STRING,
+    CONSOLE_DOES_NOT_EXIST,
 } from '../constants.js'
 import { body } from 'express-validator'
 
@@ -31,11 +32,11 @@ const validate = (validations) => {
     }
 }
 
-export const getHomePage = function (req, res, next) {
+export const getHomePage = function (req, res) {
     res.render('index.ejs')
 }
 
-export const getAllConsoles = (database) => async (req, res) => {
+export const getAllConsolesSite = (database) => async (req, res) => {
     try {
         const consoles = await database.getConsoles()
 
@@ -55,7 +56,7 @@ export const getAllConsoles = (database) => async (req, res) => {
     }
 }
 
-export const getConsoleInformation = (database) => async (req, res) => {
+export const getConsoleInformationSite = (database) => async (req, res) => {
     const id = parseInt(req.params.id)
 
     try {
@@ -91,7 +92,7 @@ export const getAddConsolePage = async (req, res) => {
     return res.render('addEditConsole.ejs', { action: 'add' })
 }
 
-export const addConsole = (database) => async (req, res) => {
+export const addConsoleSite = (database) => async (req, res) => {
     const bodyVal = req.body
 
     try {
@@ -152,7 +153,7 @@ export const getEditConsolePage = (database) => async (req, res) => {
     }
 }
 
-export const editConsole = (database) => async (req, res) => {
+export const editConsoleSite = (database) => async (req, res) => {
     const bodyVal = req.body
     const id = parseInt(req.params.id)
 
@@ -199,7 +200,7 @@ export const editConsole = (database) => async (req, res) => {
     }
 }
 
-export const deleteConsole = (database) => async (req, res) => {
+export const deleteConsoleSite = (database) => async (req, res) => {
     const id = parseInt(req.body.id)
 
     try {
@@ -223,7 +224,7 @@ export const deleteConsole = (database) => async (req, res) => {
     }
 }
 
-export const getAllGames = (database) => async (req, res) => {
+export const getAllGamesSite = (database) => async (req, res) => {
     try {
         const games = await database.getGames()
 
@@ -240,7 +241,7 @@ export const getAllGames = (database) => async (req, res) => {
     }
 }
 
-export const getGameInformation = (database) => async (req, res) => {
+export const getGameInformationSite = (database) => async (req, res) => {
     const id = parseInt(req.params.id)
     try {
         const game = await database.getGameInformation(id)
@@ -271,10 +272,16 @@ export const getAddGamePage = async (req, res) => {
     return res.render('addEditGame.ejs', { action: 'add' })
 }
 
-export const addGame = (database) => async (req, res) => {
+export const addGameSite = (database) => async (req, res) => {
     const bodyVal = req.body
 
     try {
+        if (!(await database.consoleExists(bodyVal.consoleId))) {
+            return res.status(400).render('error.ejs', {
+                status: 400,
+                error: CONSOLE_DOES_NOT_EXIST.message,
+            })
+        }
         const entry = {
             console_id: bodyVal.consoleId,
             name: bodyVal.gameName,
@@ -310,7 +317,7 @@ export const addGame = (database) => async (req, res) => {
     }
 }
 
-export const deleteGame = (database) => async (req, res) => {
+export const deleteGameSite = (database) => async (req, res) => {
     const id = parseInt(req.body.id)
     try {
         const deleteResponse = await database.deleteGame(id)
@@ -356,11 +363,17 @@ export const getEditGamePage = (database) => async (req, res) => {
     }
 }
 
-export const editGame = (database) => async (req, res) => {
+export const editGameSite = (database) => async (req, res) => {
     const bodyVal = req.body
     const id = parseInt(req.params.id)
 
     try {
+        if (!(await database.consoleExists(bodyVal.consoleId))) {
+            return res.status(400).render('error.ejs', {
+                status: 400,
+                error: CONSOLE_DOES_NOT_EXIST.message,
+            })
+        }
         const entry = {
             console_id: bodyVal.consoleId,
             name: bodyVal.gameName,
@@ -405,7 +418,7 @@ export const editGame = (database) => async (req, res) => {
     }
 }
 
-export const getAllAccessories = (database) => async (req, res) => {
+export const getAllAccessoriesSite = (database) => async (req, res) => {
     try {
         const accessories = await database.getAccessories()
 
@@ -416,7 +429,7 @@ export const getAllAccessories = (database) => async (req, res) => {
     }
 }
 
-export const getAccessoryInformation = (database) => async (req, res) => {
+export const getAccessoryInformationSite = (database) => async (req, res) => {
     const id = parseInt(req.params.id)
 
     try {
@@ -443,10 +456,16 @@ export const getAddAccessoryPage = async (req, res) => {
     return res.render('addEditAccessory.ejs', { action: 'add' })
 }
 
-export const addAccessory = (database) => async (req, res) => {
+export const addAccessorySite = (database) => async (req, res) => {
     const bodyVal = req.body
 
     try {
+        if (!(await database.consoleExists(bodyVal.consoleId))) {
+            return res.status(400).render('error.ejs', {
+                status: 400,
+                error: CONSOLE_DOES_NOT_EXIST.message,
+            })
+        }
         const entry = {
             console_id: bodyVal.consoleId,
             name: bodyVal.accessoryName,
@@ -477,7 +496,7 @@ export const addAccessory = (database) => async (req, res) => {
     }
 }
 
-export const deleteAccessory = (database) => async (req, res) => {
+export const deleteAccessorySite = (database) => async (req, res) => {
     const id = parseInt(req.body.id)
     try {
         const deleteResponse = await database.deleteAccessory(id)
@@ -524,11 +543,17 @@ export const getEditAccessoryPage = (database) => async (req, res) => {
     }
 }
 
-export const editAccessory = (database) => async (req, res) => {
+export const editAccessorySite = (database) => async (req, res) => {
     const bodyVal = req.body
     const id = parseInt(req.params.id)
 
     try {
+        if (!(await database.consoleExists(bodyVal.consoleId))) {
+            return res.status(400).render('error.ejs', {
+                status: 400,
+                error: CONSOLE_DOES_NOT_EXIST.message,
+            })
+        }
         const entry = {
             console_id: bodyVal.consoleId,
             name: bodyVal.accessoryName,
@@ -573,8 +598,8 @@ export default function makeSiteRouter(database) {
     const router = express.Router()
 
     router.get('/', getHomePage)
-    router.get('/consoles', getAllConsoles(database))
-    router.get('/consoles/:id', getConsoleInformation(database))
+    router.get('/consoles', getAllConsolesSite(database))
+    router.get('/consoles/:id', getConsoleInformationSite(database))
     router.get('/addConsole', getAddConsolePage)
     router.post(
         '/consoles',
@@ -614,9 +639,9 @@ export default function makeSiteRouter(database) {
                 .isDecimal()
                 .toFloat(),
         ]),
-        addConsole(database)
+        addConsoleSite(database)
     )
-    router.post('/deleteConsole', deleteConsole(database))
+    router.post('/deleteConsole', deleteConsoleSite(database))
     router.get('/editConsole/:id', getEditConsolePage(database))
     router.post(
         '/editConsole/:id',
@@ -652,10 +677,10 @@ export default function makeSiteRouter(database) {
             body('hasCables').toBoolean(),
             body('hasConsole').toBoolean(),
         ]),
-        editConsole(database)
+        editConsoleSite(database)
     )
-    router.get('/games', getAllGames(database))
-    router.get('/games/:id', getGameInformation(database))
+    router.get('/games', getAllGamesSite(database))
+    router.get('/games/:id', getGameInformationSite(database))
     router.get('/addGame', getAddGamePage)
     router.post(
         '/games',
@@ -701,9 +726,9 @@ export default function makeSiteRouter(database) {
                 .isDecimal()
                 .toFloat(),
         ]),
-        addGame(database)
+        addGameSite(database)
     )
-    router.post('/deleteGame', deleteGame(database))
+    router.post('/deleteGame', deleteGameSite(database))
     router.get('/editGame/:id', getEditGamePage(database))
     router.post(
         '/editGame/:id',
@@ -745,10 +770,10 @@ export default function makeSiteRouter(database) {
             body('hasManual').toBoolean(),
             body('hasGame').toBoolean(),
         ]),
-        editGame(database)
+        editGameSite(database)
     )
-    router.get('/accessories', getAllAccessories(database))
-    router.get('/accessories/:id', getAccessoryInformation(database))
+    router.get('/accessories', getAllAccessoriesSite(database))
+    router.get('/accessories/:id', getAccessoryInformationSite(database))
     router.get('/addAccessory', getAddAccessoryPage)
     router.post(
         '/accessories',
@@ -785,9 +810,9 @@ export default function makeSiteRouter(database) {
                 .isDecimal()
                 .toFloat(),
         ]),
-        addAccessory(database)
+        addAccessorySite(database)
     )
-    router.post('/deleteAccessory', deleteAccessory(database))
+    router.post('/deleteAccessory', deleteAccessorySite(database))
     router.get('/editAccessory/:id', getEditAccessoryPage(database))
     router.post(
         '/editAccessory/:id',
@@ -824,7 +849,7 @@ export default function makeSiteRouter(database) {
                 .isDecimal()
                 .toFloat(),
         ]),
-        editAccessory(database)
+        editAccessorySite(database)
     )
 
     // ToDo - In another branch, fix the below code and add tests

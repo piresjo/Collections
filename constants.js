@@ -77,6 +77,11 @@ export const MISSING_ACCESSORY_TYPE = {
     message: 'accessory_type Must Be Defined',
 }
 
+export const CONSOLE_DOES_NOT_EXIST = {
+    success: false,
+    message: 'Console Does Not Exist',
+}
+
 export const GENERATE_500_ERROR_JSON = function (errorJSON) {
     return {
         success: false,

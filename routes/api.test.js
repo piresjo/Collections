@@ -1,6 +1,6 @@
-import { beforeAll, describe, expect, test, vi } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 import { getMockReq, getMockRes } from 'vitest-mock-express'
-import makeApiRouter, {
+import {
     addAccessory,
     addConsole,
     addGame,
@@ -43,6 +43,7 @@ import {
     GENERATE_GET_NOT_FOUND_JSON,
     GENERATE_UPDATE_JSON,
     GENERATE_UPDATE_DELETE_NOT_FOUND_JSON,
+    CONSOLE_DOES_NOT_EXIST,
 } from '../constants.js'
 
 const DB_ERROR_CONNECTION_LOST = 'Connection Lost'
@@ -518,8 +519,10 @@ describe('Add Game API Call', () => {
     test('happy path', async () => {
         const database = {
             addGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.addGame.mockResolvedValue(CREATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = addGame(database)
         const req = getMockReq({
@@ -540,8 +543,10 @@ describe('Add Game API Call', () => {
     test('5XX Error', async () => {
         const database = {
             addGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.addGame.mockRejectedValueOnce(DB_ERROR)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = addGame(database)
         const req = getMockReq({
@@ -558,8 +563,10 @@ describe('Add Game API Call', () => {
     test('Invalid Input', async () => {
         const database = {
             addGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.addGame.mockResolvedValue(CREATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = addGame(database)
         const req = getMockReq({
@@ -572,14 +579,38 @@ describe('Add Game API Call', () => {
         expect(res.status).toHaveBeenCalledWith(400)
         expect(res.json).toHaveBeenCalledWith(MISSING_CONSOLE_ID_ERROR)
     })
+
+    test('Console Does Not Exist', async () => {
+        const database = {
+            addGame: vi.fn(),
+            consoleExists: vi.fn(),
+        }
+        database.addGame.mockResolvedValue(CREATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(false)
+
+        const handler = addGame(database)
+        const req = getMockReq({
+            body: FULL_GAME_ENTRY,
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.addGame).toHaveBeenCalledTimes(0)
+
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith(CONSOLE_DOES_NOT_EXIST)
+    })
 })
 
 describe('Update Game API Call', () => {
     test('happy path', async () => {
         const database = {
             updateGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateGame.mockResolvedValue(UPDATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = updateGame(database)
         const req = getMockReq({
@@ -603,8 +634,10 @@ describe('Update Game API Call', () => {
     test('5XX Error', async () => {
         const database = {
             updateGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateGame.mockRejectedValueOnce(DB_ERROR)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = updateGame(database)
         const req = getMockReq({
@@ -624,8 +657,10 @@ describe('Update Game API Call', () => {
     test('Invalid Input', async () => {
         const database = {
             updateGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateGame.mockResolvedValue(UPDATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = updateGame(database)
         const req = getMockReq({
@@ -645,8 +680,10 @@ describe('Update Game API Call', () => {
     test('Game Not Found', async () => {
         const database = {
             updateGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateGame.mockResolvedValue(null)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = updateGame(database)
         const req = getMockReq({
@@ -665,6 +702,31 @@ describe('Update Game API Call', () => {
         expect(res.json).toHaveBeenCalledWith(
             GENERATE_UPDATE_DELETE_NOT_FOUND_JSON('Game', 1, true)
         )
+    })
+
+    test('Console Does Not Exist', async () => {
+        const database = {
+            updateGame: vi.fn(),
+            consoleExists: vi.fn(),
+        }
+        database.updateGame.mockResolvedValue(UPDATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(false)
+
+        const handler = updateGame(database)
+        const req = getMockReq({
+            params: {
+                id: '1',
+            },
+            body: FULL_GAME_ENTRY,
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.updateGame).toHaveBeenCalledTimes(0)
+
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith(CONSOLE_DOES_NOT_EXIST)
     })
 })
 
@@ -852,8 +914,10 @@ describe('Add Accessory API Call', () => {
     test('happy path', async () => {
         const database = {
             addAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.addAccessory.mockResolvedValue(CREATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = addAccessory(database)
         const req = getMockReq({
@@ -874,8 +938,10 @@ describe('Add Accessory API Call', () => {
     test('5XX Error', async () => {
         const database = {
             addAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.addAccessory.mockRejectedValueOnce(DB_ERROR)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = addAccessory(database)
         const req = getMockReq({
@@ -892,8 +958,10 @@ describe('Add Accessory API Call', () => {
     test('Invalid Input', async () => {
         const database = {
             addAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.addAccessory.mockResolvedValue(CREATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = addAccessory(database)
         const req = getMockReq({
@@ -906,14 +974,38 @@ describe('Add Accessory API Call', () => {
         expect(res.status).toHaveBeenCalledWith(400)
         expect(res.json).toHaveBeenCalledWith(MISSING_CONSOLE_ID_ERROR)
     })
+
+    test('Console Does Not Exist', async () => {
+        const database = {
+            addAccessory: vi.fn(),
+            consoleExists: vi.fn(),
+        }
+        database.addAccessory.mockResolvedValue(CREATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(false)
+
+        const handler = addAccessory(database)
+        const req = getMockReq({
+            body: FULL_ACCESSORY_ENTRY,
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.addAccessory).toHaveBeenCalledTimes(0)
+
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith(CONSOLE_DOES_NOT_EXIST)
+    })
 })
 
 describe('Update Accessory API Call', () => {
     test('happy path', async () => {
         const database = {
             updateAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateAccessory.mockResolvedValue(UPDATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = updateAccessory(database)
         const req = getMockReq({
@@ -940,8 +1032,10 @@ describe('Update Accessory API Call', () => {
     test('5XX Error', async () => {
         const database = {
             updateAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateAccessory.mockRejectedValueOnce(DB_ERROR)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = updateAccessory(database)
         const req = getMockReq({
@@ -961,8 +1055,10 @@ describe('Update Accessory API Call', () => {
     test('Invalid Input', async () => {
         const database = {
             updateAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateAccessory.mockResolvedValue(UPDATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = updateAccessory(database)
         const req = getMockReq({
@@ -982,8 +1078,10 @@ describe('Update Accessory API Call', () => {
     test('Accessory Not Found', async () => {
         const database = {
             updateAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateAccessory.mockResolvedValue(null)
+        database.consoleExists.mockResolvedValue(true)
 
         const handler = updateAccessory(database)
         const req = getMockReq({
@@ -1005,6 +1103,31 @@ describe('Update Accessory API Call', () => {
         expect(res.json).toHaveBeenCalledWith(
             GENERATE_UPDATE_DELETE_NOT_FOUND_JSON('Accessory', 1, true)
         )
+    })
+
+    test('Console Does Not Exist', async () => {
+        const database = {
+            updateAccessory: vi.fn(),
+            consoleExists: vi.fn(),
+        }
+        database.updateAccessory.mockResolvedValue(UPDATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(false)
+
+        const handler = updateAccessory(database)
+        const req = getMockReq({
+            params: {
+                id: '1',
+            },
+            body: FULL_ACCESSORY_ENTRY,
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.updateAccessory).toHaveBeenCalledTimes(0)
+
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith(CONSOLE_DOES_NOT_EXIST)
     })
 })
 

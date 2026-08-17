@@ -2,27 +2,27 @@ import { describe, expect, test, vi } from 'vitest'
 import { getMockReq, getMockRes } from 'vitest-mock-express'
 import {
     getHomePage,
-    getAllConsoles,
-    getConsoleInformation,
+    getAllConsolesSite,
+    getConsoleInformationSite,
     getAddConsolePage,
-    addConsole,
+    addConsoleSite,
     getEditConsolePage,
-    editConsole,
-    deleteConsole,
-    getAllGames,
-    getGameInformation,
+    editConsoleSite,
+    deleteConsoleSite,
+    getAllGamesSite,
+    getGameInformationSite,
     getAddGamePage,
-    addGame,
-    editGame,
-    deleteGame,
+    addGameSite,
+    editGameSite,
+    deleteGameSite,
     getEditGamePage,
-    getAllAccessories,
-    getAccessoryInformation,
+    getAllAccessoriesSite,
+    getAccessoryInformationSite,
     getAddAccessoryPage,
     getEditAccessoryPage,
-    addAccessory,
-    editAccessory,
-    deleteAccessory,
+    addAccessorySite,
+    editAccessorySite,
+    deleteAccessorySite,
 } from './index.js'
 import {
     ACCESSORY_INFO_RESPONSE,
@@ -42,6 +42,7 @@ import {
     DERIVE_CONSOLE_TYPE_STRING,
     DERIVE_REGION_STRING,
     DERIVE_CONDITION_STRING,
+    CONSOLE_DOES_NOT_EXIST,
 } from '../constants.js'
 import {
     FULL_ACCESSORY_SITE_ENTRY,
@@ -71,7 +72,7 @@ describe('Get All Consoles Page Test', () => {
         }
         database.getConsoles.mockResolvedValue(ALL_CONSOLES_RESPONSE)
 
-        const handler = getAllConsoles(database)
+        const handler = getAllConsolesSite(database)
         const req = getMockReq()
         const { res } = getMockRes()
 
@@ -101,7 +102,7 @@ describe('Get All Consoles Page Test', () => {
         }
         database.getConsoles.mockRejectedValueOnce(DB_ERROR)
 
-        const handler = getAllConsoles(database)
+        const handler = getAllConsolesSite(database)
         const req = getMockReq()
         const { res } = getMockRes()
 
@@ -115,13 +116,13 @@ describe('Get All Consoles Page Test', () => {
 })
 
 describe('Get Console Information Page Test', () => {
-    test('happy path', async () => {
+    test('Get Console Information Happy Path', async () => {
         const database = {
             getConsoleInformation: vi.fn(),
         }
         database.getConsoleInformation.mockResolvedValue(CONSOLE_INFO_RESPONSE)
 
-        const handler = getConsoleInformation(database)
+        const handler = getConsoleInformationSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -156,7 +157,7 @@ describe('Get Console Information Page Test', () => {
         }
         database.getConsoleInformation.mockRejectedValueOnce(DB_ERROR)
 
-        const handler = getConsoleInformation(database)
+        const handler = getConsoleInformationSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -178,7 +179,7 @@ describe('Get Console Information Page Test', () => {
         }
         database.getConsoleInformation.mockResolvedValue([])
 
-        const handler = getConsoleInformation(database)
+        const handler = getConsoleInformationSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -212,13 +213,13 @@ describe('Add Console Page Test', () => {
 })
 
 describe('Add Console Test', () => {
-    test('happy path', async () => {
+    test('Add Console Happy Path', async () => {
         const database = {
             addConsole: vi.fn(),
         }
         database.addConsole.mockResolvedValue(CREATE_RESPONSE)
 
-        const handler = addConsole(database)
+        const handler = addConsoleSite(database)
         const req = getMockReq({
             body: FULL_CONSOLE_SITE_ENTRY,
         })
@@ -240,7 +241,7 @@ describe('Add Console Test', () => {
         }
         database.addConsole.mockRejectedValueOnce(DB_ERROR)
 
-        const handler = addConsole(database)
+        const handler = addConsoleSite(database)
         const req = getMockReq({
             body: FULL_CONSOLE_SITE_ENTRY,
         })
@@ -256,7 +257,7 @@ describe('Add Console Test', () => {
 })
 
 describe('Get Edit Console Information Page Test', () => {
-    test('happy path', async () => {
+    test('Edit Console Info Happy Path', async () => {
         const database = {
             getConsoleInformation: vi.fn(),
         }
@@ -340,13 +341,13 @@ describe('Get Edit Console Information Page Test', () => {
 })
 
 describe('Edit Console Test', () => {
-    test('happy path', async () => {
+    test('Edit Console Happy Path', async () => {
         const database = {
             updateConsole: vi.fn(),
         }
         database.updateConsole.mockResolvedValue(UPDATE_RESPONSE)
 
-        const handler = editConsole(database)
+        const handler = editConsoleSite(database)
         const req = getMockReq({
             params: {
                 id: 1,
@@ -375,7 +376,7 @@ describe('Edit Console Test', () => {
         }
         database.updateConsole.mockRejectedValueOnce(DB_ERROR)
 
-        const handler = editConsole(database)
+        const handler = editConsoleSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -398,7 +399,7 @@ describe('Edit Console Test', () => {
         }
         database.updateConsole.mockResolvedValue(null)
 
-        const handler = editConsole(database)
+        const handler = editConsoleSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -423,13 +424,13 @@ describe('Edit Console Test', () => {
 })
 
 describe('Delete Console Test', () => {
-    test('Happy Path', async () => {
+    test('Delete Console Happy Path', async () => {
         const database = {
             deleteConsole: vi.fn(),
         }
         database.deleteConsole.mockResolvedValueOnce(DELETE_RESPONSE)
 
-        const handler = deleteConsole(database)
+        const handler = deleteConsoleSite(database)
         const req = getMockReq({
             body: {
                 id: 1,
@@ -454,7 +455,7 @@ describe('Delete Console Test', () => {
         }
         database.deleteConsole.mockRejectedValueOnce(DB_ERROR)
 
-        const handler = deleteConsole(database)
+        const handler = deleteConsoleSite(database)
         const req = getMockReq({
             body: {
                 id: '1',
@@ -476,7 +477,7 @@ describe('Delete Console Test', () => {
         }
         database.deleteConsole.mockResolvedValue(null)
 
-        const handler = deleteConsole(database)
+        const handler = deleteConsoleSite(database)
         const req = getMockReq({
             body: {
                 id: '1',
@@ -503,7 +504,7 @@ describe('Get All Games Page Test', () => {
         }
         database.getGames.mockResolvedValue(ALL_GAMES_RESPONSE)
 
-        const handler = getAllGames(database)
+        const handler = getAllGamesSite(database)
         const req = getMockReq()
         const { res } = getMockRes()
 
@@ -528,7 +529,7 @@ describe('Get All Games Page Test', () => {
         }
         database.getGames.mockRejectedValueOnce(DB_ERROR)
 
-        const handler = getAllGames(database)
+        const handler = getAllGamesSite(database)
         const req = getMockReq()
         const { res } = getMockRes()
 
@@ -542,13 +543,13 @@ describe('Get All Games Page Test', () => {
 })
 
 describe('Get Game Information Page Test', () => {
-    test('happy path', async () => {
+    test('Get Game Info Happy Path', async () => {
         const database = {
             getGameInformation: vi.fn(),
         }
         database.getGameInformation.mockResolvedValue(GAME_INFO_RESPONSE)
 
-        const handler = getGameInformation(database)
+        const handler = getGameInformationSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -578,7 +579,7 @@ describe('Get Game Information Page Test', () => {
         }
         database.getGameInformation.mockRejectedValueOnce(DB_ERROR)
 
-        const handler = getGameInformation(database)
+        const handler = getGameInformationSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -600,7 +601,7 @@ describe('Get Game Information Page Test', () => {
         }
         database.getGameInformation.mockResolvedValue([])
 
-        const handler = getGameInformation(database)
+        const handler = getGameInformationSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -634,13 +635,15 @@ describe('Add Game Page Test', () => {
 })
 
 describe('Add Game Test', () => {
-    test('happy path', async () => {
+    test('Add Game Happy Path', async () => {
         const database = {
             addGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.addGame.mockResolvedValue(CREATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
-        const handler = addGame(database)
+        const handler = addGameSite(database)
         const req = getMockReq({
             body: FULL_GAME_SITE_ENTRY,
         })
@@ -659,10 +662,12 @@ describe('Add Game Test', () => {
     test('Encountered 5XX Error', async () => {
         const database = {
             addGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.addGame.mockRejectedValueOnce(DB_ERROR)
+        database.consoleExists.mockResolvedValue(true)
 
-        const handler = addGame(database)
+        const handler = addGameSite(database)
         const req = getMockReq({
             body: FULL_GAME_SITE_ENTRY,
         })
@@ -673,6 +678,30 @@ describe('Add Game Test', () => {
         expect(res.render).toHaveBeenCalledWith('error.ejs', {
             status: 500,
             error: DB_ERROR,
+        })
+    })
+
+    test('Console Does Not Exist', async () => {
+        const database = {
+            addGame: vi.fn(),
+            consoleExists: vi.fn(),
+        }
+        database.addGame.mockResolvedValue(CREATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(false)
+
+        const handler = addGameSite(database)
+        const req = getMockReq({
+            body: FULL_GAME_SITE_ENTRY,
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.addGame).toHaveBeenCalledTimes(0)
+
+        expect(res.render).toHaveBeenCalledWith('error.ejs', {
+            status: 400,
+            error: CONSOLE_DOES_NOT_EXIST.message,
         })
     })
 })
@@ -757,13 +786,15 @@ describe('Get Edit Game Information Page Test', () => {
 })
 
 describe('Edit Game Test', () => {
-    test('happy path', async () => {
+    test('Edit Game Happy Path', async () => {
         const database = {
             updateGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateGame.mockResolvedValue(UPDATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
-        const handler = editGame(database)
+        const handler = editGameSite(database)
         const req = getMockReq({
             params: {
                 id: 1,
@@ -786,10 +817,12 @@ describe('Edit Game Test', () => {
     test('Encountered 5XX Error', async () => {
         const database = {
             updateGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateGame.mockRejectedValueOnce(DB_ERROR)
+        database.consoleExists.mockResolvedValue(true)
 
-        const handler = editGame(database)
+        const handler = editGameSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -809,10 +842,12 @@ describe('Edit Game Test', () => {
     test('Game Not Found', async () => {
         const database = {
             updateGame: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateGame.mockResolvedValue(null)
+        database.consoleExists.mockResolvedValue(true)
 
-        const handler = editGame(database)
+        const handler = editGameSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -831,16 +866,43 @@ describe('Edit Game Test', () => {
             idVal: 1,
         })
     })
+
+    test('Console Does Not Exist', async () => {
+        const database = {
+            updateGame: vi.fn(),
+            consoleExists: vi.fn(),
+        }
+        database.updateGame.mockResolvedValue(UPDATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(false)
+
+        const handler = editGameSite(database)
+        const req = getMockReq({
+            params: {
+                id: 1,
+            },
+            body: FULL_GAME_SITE_ENTRY,
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.updateGame).toHaveBeenCalledTimes(0)
+
+        expect(res.render).toHaveBeenCalledWith('error.ejs', {
+            status: 400,
+            error: CONSOLE_DOES_NOT_EXIST.message,
+        })
+    })
 })
 
 describe('Delete Game Test', () => {
-    test('Happy Path', async () => {
+    test('Delete Game Happy Path', async () => {
         const database = {
             deleteGame: vi.fn(),
         }
         database.deleteGame.mockResolvedValueOnce(DELETE_RESPONSE)
 
-        const handler = deleteGame(database)
+        const handler = deleteGameSite(database)
         const req = getMockReq({
             body: {
                 id: 1,
@@ -865,7 +927,7 @@ describe('Delete Game Test', () => {
         }
         database.deleteGame.mockRejectedValueOnce(DB_ERROR)
 
-        const handler = deleteGame(database)
+        const handler = deleteGameSite(database)
         const req = getMockReq({
             body: {
                 id: '1',
@@ -887,7 +949,7 @@ describe('Delete Game Test', () => {
         }
         database.deleteGame.mockResolvedValue(null)
 
-        const handler = deleteGame(database)
+        const handler = deleteGameSite(database)
         const req = getMockReq({
             body: {
                 id: '1',
@@ -908,13 +970,13 @@ describe('Delete Game Test', () => {
 })
 
 describe('Get All Accessories Page Test', () => {
-    test('Get All Games Happy Path', async () => {
+    test('Get All Accessories Happy Path', async () => {
         const database = {
             getAccessories: vi.fn(),
         }
         database.getAccessories.mockResolvedValue(ALL_ACCESSORIES_RESPONSE)
 
-        const handler = getAllAccessories(database)
+        const handler = getAllAccessoriesSite(database)
         const req = getMockReq()
         const { res } = getMockRes()
 
@@ -933,7 +995,7 @@ describe('Get All Accessories Page Test', () => {
         }
         database.getAccessories.mockRejectedValueOnce(DB_ERROR)
 
-        const handler = getAllAccessories(database)
+        const handler = getAllAccessoriesSite(database)
         const req = getMockReq()
         const { res } = getMockRes()
 
@@ -947,7 +1009,7 @@ describe('Get All Accessories Page Test', () => {
 })
 
 describe('Get Accessory Information Page Test', () => {
-    test('happy path', async () => {
+    test('Get Accessory Info Happy Path', async () => {
         const database = {
             getAccessoryInformation: vi.fn(),
         }
@@ -955,7 +1017,7 @@ describe('Get Accessory Information Page Test', () => {
             ACCESSORY_INFO_RESPONSE
         )
 
-        const handler = getAccessoryInformation(database)
+        const handler = getAccessoryInformationSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -979,7 +1041,7 @@ describe('Get Accessory Information Page Test', () => {
         }
         database.getAccessoryInformation.mockRejectedValueOnce(DB_ERROR)
 
-        const handler = getAccessoryInformation(database)
+        const handler = getAccessoryInformationSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -1001,7 +1063,7 @@ describe('Get Accessory Information Page Test', () => {
         }
         database.getAccessoryInformation.mockResolvedValue([])
 
-        const handler = getAccessoryInformation(database)
+        const handler = getAccessoryInformationSite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -1035,13 +1097,15 @@ describe('Add Accessory Page Test', () => {
 })
 
 describe('Add Accessory Test', () => {
-    test('happy path', async () => {
+    test('Add Accessory Happy Path', async () => {
         const database = {
             addAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.addAccessory.mockResolvedValue(CREATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
-        const handler = addAccessory(database)
+        const handler = addAccessorySite(database)
         const req = getMockReq({
             body: FULL_ACCESSORY_SITE_ENTRY,
         })
@@ -1060,10 +1124,12 @@ describe('Add Accessory Test', () => {
     test('Encountered 5XX Error', async () => {
         const database = {
             addAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.addAccessory.mockRejectedValueOnce(DB_ERROR)
+        database.consoleExists.mockResolvedValue(true)
 
-        const handler = addAccessory(database)
+        const handler = addAccessorySite(database)
         const req = getMockReq({
             body: FULL_ACCESSORY_SITE_ENTRY,
         })
@@ -1074,6 +1140,30 @@ describe('Add Accessory Test', () => {
         expect(res.render).toHaveBeenCalledWith('error.ejs', {
             status: 500,
             error: DB_ERROR,
+        })
+    })
+
+    test('Console Does Not Exist', async () => {
+        const database = {
+            addAccessory: vi.fn(),
+            consoleExists: vi.fn(),
+        }
+        database.addAccessory.mockResolvedValue(CREATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(false)
+
+        const handler = addAccessorySite(database)
+        const req = getMockReq({
+            body: FULL_ACCESSORY_SITE_ENTRY,
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.addAccessory).toHaveBeenCalledTimes(0)
+
+        expect(res.render).toHaveBeenCalledWith('error.ejs', {
+            status: 400,
+            error: CONSOLE_DOES_NOT_EXIST.message,
         })
     })
 })
@@ -1154,13 +1244,15 @@ describe('Get Edit Accessory Information Page Test', () => {
 })
 
 describe('Edit Accessory Test', () => {
-    test('happy path', async () => {
+    test('Edit Accessory Happy Path', async () => {
         const database = {
             updateAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateAccessory.mockResolvedValue(UPDATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(true)
 
-        const handler = editAccessory(database)
+        const handler = editAccessorySite(database)
         const req = getMockReq({
             params: {
                 id: 1,
@@ -1186,10 +1278,12 @@ describe('Edit Accessory Test', () => {
     test('Encountered 5XX Error', async () => {
         const database = {
             updateAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateAccessory.mockRejectedValueOnce(DB_ERROR)
+        database.consoleExists.mockResolvedValue(true)
 
-        const handler = editAccessory(database)
+        const handler = editAccessorySite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -1209,10 +1303,12 @@ describe('Edit Accessory Test', () => {
     test('Accessory Not Found', async () => {
         const database = {
             updateAccessory: vi.fn(),
+            consoleExists: vi.fn(),
         }
         database.updateAccessory.mockResolvedValue(null)
+        database.consoleExists.mockResolvedValue(true)
 
-        const handler = editAccessory(database)
+        const handler = editAccessorySite(database)
         const req = getMockReq({
             params: {
                 id: '1',
@@ -1234,16 +1330,43 @@ describe('Edit Accessory Test', () => {
             idVal: 1,
         })
     })
+
+    test('Console Does Not Exist', async () => {
+        const database = {
+            updateAccessory: vi.fn(),
+            consoleExists: vi.fn(),
+        }
+        database.updateAccessory.mockResolvedValue(UPDATE_RESPONSE)
+        database.consoleExists.mockResolvedValue(false)
+
+        const handler = editAccessorySite(database)
+        const req = getMockReq({
+            params: {
+                id: 1,
+            },
+            body: FULL_ACCESSORY_SITE_ENTRY,
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.updateAccessory).toHaveBeenCalledTimes(0)
+
+        expect(res.render).toHaveBeenCalledWith('error.ejs', {
+            status: 400,
+            error: CONSOLE_DOES_NOT_EXIST.message,
+        })
+    })
 })
 
 describe('Delete Accessory Test', () => {
-    test('Happy Path', async () => {
+    test('Delete Accessory Happy Path', async () => {
         const database = {
             deleteAccessory: vi.fn(),
         }
         database.deleteAccessory.mockResolvedValueOnce(DELETE_RESPONSE)
 
-        const handler = deleteAccessory(database)
+        const handler = deleteAccessorySite(database)
         const req = getMockReq({
             body: {
                 id: 1,
@@ -1268,7 +1391,7 @@ describe('Delete Accessory Test', () => {
         }
         database.deleteAccessory.mockRejectedValueOnce(DB_ERROR)
 
-        const handler = deleteAccessory(database)
+        const handler = deleteAccessorySite(database)
         const req = getMockReq({
             body: {
                 id: '1',
@@ -1290,7 +1413,7 @@ describe('Delete Accessory Test', () => {
         }
         database.deleteAccessory.mockResolvedValue(null)
 
-        const handler = deleteAccessory(database)
+        const handler = deleteAccessorySite(database)
         const req = getMockReq({
             body: {
                 id: '1',

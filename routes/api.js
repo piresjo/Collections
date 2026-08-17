@@ -10,6 +10,7 @@ import {
     VALIDATE_CONSOLE_ENTRY_JSON,
     VALIDATE_GAME_ENTRY_JSON,
     VALIDATE_ACCESSORY_ENTRY_JSON,
+    CONSOLE_DOES_NOT_EXIST,
 } from '../constants.js'
 
 // HEALTHCHECK
@@ -178,6 +179,9 @@ export const addGame = (database) => async (req, res) => {
         return res.status(400).json(errorVal)
     }
     try {
+        if (!(await database.consoleExists(bodyVal.console_id))) {
+            return res.status(400).json(CONSOLE_DOES_NOT_EXIST)
+        }
         const entry = {
             console_id: bodyVal.console_id,
             name: bodyVal.name,
@@ -214,6 +218,9 @@ export const updateGame = (database) => async (req, res) => {
         return res.status(400).json(errorVal)
     }
     try {
+        if (!(await database.consoleExists(bodyVal.console_id))) {
+            return res.status(400).json(CONSOLE_DOES_NOT_EXIST)
+        }
         const entry = {
             console_id: bodyVal.console_id,
             name: bodyVal.name,
@@ -301,6 +308,9 @@ export const addAccessory = (database) => async (req, res) => {
         return res.status(400).json(errorVal)
     }
     try {
+        if (!(await database.consoleExists(bodyVal.console_id))) {
+            return res.status(400).json(CONSOLE_DOES_NOT_EXIST)
+        }
         const entry = {
             console_id: bodyVal.console_id,
             name: bodyVal.name,
@@ -334,6 +344,9 @@ export const updateAccessory = (database) => async (req, res) => {
         return res.status(400).json(errorVal)
     }
     try {
+        if (!(await database.consoleExists(bodyVal.console_id))) {
+            return res.status(400).json(CONSOLE_DOES_NOT_EXIST)
+        }
         const entry = {
             console_id: bodyVal.console_id,
             name: bodyVal.name,
