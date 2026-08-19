@@ -13,6 +13,10 @@ import {
     FULL_ACCESSORY_ENTRY,
     DELETE_RESPONSE,
     UPDATE_RESPONSE,
+    BULK_CONSOLE_ENTRIES,
+    BULK_GAME_ENTRIES,
+    EXPECTED_CONSOLE_AND_ID_MAP,
+    BULK_CONSOLE_ID_SEARCH_RESPONSE,
 } from './database.test.data'
 
 const DB_ERROR_CONNECTION_LOST = 'Connection Lost'
@@ -484,5 +488,67 @@ describe('Console Exists DB Call', () => {
         const result = await database.consoleExists(1)
 
         expect(result).toBe(false)
+    })
+})
+
+describe('Bulk Console Entry DB Call', () => {
+    test('Successful Bulk Entry', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [CREATE_RESPONSE]
+        })
+        const result = await database.bulkConsoleEntry(BULK_CONSOLE_ENTRIES)
+        expect(database.connection.query).toHaveBeenCalledWith(
+            expect.stringContaining('INSERT INTO Console'),
+            [BULK_CONSOLE_ENTRIES]
+        )
+        expect(result).toEqual(CREATE_RESPONSE)
+    })
+
+    test('Encountered DB Error', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+        await expect(
+            database.bulkConsoleEntry(BULK_CONSOLE_ENTRIES)
+        ).rejects.toThrow(DB_ERROR_CONNECTION_LOST)
+    })
+})
+
+describe('Bulk Game Entry DB Call', () => {
+    test('Successful Bulk Entry', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [CREATE_RESPONSE]
+        })
+        const result = await database.bulkGameEntry(BULK_GAME_ENTRIES)
+        expect(database.connection.query).toHaveBeenCalledWith(
+            expect.stringContaining('INSERT INTO Game'),
+            [BULK_GAME_ENTRIES]
+        )
+        expect(result).toEqual(CREATE_RESPONSE)
+    })
+
+    test('Encountered DB Error', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+        await expect(database.bulkGameEntry(BULK_GAME_ENTRIES)).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
+    })
+})
+
+describe('Get All Consoles And Ids DB Call', () => {
+    test('Successful Search', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [BULK_CONSOLE_ID_SEARCH_RESPONSE]
+        })
+        const result = await database.mapConsoleNameToConsoleIds()
+        expect(database.connection.query).toHaveBeenCalledWith(
+            `SELECT id, name FROM Console`
+        )
+        expect(result).toEqual(EXPECTED_CONSOLE_AND_ID_MAP)
+    })
+
+    test('Encountered DB Error', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+        await expect(database.mapConsoleNameToConsoleIds()).rejects.toThrow(
+            DB_ERROR_CONNECTION_LOST
+        )
     })
 })

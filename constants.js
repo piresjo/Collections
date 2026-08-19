@@ -371,37 +371,36 @@ export const VALIDATE_GAME_ENTRY_JSON = function (bodyVal) {
     return returnVal
 }
 
-export const ConsolesAndIds = {
-    'atari 2600': 1,
-    'atari 7800': 2,
-    'atari 8-bit': 3,
-    'ms-dos': 4,
-    'windows 9x': 5,
-    'windows nt (x86)': 6,
-    'windows nt (x64)': 7,
-    'commodore amiga 500': 8,
-    'sega master system': 9,
-    'sega genesis': 10,
-    'sega game gear': 11,
-    'nintendo entertainment system': 12,
-    'nintendo game boy': 13,
-    'super nintendo entertainment system': 14,
-    'nintendo 64': 15,
-    'nintendo gamecube': 16,
-    'nintendo game boy advance': 17,
-    'nintendo ds': 18,
-    'nintendo wii': 19,
-    'nintendo wii u': 20,
-    'nintendo 3ds xl': 21,
-    'nintendo switch': 22,
-    'sony playstation': 23,
-    'sony playstation 2': 24,
-    'sony playstation 3': 25,
-    'sony playstation 4': 26,
-    'microsoft xbox 360': 27,
-    'analogue super nt': 28,
-    'analogue mega sg': 29,
-    'analogue pocket': 30,
+export const VALIDATE_GAME_ENTRY_ARRAY = function (bodyArray) {
+    const returnVal = null
+    if (bodyArray[1] == null) {
+        return MISSING_GAME_NAME
+    }
+    if (bodyArray[0] == null) {
+        return MISSING_CONSOLE_ID
+    }
+    if (bodyArray[8] == null) {
+        return MISSING_DIGITAL
+    }
+    if (bodyArray[5] == null) {
+        return MISSING_REGION
+    }
+    if (bodyArray[13] == null) {
+        return MISSING_PRODUCT_CONDITION
+    }
+    if (bodyArray[11] == null) {
+        return MISSING_HAS_BOX
+    }
+    if (bodyArray[12] == null) {
+        return MISSING_IS_DUPLICATE
+    }
+    if (bodyArray[10] == null) {
+        return MISSING_HAS_MANUAL
+    }
+    if (bodyArray[9] == null) {
+        return MISSING_HAS_GAME
+    }
+    return returnVal
 }
 
 export const VALIDATE_ACCESSORY_ENTRY_JSON = function (bodyVal) {

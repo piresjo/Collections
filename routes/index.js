@@ -7,7 +7,6 @@ import {
     VALIDATE_CONSOLE_ENTRY_JSON,
     DERIVE_PRODUCT_CONDITION,
     VALIDATE_GAME_ENTRY_JSON,
-    ConsolesAndIds,
     VALIDATE_ACCESSORY_ENTRY_JSON,
     DERIVE_ACCESSORY_TYPE,
     DERIVE_CONSOLE_TYPE_STRING,
@@ -15,6 +14,7 @@ import {
     DERIVE_CONDITION_STRING,
     CONSOLE_DOES_NOT_EXIST,
     VALIDATE_CONSOLE_ENTRY_ARRAY,
+    VALIDATE_GAME_ENTRY_ARRAY,
 } from '../constants.js'
 import { body } from 'express-validator'
 
@@ -691,6 +691,104 @@ export const bulkEntryConsoles = (database) => async (req, res) => {
     }
 }
 
+export const getBulkEntryGamePage = async (req, res) => {
+    res.render('bulkentry.ejs', { object: 'Game' })
+}
+
+export const bulkEntryGames = (database) => async (req, res) => {
+    if (req.files && Object.keys(req.files).length !== 0) {
+        const uploadedFile = req.files.uploadFile
+        const uploadPath = uploadedFile.tempFilePath
+        const gameList = []
+        const entriesToAdd = []
+        const errors = []
+
+        fs.createReadStream(uploadPath)
+            .pipe(csv.parse({ headers: true }))
+            .on('error', (error) => {
+                console.error(error)
+                return res.status(500).json(error)
+            })
+            .on('data', (row) => {
+                gameList.push(row)
+            })
+            .on('end', async (rowCount) => {
+                console.log(`Parsed ${rowCount} rows`)
+                let consoleIDMap = null
+                try {
+                    consoleIDMap = await database.mapConsoleNameToConsoleIds()
+                } catch (error) {
+                    console.error(error)
+                    return res.status(500).json(error)
+                }
+                gameList.forEach((game) => {
+                    const entryArray = [
+                        consoleIDMap[game.Console.toLowerCase()],
+                        game.Name,
+                        game.Edition === '' ? null : game.Edition,
+                        game['Release Date'] === ''
+                            ? null
+                            : new Date(game['Release Date'])
+                                  .toISOString()
+                                  .split('T')[0],
+                        game['Bought Date'] === ''
+                            ? null
+                            : new Date(game['Bought Date'])
+                                  .toISOString()
+                                  .split('T')[0],
+                        DERIVE_REGION(game.Region.toUpperCase()),
+                        game.Developer === '' ? null : game.Developer,
+                        game.Publisher === '' ? null : game.Publisher,
+                        game.Digital.toLowerCase() === 'yes',
+
+                        game['Has Game'].toLowerCase() === 'yes',
+                        game['Has Manual'].toLowerCase() === 'yes',
+                        game['Has Box'].toLowerCase() === 'yes',
+                        game['Is Duplicate'].toLowerCase() === 'yes',
+                        DERIVE_PRODUCT_CONDITION(
+                            game['Product Condition'].toLowerCase()
+                        ),
+                        game['Monetary Value'] === ''
+                            ? null
+                            : parseFloat(
+                                  game['Monetary Value'].trim().slice(1)
+                              ),
+                        game.Notes,
+                    ]
+                    const errorVal = VALIDATE_GAME_ENTRY_ARRAY(entryArray)
+
+                    if (errorVal != null) {
+                        errors.push(errorVal)
+                    } else {
+                        entriesToAdd.push(entryArray)
+                    }
+                })
+                if (errors.length > 0) {
+                    return res.status(400).json(errors)
+                }
+                if (entriesToAdd.length === 0) {
+                    return res.status(400).json({
+                        message: 'no entries in csv',
+                    })
+                }
+                try {
+                    await database.bulkGameEntry(entriesToAdd)
+                } catch (error) {
+                    console.error(error)
+                    return res.status(500).json(error)
+                }
+                return res.render('status.ejs', {
+                    action: 'create',
+                    object: 'Game',
+                })
+            })
+    } else {
+        return res.status(400).json({
+            message: 'no file uploaded',
+        })
+    }
+}
+
 export default function makeSiteRouter(database) {
     const router = express.Router()
 
@@ -950,107 +1048,10 @@ export default function makeSiteRouter(database) {
     )
     router.get('/bulk_entry/consoles', getBulkEntryConsolePage)
     router.post('/bulk_entry/consoles', bulkEntryConsoles(database))
+    router.get('/bulk_entry/games', getBulkEntryGamePage)
+    router.post('/bulk_entry/games', bulkEntryGames(database))
 
     /*
-    // Bulk Entry - Games
-    router.get('/bulk_entry/games', async (req, res) => {
-        res.render('bulkentry.ejs', { object: 'Game' })
-    })
-
-    router.post('/bulk_entry/games', async (req, res) => {
-        if (req.files && Object.keys(req.files).length !== 0) {
-            const uploadedFile = req.files.uploadFile
-            const uploadPath = __dirname + uploadedFile.name
-            const gameList = []
-
-            fs.createReadStream(uploadPath)
-                .pipe(csv.parse({ headers: true }))
-                .on('error', (error) => console.error(error))
-                .on('data', (row) => {
-                    gameList.push(row)
-                })
-                .on('end', (rowCount) => {
-                    console.log(`Parsed ${rowCount} rows`)
-                    const resultsList = []
-                    gameList.forEach((game) => {
-                        try {
-                            const entry = {
-                                has_game:
-                                    game['Has Game'].toLowerCase() === 'yes',
-                                is_duplicate:
-                                    game['Is Duplicate'].toLowerCase() ===
-                                    'yes',
-                                has_manual:
-                                    game['Has Manual'].toLowerCase() === 'yes',
-                                has_box:
-                                    game['Has Box'].toLowerCase() === 'yes',
-                                monetary_value:
-                                    game['Monetary Value'] === ''
-                                        ? null
-                                        : parseFloat(
-                                              game['Monetary Value']
-                                                  .trim()
-                                                  .slice(1)
-                                          ),
-                                notes: game.Notes,
-                                console_id:
-                                    ConsolesAndIds[game.Console.toLowerCase()],
-                                name: game.Name,
-                                edition:
-                                    game.Edition === '' ? null : game.Edition,
-                                release_date:
-                                    game['Release Date'] === ''
-                                        ? null
-                                        : new Date(game['Release Date'])
-                                              .toISOString()
-                                              .split('T')[0],
-                                bought_date:
-                                    game['Bought Date'] === ''
-                                        ? null
-                                        : new Date(game['Bought Date'])
-                                              .toISOString()
-                                              .split('T')[0],
-                                region: DERIVE_REGION(
-                                    game.Region.toUpperCase()
-                                ),
-                                developer:
-                                    game.Developer === ''
-                                        ? null
-                                        : game.Developer,
-                                publisher:
-                                    game.Publisher === ''
-                                        ? null
-                                        : game.Publisher,
-                                digital: game.Digital.toLowerCase() === 'yes',
-                                product_condition: DERIVE_PRODUCT_CONDITION(
-                                    game['Product Condition'].toLowerCase()
-                                ),
-                            }
-                            const errorVal = VALIDATE_GAME_ENTRY_JSON(entry)
-
-                            if (errorVal != null) {
-                                return res.status(400).json(errorVal)
-                            }
-
-                            await database.addGame(entry)
-                        } catch (error) {
-                            console.log(error)
-                            return res.render('error.ejs', {
-                                status: 500,
-                                error: error,
-                            })
-                        }
-                    })
-                    return res.render('status.ejs', {
-                        action: 'create',
-                        object: 'Game',
-                    })
-                })
-        } else {
-            res.send('No file uploaded !!')
-        }
-    })
-
     // Bulk Entry - Accessories
     router.get('/bulk_entry/accessories', async (req, res) => {
         res.render('bulkentry.ejs', { object: 'Accessory' })

@@ -136,4 +136,24 @@ export class Database {
 
         return results
     }
+
+    async bulkGameEntry(gamesToAdd) {
+        const [results] = await this.connection.query(
+            `INSERT INTO Game (console_id, name, edition, release_date, bought_date, region,
+            developer, publisher, digital, has_game, has_manual, has_box,
+            is_duplicate, product_condition, monetary_value, notes) VALUES ?`,
+            [gamesToAdd]
+        )
+        return results
+    }
+
+    async mapConsoleNameToConsoleIds() {
+        const [results] = await this.connection.query(
+            `SELECT id, name FROM Console`
+        )
+        const returnMap = Object.fromEntries(
+            results.map((r) => [r.name.toLowerCase(), r.id])
+        )
+        return returnMap
+    }
 }
