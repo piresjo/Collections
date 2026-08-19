@@ -423,6 +423,26 @@ export const VALIDATE_ACCESSORY_ENTRY_JSON = function (bodyVal) {
     return returnVal
 }
 
+export const VALIDATE_ACCESSORY_ENTRY_ARRAY = function (bodyArray) {
+    const returnVal = null
+    if (bodyArray[1] == null) {
+        return MISSING_ACCESSORY_NAME
+    }
+    if (bodyArray[0] == null) {
+        return MISSING_CONSOLE_ID
+    }
+    if (bodyArray[3] == null) {
+        return MISSING_ACCESSORY_TYPE
+    }
+    if (bodyArray[7] == null) {
+        return MISSING_PRODUCT_CONDITION
+    }
+    if (bodyArray[8] == null) {
+        return MISSING_HAS_PACKAGING
+    }
+    return returnVal
+}
+
 export const AccessoryType = Object.freeze({
     CONTROLLER: 1,
 })

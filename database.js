@@ -147,6 +147,16 @@ export class Database {
         return results
     }
 
+    async bulkAccessoryEntry(accessoriesToAdd) {
+        const [results] = await this.connection.query(
+            `INSERT INTO Accessory (console_id, name, model, accessory_type, 
+            release_date, bought_date, company, product_condition, has_packaging, 
+            monetary_value, notes) VALUES ?`,
+            [accessoriesToAdd]
+        )
+        return results
+    }
+
     async mapConsoleNameToConsoleIds() {
         const [results] = await this.connection.query(
             `SELECT id, name FROM Console`

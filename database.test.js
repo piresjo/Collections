@@ -17,6 +17,7 @@ import {
     BULK_GAME_ENTRIES,
     EXPECTED_CONSOLE_AND_ID_MAP,
     BULK_CONSOLE_ID_SEARCH_RESPONSE,
+    BULK_ACCESSORY_ENTRIES,
 } from './database.test.data'
 
 const DB_ERROR_CONNECTION_LOST = 'Connection Lost'
@@ -530,6 +531,27 @@ describe('Bulk Game Entry DB Call', () => {
         await expect(database.bulkGameEntry(BULK_GAME_ENTRIES)).rejects.toThrow(
             DB_ERROR_CONNECTION_LOST
         )
+    })
+})
+
+describe('Bulk Accessory Entry DB Call', () => {
+    test('Successful Bulk Entry', async () => {
+        database.connection.query.mockImplementation(() => {
+            return [CREATE_RESPONSE]
+        })
+        const result = await database.bulkAccessoryEntry(BULK_ACCESSORY_ENTRIES)
+        expect(database.connection.query).toHaveBeenCalledWith(
+            expect.stringContaining('INSERT INTO Accessory'),
+            [BULK_ACCESSORY_ENTRIES]
+        )
+        expect(result).toEqual(CREATE_RESPONSE)
+    })
+
+    test('Encountered DB Error', async () => {
+        database.connection.query.mockRejectedValueOnce(DB_ERROR)
+        await expect(
+            database.bulkAccessoryEntry(BULK_ACCESSORY_ENTRIES)
+        ).rejects.toThrow(DB_ERROR_CONNECTION_LOST)
     })
 })
 

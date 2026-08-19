@@ -15,6 +15,7 @@ import {
     CONSOLE_DOES_NOT_EXIST,
     VALIDATE_CONSOLE_ENTRY_ARRAY,
     VALIDATE_GAME_ENTRY_ARRAY,
+    VALIDATE_ACCESSORY_ENTRY_ARRAY,
 } from '../constants.js'
 import { body } from 'express-validator'
 
@@ -789,6 +790,108 @@ export const bulkEntryGames = (database) => async (req, res) => {
     }
 }
 
+export const getBulkEntryAccessoryPage = async (req, res) => {
+    res.render('bulkentry.ejs', { object: 'Accessory' })
+}
+
+export const bulkEntryAccessories = (database) => async (req, res) => {
+    if (req.files && Object.keys(req.files).length !== 0) {
+        const uploadedFile = req.files.uploadFile
+        const uploadPath = uploadedFile.tempFilePath
+        const accessoryList = []
+        const entriesToAdd = []
+        const errors = []
+
+        fs.createReadStream(uploadPath)
+            .pipe(csv.parse({ headers: true }))
+            .on('error', (error) => {
+                console.error(error)
+                return res.status(500).json(error)
+            })
+            .on('data', (row) => {
+                accessoryList.push(row)
+            })
+            .on('end', async (rowCount) => {
+                console.log(`Parsed ${rowCount} rows`)
+
+                let consoleIDMap = null
+                try {
+                    consoleIDMap = await database.mapConsoleNameToConsoleIds()
+                } catch (error) {
+                    console.error(error)
+                    return res.status(500).json(error)
+                }
+
+                accessoryList.forEach((accessory) => {
+                    const entryArray = [
+                        consoleIDMap[accessory.Console.toLowerCase()],
+                        accessory.Name,
+                        accessory.Model,
+                        DERIVE_ACCESSORY_TYPE(
+                            accessory['Accessory Type'].toLowerCase()
+                        ),
+
+                        accessory['Release Date'] === ''
+                            ? null
+                            : new Date(accessory['Release Date'])
+                                  .toISOString()
+                                  .split('T')[0],
+
+                        accessory['Bought Date'] === ''
+                            ? null
+                            : new Date(accessory['Bought Date'])
+                                  .toISOString()
+                                  .split('T')[0],
+
+                        accessory.Company === '' ? null : accessory.Company,
+                        DERIVE_PRODUCT_CONDITION(
+                            accessory['Product Condition'].toLowerCase()
+                        ),
+
+                        accessory['Has Packaging'].toLowerCase() === 'yes',
+
+                        accessory['Monetary Value'] === ''
+                            ? null
+                            : parseFloat(
+                                  accessory['Monetary Value'].trim().slice(1)
+                              ),
+                        accessory.Notes,
+                    ]
+
+                    const errorVal = VALIDATE_ACCESSORY_ENTRY_ARRAY(entryArray)
+
+                    if (errorVal != null) {
+                        errors.push(errorVal)
+                    } else {
+                        entriesToAdd.push(entryArray)
+                    }
+                })
+                if (errors.length > 0) {
+                    return res.status(400).json(errors)
+                }
+                if (entriesToAdd.length === 0) {
+                    return res.status(400).json({
+                        message: 'no entries in csv',
+                    })
+                }
+                try {
+                    await database.bulkAccessoryEntry(entriesToAdd)
+                } catch (error) {
+                    console.error(error)
+                    return res.status(500).json(error)
+                }
+                return res.render('status.ejs', {
+                    action: 'create',
+                    object: 'Accessory',
+                })
+            })
+    } else {
+        return res.status(400).json({
+            message: 'no file uploaded',
+        })
+    }
+}
+
 export default function makeSiteRouter(database) {
     const router = express.Router()
 
@@ -1050,101 +1153,8 @@ export default function makeSiteRouter(database) {
     router.post('/bulk_entry/consoles', bulkEntryConsoles(database))
     router.get('/bulk_entry/games', getBulkEntryGamePage)
     router.post('/bulk_entry/games', bulkEntryGames(database))
+    router.get('/bulk_entry/accessories', getBulkEntryAccessoryPage)
+    router.post('/bulk_entry/accessories', bulkEntryAccessories(database))
 
-    /*
-    // Bulk Entry - Accessories
-    router.get('/bulk_entry/accessories', async (req, res) => {
-        res.render('bulkentry.ejs', { object: 'Accessory' })
-    })
-
-    router.post('/bulk_entry/accessories', async (req, res) => {
-        if (req.files && Object.keys(req.files).length !== 0) {
-            const uploadedFile = req.files.uploadFile
-            const uploadPath = __dirname + uploadedFile.name
-            const accessoryList = []
-
-            fs.createReadStream(uploadPath)
-                .pipe(csv.parse({ headers: true }))
-                .on('error', (error) => console.error(error))
-                .on('data', (row) => {
-                    accessoryList.push(row)
-                })
-                .on('end', (rowCount) => {
-                    console.log(`Parsed ${rowCount} rows`)
-
-                    const resultsList = []
-
-                    accessoryList.forEach((accessory) => {
-                        try {
-                            const entry = {
-                                console_id:
-                                    ConsolesAndIds[
-                                        accessory.Console.toLowerCase()
-                                    ],
-                                name: accessory.Name,
-                                model: accessory.Model,
-                                accessory_type: DERIVE_ACCESSORY_TYPE(
-                                    accessory['Accessory Type'].toLowerCase()
-                                ),
-                                release_date:
-                                    accessory['Release Date'] === ''
-                                        ? null
-                                        : new Date(accessory['Release Date'])
-                                              .toISOString()
-                                              .split('T')[0],
-                                bought_date:
-                                    accessory['Bought Date'] === ''
-                                        ? null
-                                        : new Date(accessory['Bought Date'])
-                                              .toISOString()
-                                              .split('T')[0],
-                                company:
-                                    accessory.Company === ''
-                                        ? null
-                                        : accessory.Company,
-                                product_condition: DERIVE_PRODUCT_CONDITION(
-                                    accessory['Product Condition'].toLowerCase()
-                                ),
-                                has_packaging:
-                                    accessory['Has Packaging'].toLowerCase() ===
-                                    'yes',
-                                monetary_value:
-                                    accessory['Monetary Value'] === ''
-                                        ? null
-                                        : parseFloat(
-                                              accessory['Monetary Value']
-                                                  .trim()
-                                                  .slice(1)
-                                          ),
-                                notes: accessory.Notes,
-                            }
-
-                            const errorVal =
-                                VALIDATE_ACCESSORY_ENTRY_JSON(entry)
-
-                            if (errorVal != null) {
-                                return res.status(400).json(errorVal)
-                            }
-
-                            await database.addAccessory(entry)
-                        } catch (error) {
-                            console.log(error)
-                            return res.render('error.ejs', {
-                                status: 500,
-                                error: error,
-                            })
-                        }
-                    })
-                    return res.render('status.ejs', {
-                        action: 'create',
-                        object: 'Accessory',
-                    })
-                })
-        } else {
-            res.send('No file uploaded !!')
-        }
-    })
-
-    */
     return router
 }
