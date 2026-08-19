@@ -310,7 +310,35 @@ export const VALIDATE_CONSOLE_ENTRY_JSON = function (bodyVal) {
     return returnVal
 }
 
-// ToDo - Need check to make sure console_id is valid
+export const VALIDATE_CONSOLE_ENTRY_ARRAY = function (bodyArray) {
+    const returnVal = null
+    if (bodyArray[0] == null) {
+        return MISSING_CONSOLE_NAME
+    }
+    if (bodyArray[1] == null) {
+        return MISSING_CONSOLE_TYPE
+    }
+    if (bodyArray[3] == null) {
+        return MISSING_REGION
+    }
+    if (bodyArray[7] == null) {
+        return MISSING_PRODUCT_CONDITION
+    }
+    if (bodyArray[8] == null) {
+        return MISSING_HAS_PACKAGING
+    }
+    if (bodyArray[9] == null) {
+        return MISSING_IS_DUPLICATE
+    }
+    if (bodyArray[10] == null) {
+        return MISSING_HAS_CABLES
+    }
+    if (bodyArray[11] == null) {
+        return MISSING_HAS_CONSOLE
+    }
+    return returnVal
+}
+
 export const VALIDATE_GAME_ENTRY_JSON = function (bodyVal) {
     const returnVal = null
     if (bodyVal.name == null) {
@@ -376,7 +404,6 @@ export const ConsolesAndIds = {
     'analogue pocket': 30,
 }
 
-// ToDo - More validation for console id
 export const VALIDATE_ACCESSORY_ENTRY_JSON = function (bodyVal) {
     const returnVal = null
     if (bodyVal.name == null) {

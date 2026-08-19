@@ -24,7 +24,7 @@ export default function makeApp(database) {
     app.use(express.urlencoded({ extended: true }))
     app.use(cookieParser())
     app.use(express.static(path.join(__dirname, 'public')))
-    app.use(fileUpload())
+    app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }))
 
     app.use('/', makeSiteRouter(database))
     app.use('/api', makeApiRouter(database))

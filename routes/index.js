@@ -14,11 +14,9 @@ import {
     DERIVE_REGION_STRING,
     DERIVE_CONDITION_STRING,
     CONSOLE_DOES_NOT_EXIST,
+    VALIDATE_CONSOLE_ENTRY_ARRAY,
 } from '../constants.js'
 import { body } from 'express-validator'
-
-const __dirname =
-    'C:\\Users\\Pires\\OneDrive\\Documents\\GitHub\\CollectionsDB\\public\\csv\\'
 
 const validate = (validations) => {
     return async (req, res, next) => {
@@ -594,6 +592,105 @@ export const editAccessorySite = (database) => async (req, res) => {
     }
 }
 
+export const getBulkEntryConsolePage = async (req, res) => {
+    res.render('bulkentry.ejs', { object: 'Console' })
+}
+
+export const bulkEntryConsoles = (database) => async (req, res) => {
+    if (req.files && Object.keys(req.files).length !== 0) {
+        const uploadedFile = req.files.uploadFile
+        const uploadPath = uploadedFile.tempFilePath
+        const consoleList = []
+        const entriesToAdd = []
+        const errors = []
+
+        fs.createReadStream(uploadPath)
+            .pipe(csv.parse({ headers: true }))
+            .on('error', (error) => {
+                console.error(error)
+                return res.status(500).json(error)
+            })
+            .on('data', (row) => {
+                consoleList.push(row)
+            })
+            .on('end', async (rowCount) => {
+                console.log(`Parsed ${rowCount} rows`)
+
+                consoleList.forEach((consoleToAdd) => {
+                    const entryArray = [
+                        consoleToAdd.Name,
+                        DERIVE_CONSOLE_TYPE(
+                            consoleToAdd['Console Type'].toLowerCase()
+                        ),
+                        consoleToAdd.Model === '' ? null : consoleToAdd.Model,
+                        DERIVE_REGION(consoleToAdd.Region.toUpperCase()),
+
+                        consoleToAdd['Release Date'] === ''
+                            ? null
+                            : consoleToAdd['Release Date'],
+                        consoleToAdd['Bought Date'] === ''
+                            ? null
+                            : consoleToAdd['Bought Date'],
+                        consoleToAdd.Company === ''
+                            ? null
+                            : consoleToAdd.Company,
+                        DERIVE_PRODUCT_CONDITION(
+                            consoleToAdd['Product Condition'].toLowerCase()
+                        ),
+
+                        consoleToAdd['Has Packaging'].toLowerCase() === 'yes',
+
+                        consoleToAdd['Is Duplicate'].toLowerCase() === 'yes',
+
+                        consoleToAdd['Has Cables'].toLowerCase() === 'yes',
+
+                        consoleToAdd['Has Console'].toLowerCase() === 'yes',
+
+                        consoleToAdd['Monetary Value'] === ''
+                            ? null
+                            : parseFloat(
+                                  consoleToAdd['Monetary Value'].trim().slice(1)
+                              ),
+                        consoleToAdd.Notes,
+                    ]
+
+                    const validateError =
+                        VALIDATE_CONSOLE_ENTRY_ARRAY(entryArray)
+
+                    if (validateError != null) {
+                        errors.push(validateError)
+                    } else {
+                        entriesToAdd.push(entryArray)
+                    }
+                })
+                if (errors.length > 0) {
+                    return res.status(400).json(errors)
+                }
+                if (entriesToAdd.length === 0) {
+                    return res.status(400).json({
+                        message: 'no entries in csv',
+                    })
+                }
+                try {
+                    await database.bulkConsoleEntry(entriesToAdd)
+                } catch (error) {
+                    console.error(error)
+                    return res.status(500).json(error)
+                }
+
+                // ToDo - Update
+                return res.render('status.ejs', {
+                    action: 'create',
+                    object: 'Console',
+                })
+            })
+    } else {
+        return res.status(400).json({
+            message: 'no file uploaded',
+        })
+    }
+}
+
 export default function makeSiteRouter(database) {
     const router = express.Router()
 
@@ -851,112 +948,10 @@ export default function makeSiteRouter(database) {
         ]),
         editAccessorySite(database)
     )
+    router.get('/bulk_entry/consoles', getBulkEntryConsolePage)
+    router.post('/bulk_entry/consoles', bulkEntryConsoles(database))
 
-    // ToDo - In another branch, fix the below code and add tests
-    // Bulk Entry - Console
-    router.get('/bulk_entry/consoles', async (req, res) => {
-        res.render('bulkentry.ejs', { object: 'Console' })
-    })
-
-    router.post('/bulk_entry/consoles', async (req, res) => {
-        if (req.files && Object.keys(req.files).length !== 0) {
-            const uploadedFile = req.files.uploadFile
-            const uploadPath = __dirname + uploadedFile.name
-            const consoleList = []
-
-            fs.createReadStream(uploadPath)
-                .pipe(csv.parse({ headers: true }))
-                .on('error', (error) => console.error(error))
-                .on('data', (row) => {
-                    consoleList.push(row)
-                })
-                .on('end', (rowCount) => {
-                    console.log(`Parsed ${rowCount} rows`)
-
-                    const resultsList = []
-
-                    consoleList.forEach((console) => {
-                        try {
-                            const entry = {
-                                name: console.Name,
-                                console_type: DERIVE_CONSOLE_TYPE(
-                                    console['Console Type'].toLowerCase()
-                                ),
-                                model:
-                                    console.Model === '' ? null : console.Model,
-                                region: DERIVE_REGION(
-                                    console.Region.toUpperCase()
-                                ),
-                                release_date:
-                                    console['Release Date'] === ''
-                                        ? null
-                                        : console['Release Date'],
-                                bought_date:
-                                    console['Bought Date'] === ''
-                                        ? null
-                                        : console['Bought Date'],
-                                company:
-                                    console.Company === ''
-                                        ? null
-                                        : console.Company,
-                                product_condition: DERIVE_PRODUCT_CONDITION(
-                                    console['Product Condition'].toLowerCase()
-                                ),
-                                has_packaging:
-                                    console['Has Packaging'].toLowerCase() ===
-                                    'yes',
-                                is_duplicate:
-                                    console['Is Duplicate'].toLowerCase() ===
-                                    'yes',
-                                has_cables:
-                                    console['Has Cables'].toLowerCase() ===
-                                    'yes',
-                                has_console:
-                                    console['Has Console'].toLowerCase() ===
-                                    'yes',
-                                monetary_value:
-                                    console['Monetary Value'] === ''
-                                        ? null
-                                        : parseFloat(
-                                              console['Monetary Value']
-                                                  .trim()
-                                                  .slice(1)
-                                          ),
-                                notes: console.Notes,
-                            }
-
-                            const errorVal = VALIDATE_CONSOLE_ENTRY_JSON(entry)
-
-                            if (errorVal != null) {
-                                return res.status(400).json(errorVal)
-                            }
-
-                            database.connection.query(
-                                'INSERT INTO Console SET ?',
-                                entry,
-                                function (error, results) {
-                                    if (error) throw error
-                                    resultsList.push(results)
-                                }
-                            )
-                        } catch (error) {
-                            console.log(error)
-                            return res.render('error.ejs', {
-                                status: 500,
-                                error: error,
-                            })
-                        }
-                    })
-                    return res.render('status.ejs', {
-                        action: 'create',
-                        object: 'Console',
-                    })
-                })
-        } else {
-            res.send('No file uploaded !!')
-        }
-    })
-
+    /*
     // Bulk Entry - Games
     router.get('/bulk_entry/games', async (req, res) => {
         res.render('bulkentry.ejs', { object: 'Game' })
@@ -1037,14 +1032,7 @@ export default function makeSiteRouter(database) {
                                 return res.status(400).json(errorVal)
                             }
 
-                            database.connection.query(
-                                'INSERT INTO Game SET ?',
-                                entry,
-                                function (error, results) {
-                                    if (error) throw error
-                                    resultsList.push(results)
-                                }
-                            )
+                            await database.addGame(entry)
                         } catch (error) {
                             console.log(error)
                             return res.render('error.ejs', {
@@ -1137,14 +1125,7 @@ export default function makeSiteRouter(database) {
                                 return res.status(400).json(errorVal)
                             }
 
-                            database.connection.query(
-                                'INSERT INTO Accessory SET ?',
-                                entry,
-                                function (error, results) {
-                                    if (error) throw error
-                                    resultsList.push(results)
-                                }
-                            )
+                            await database.addAccessory(entry)
                         } catch (error) {
                             console.log(error)
                             return res.render('error.ejs', {
@@ -1163,5 +1144,6 @@ export default function makeSiteRouter(database) {
         }
     })
 
+    */
     return router
 }

@@ -1,5 +1,7 @@
 import { describe, expect, test, vi } from 'vitest'
 import { getMockReq, getMockRes } from 'vitest-mock-express'
+import { Readable } from 'stream'
+import fs, { createReadStream } from 'fs'
 import {
     getHomePage,
     getAllConsolesSite,
@@ -23,6 +25,8 @@ import {
     addAccessorySite,
     editAccessorySite,
     deleteAccessorySite,
+    getBulkEntryConsolePage,
+    bulkEntryConsoles,
 } from './index.js'
 import {
     ACCESSORY_INFO_RESPONSE,
@@ -1430,5 +1434,156 @@ describe('Delete Accessory Test', () => {
             object: 'Accessory',
             idVal: 1,
         })
+    })
+})
+
+describe('Console Bulk Entry Page Test', () => {
+    test('Console Bulk Entry Page Happy Path', async () => {
+        const req = getMockReq()
+        const { res } = getMockRes()
+
+        await getBulkEntryConsolePage(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('bulkentry.ejs', {
+            object: 'Console',
+        })
+    })
+})
+
+vi.mock('fs', async (importOriginal) => {
+    const actual = await importOriginal()
+    return {
+        ...actual,
+        default: {
+            ...actual.default,
+            createReadStream: vi.fn(),
+        },
+        createReadStream: vi.fn(),
+    }
+})
+
+describe('Console Bulk Entry Test', () => {
+    test('Bulk Entry Consoles Happy Path', async () => {
+        const csvContent =
+            'Name,Console Type,Model,Region,Release Date,Bought Date,Company,Product Condition,Has Packaging,Is Duplicate,Has Cables,Has Console,Monetary Value,Notes\n' +
+            'Atari 2600,Home,,NTSC,,,Atari,Good,No,No,Yes,Yes,,'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = { bulkConsoleEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryConsoles(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.render).toHaveBeenCalled())
+
+        expect(database.bulkConsoleEntry).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('status.ejs', {
+            action: 'create',
+            object: 'Console',
+        })
+    })
+
+    test('Bulk Entry Consoles Happy Path - Multiple Entries', async () => {
+        const csvContent =
+            'Name,Console Type,Model,Region,Release Date,Bought Date,Company,Product Condition,Has Packaging,Is Duplicate,Has Cables,Has Console,Monetary Value,Notes\n' +
+            'Atari 2600,Home,,NTSC,,,Atari,Good,No,No,Yes,Yes,,\n' +
+            'Game Boy,Handheld,,NTSC,,,Nintendo,Good,No,No,Yes,Yes,,'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = { bulkConsoleEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryConsoles(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.render).toHaveBeenCalled())
+
+        expect(database.bulkConsoleEntry).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('status.ejs', {
+            action: 'create',
+            object: 'Console',
+        })
+    })
+
+    test('Bulk Entry Consoles Happy Path - No Entries', async () => {
+        const csvContent =
+            'Name,Console Type,Model,Region,Release Date,Bought Date,Company,Product Condition,Has Packaging,Is Duplicate,Has Cables,Has Console,Monetary Value,Notes'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = { bulkConsoleEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryConsoles(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.status).toHaveBeenCalled())
+
+        expect(database.bulkConsoleEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'no entries in csv',
+        })
+    })
+
+    test('Bulk Entry Consoles Happy Path - No File Uploaded', async () => {
+        const database = { bulkConsoleEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryConsoles(database)
+
+        const req = getMockReq()
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.bulkConsoleEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'no file uploaded',
+        })
+    })
+
+    test('Bulk Entry Consoles Happy Path - Bad Entries', async () => {
+        const csvContent =
+            'Name,Console Type,Model,Region,Release Date,Bought Date,Company,Product Condition,Has Packaging,Is Duplicate,Has Cables,Has Console,Monetary Value,Notes\n' +
+            ',Home,,NTSC,,,Atari,,No,No,Yes,Yes,,\n' +
+            'Game Boy,,,NTSC,,,Nintendo,Good,No,No,Yes,Yes,,'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = { bulkConsoleEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryConsoles(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.json).toHaveBeenCalled())
+
+        expect(database.bulkConsoleEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith([
+            {
+                message: 'product_condition Must Be Defined',
+                success: false,
+            },
+            {
+                message: 'console_type Must Be Defined',
+                success: false,
+            },
+        ])
     })
 })

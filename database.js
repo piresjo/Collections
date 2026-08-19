@@ -124,4 +124,16 @@ export class Database {
         const results = await this.getConsoleInformation(idVal)
         return results.length > 0
     }
+
+    async bulkConsoleEntry(consolesToAdd) {
+        const [results] = await this.connection.query(
+            `INSERT INTO Console (name, console_type, model, region, 
+            release_date, bought_date, company, product_condition, 
+            has_packaging, is_duplicate, has_cables, has_console, 
+            monetary_value, notes) VALUES ?`,
+            [consolesToAdd]
+        )
+
+        return results
+    }
 }
