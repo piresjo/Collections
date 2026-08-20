@@ -1519,7 +1519,7 @@ describe('Console Bulk Entry Test', () => {
         })
     })
 
-    test('Bulk Entry Consoles Happy Path - No Entries', async () => {
+    test('Bulk Entry Consoles - No Entries', async () => {
         const csvContent =
             'Name,Console Type,Model,Region,Release Date,Bought Date,Company,Product Condition,Has Packaging,Is Duplicate,Has Cables,Has Console,Monetary Value,Notes'
 
@@ -1559,7 +1559,7 @@ describe('Console Bulk Entry Test', () => {
         })
     })
 
-    test('Bulk Entry Consoles Happy Path - Bad Entries', async () => {
+    test('Bulk Entry Consoles - Bad Entries', async () => {
         const csvContent =
             'Name,Console Type,Model,Region,Release Date,Bought Date,Company,Product Condition,Has Packaging,Is Duplicate,Has Cables,Has Console,Monetary Value,Notes\n' +
             ',Home,,NTSC,,,Atari,,No,No,Yes,Yes,,\n' +
@@ -1582,7 +1582,7 @@ describe('Console Bulk Entry Test', () => {
         expect(res.status).toHaveBeenCalledWith(400)
         expect(res.json).toHaveBeenCalledWith([
             {
-                message: 'product_condition Must Be Defined',
+                message: 'Console Needs To Have A Name',
                 success: false,
             },
             {
@@ -1766,7 +1766,7 @@ describe('Accessory Bulk Entry Test', () => {
         const csvContent =
             'Name,Model,Accessory Type,Release Date,Bought Date,Company,Product Condition,Has Packaging,Monetary Value,Notes,Console\n' +
             'Atari 2600 Joystick,CX40,Controller,1977-10-01,2020-01-15,Atari,Good,No,$12.50,Works great,Atari 2600'
-            
+
         fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
 
         const database = {
@@ -1904,7 +1904,7 @@ describe('Accessory Bulk Entry Test', () => {
             {
                 message: 'product_condition Must Be Defined',
                 success: false,
-            }
+            },
         ])
     })
 })

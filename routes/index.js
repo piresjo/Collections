@@ -609,81 +609,119 @@ export const bulkEntryConsoles = (database) => async (req, res) => {
             .pipe(csv.parse({ headers: true }))
             .on('error', (error) => {
                 console.error(error)
-                return res.status(500).json(error)
+                return res
+                    .status(500)
+                    .json({ success: false, message: error.message })
             })
             .on('data', (row) => {
                 consoleList.push(row)
             })
             .on('end', async (rowCount) => {
-                console.log(`Parsed ${rowCount} rows`)
-
-                consoleList.forEach((consoleToAdd) => {
-                    const entryArray = [
-                        consoleToAdd.Name,
-                        DERIVE_CONSOLE_TYPE(
-                            consoleToAdd['Console Type'].toLowerCase()
-                        ),
-                        consoleToAdd.Model === '' ? null : consoleToAdd.Model,
-                        DERIVE_REGION(consoleToAdd.Region.toUpperCase()),
-
-                        consoleToAdd['Release Date'] === ''
-                            ? null
-                            : consoleToAdd['Release Date'],
-                        consoleToAdd['Bought Date'] === ''
-                            ? null
-                            : consoleToAdd['Bought Date'],
-                        consoleToAdd.Company === ''
-                            ? null
-                            : consoleToAdd.Company,
-                        DERIVE_PRODUCT_CONDITION(
-                            consoleToAdd['Product Condition'].toLowerCase()
-                        ),
-
-                        consoleToAdd['Has Packaging'].toLowerCase() === 'yes',
-
-                        consoleToAdd['Is Duplicate'].toLowerCase() === 'yes',
-
-                        consoleToAdd['Has Cables'].toLowerCase() === 'yes',
-
-                        consoleToAdd['Has Console'].toLowerCase() === 'yes',
-
-                        consoleToAdd['Monetary Value'] === ''
-                            ? null
-                            : parseFloat(
-                                  consoleToAdd['Monetary Value'].trim().slice(1)
-                              ),
-                        consoleToAdd.Notes,
-                    ]
-
-                    const validateError =
-                        VALIDATE_CONSOLE_ENTRY_ARRAY(entryArray)
-
-                    if (validateError != null) {
-                        errors.push(validateError)
-                    } else {
-                        entriesToAdd.push(entryArray)
-                    }
-                })
-                if (errors.length > 0) {
-                    return res.status(400).json(errors)
-                }
-                if (entriesToAdd.length === 0) {
-                    return res.status(400).json({
-                        message: 'no entries in csv',
-                    })
-                }
                 try {
-                    await database.bulkConsoleEntry(entriesToAdd)
-                } catch (error) {
-                    console.error(error)
-                    return res.status(500).json(error)
-                }
+                    console.log(`Parsed ${rowCount} rows`)
 
-                // ToDo - Update
-                return res.render('status.ejs', {
-                    action: 'create',
-                    object: 'Console',
-                })
+                    consoleList.forEach((consoleToAdd) => {
+                        let entryArray = null
+                        let errorVal = null
+
+                        try {
+                            entryArray = [
+                                consoleToAdd.Name === ''
+                                    ? null
+                                    : consoleToAdd.Name,
+                                DERIVE_CONSOLE_TYPE(
+                                    consoleToAdd['Console Type'].toLowerCase()
+                                ),
+                                consoleToAdd.Model === ''
+                                    ? null
+                                    : consoleToAdd.Model,
+                                DERIVE_REGION(
+                                    consoleToAdd.Region.toUpperCase()
+                                ),
+
+                                consoleToAdd['Release Date'] === ''
+                                    ? null
+                                    : consoleToAdd['Release Date'],
+                                consoleToAdd['Bought Date'] === ''
+                                    ? null
+                                    : consoleToAdd['Bought Date'],
+                                consoleToAdd.Company === ''
+                                    ? null
+                                    : consoleToAdd.Company,
+                                DERIVE_PRODUCT_CONDITION(
+                                    consoleToAdd[
+                                        'Product Condition'
+                                    ].toLowerCase()
+                                ),
+
+                                consoleToAdd['Has Packaging'].toLowerCase() ===
+                                    'yes',
+
+                                consoleToAdd['Is Duplicate'].toLowerCase() ===
+                                    'yes',
+
+                                consoleToAdd['Has Cables'].toLowerCase() ===
+                                    'yes',
+
+                                consoleToAdd['Has Console'].toLowerCase() ===
+                                    'yes',
+
+                                consoleToAdd['Monetary Value'] === ''
+                                    ? null
+                                    : parseFloat(
+                                          consoleToAdd['Monetary Value']
+                                              .trim()
+                                              .slice(1)
+                                      ),
+                                consoleToAdd.Notes,
+                            ]
+                        } catch (error) {
+                            console.error(error)
+                            errorVal = {
+                                success: false,
+                                message: error.message,
+                            }
+                        }
+
+                        if (errorVal === null) {
+                            errorVal = VALIDATE_CONSOLE_ENTRY_ARRAY(entryArray)
+                        }
+
+                        if (errorVal != null) {
+                            errors.push(errorVal)
+                        } else {
+                            entriesToAdd.push(entryArray)
+                        }
+                    })
+                    if (errors.length > 0) {
+                        return res.status(400).json(errors)
+                    }
+                    if (entriesToAdd.length === 0) {
+                        return res.status(400).json({
+                            message: 'no entries in csv',
+                        })
+                    }
+                    try {
+                        await database.bulkConsoleEntry(entriesToAdd)
+                    } catch (error) {
+                        console.error(error)
+                        return res
+                            .status(500)
+                            .json({ success: false, message: error.message })
+                    }
+
+                    // ToDo - Update
+                    return res.render('status.ejs', {
+                        action: 'create',
+                        object: 'Console',
+                    })
+                } finally {
+                    try {
+                        await fs.promises.unlink(uploadPath)
+                    } catch (unlinkError) {
+                        console.error(unlinkError)
+                    }
+                }
             })
     } else {
         return res.status(400).json({
@@ -708,80 +746,108 @@ export const bulkEntryGames = (database) => async (req, res) => {
             .pipe(csv.parse({ headers: true }))
             .on('error', (error) => {
                 console.error(error)
-                return res.status(500).json(error)
+                return res
+                    .status(500)
+                    .json({ success: false, message: error.message })
             })
             .on('data', (row) => {
                 gameList.push(row)
             })
             .on('end', async (rowCount) => {
-                console.log(`Parsed ${rowCount} rows`)
-                let consoleIDMap = null
                 try {
-                    consoleIDMap = await database.mapConsoleNameToConsoleIds()
-                } catch (error) {
-                    console.error(error)
-                    return res.status(500).json(error)
-                }
-                gameList.forEach((game) => {
-                    const entryArray = [
-                        consoleIDMap[game.Console.toLowerCase()],
-                        game.Name,
-                        game.Edition === '' ? null : game.Edition,
-                        game['Release Date'] === ''
-                            ? null
-                            : new Date(game['Release Date'])
-                                  .toISOString()
-                                  .split('T')[0],
-                        game['Bought Date'] === ''
-                            ? null
-                            : new Date(game['Bought Date'])
-                                  .toISOString()
-                                  .split('T')[0],
-                        DERIVE_REGION(game.Region.toUpperCase()),
-                        game.Developer === '' ? null : game.Developer,
-                        game.Publisher === '' ? null : game.Publisher,
-                        game.Digital.toLowerCase() === 'yes',
-
-                        game['Has Game'].toLowerCase() === 'yes',
-                        game['Has Manual'].toLowerCase() === 'yes',
-                        game['Has Box'].toLowerCase() === 'yes',
-                        game['Is Duplicate'].toLowerCase() === 'yes',
-                        DERIVE_PRODUCT_CONDITION(
-                            game['Product Condition'].toLowerCase()
-                        ),
-                        game['Monetary Value'] === ''
-                            ? null
-                            : parseFloat(
-                                  game['Monetary Value'].trim().slice(1)
-                              ),
-                        game.Notes,
-                    ]
-                    const errorVal = VALIDATE_GAME_ENTRY_ARRAY(entryArray)
-
-                    if (errorVal != null) {
-                        errors.push(errorVal)
-                    } else {
-                        entriesToAdd.push(entryArray)
+                    console.log(`Parsed ${rowCount} rows`)
+                    let consoleIDMap = null
+                    try {
+                        consoleIDMap =
+                            await database.mapConsoleNameToConsoleIds()
+                    } catch (error) {
+                        console.error(error)
+                        return res
+                            .status(500)
+                            .json({ success: false, message: error.message })
                     }
-                })
-                if (errors.length > 0) {
-                    return res.status(400).json(errors)
-                }
-                if (entriesToAdd.length === 0) {
-                    return res.status(400).json({
-                        message: 'no entries in csv',
+                    gameList.forEach((game) => {
+                        let entryArray = null
+                        let errorVal = null
+                        try {
+                            entryArray = [
+                                consoleIDMap[game.Console.toLowerCase()],
+                                game.Name === '' ? null : game.Name,
+                                game.Edition === '' ? null : game.Edition,
+                                game['Release Date'] === ''
+                                    ? null
+                                    : new Date(game['Release Date'])
+                                          .toISOString()
+                                          .split('T')[0],
+                                game['Bought Date'] === ''
+                                    ? null
+                                    : new Date(game['Bought Date'])
+                                          .toISOString()
+                                          .split('T')[0],
+                                DERIVE_REGION(game.Region.toUpperCase()),
+                                game.Developer === '' ? null : game.Developer,
+                                game.Publisher === '' ? null : game.Publisher,
+                                game.Digital.toLowerCase() === 'yes',
+
+                                game['Has Game'].toLowerCase() === 'yes',
+                                game['Has Manual'].toLowerCase() === 'yes',
+                                game['Has Box'].toLowerCase() === 'yes',
+                                game['Is Duplicate'].toLowerCase() === 'yes',
+                                DERIVE_PRODUCT_CONDITION(
+                                    game['Product Condition'].toLowerCase()
+                                ),
+                                game['Monetary Value'] === ''
+                                    ? null
+                                    : parseFloat(
+                                          game['Monetary Value'].trim().slice(1)
+                                      ),
+                                game.Notes,
+                            ]
+                        } catch (error) {
+                            console.error(error)
+                            errorVal = {
+                                success: false,
+                                message: error.message,
+                            }
+                        }
+
+                        if (errorVal === null) {
+                            errorVal = VALIDATE_GAME_ENTRY_ARRAY(entryArray)
+                        }
+
+                        if (errorVal != null) {
+                            errors.push(errorVal)
+                        } else {
+                            entriesToAdd.push(entryArray)
+                        }
                     })
+                    if (errors.length > 0) {
+                        return res.status(400).json(errors)
+                    }
+                    if (entriesToAdd.length === 0) {
+                        return res.status(400).json({
+                            message: 'no entries in csv',
+                        })
+                    }
+                    try {
+                        await database.bulkGameEntry(entriesToAdd)
+                    } catch (error) {
+                        console.error(error)
+                        return res
+                            .status(500)
+                            .json({ success: false, message: error.message })
+                    }
+                    return res.render('status.ejs', {
+                        action: 'create',
+                        object: 'Game',
+                    })
+                } finally {
+                    try {
+                        await fs.promises.unlink(uploadPath)
+                    } catch (unlinkError) {
+                        console.error(unlinkError)
+                    }
                 }
-                try {
-                    await database.bulkGameEntry(entriesToAdd)
-                } catch (error) {
-                    console.error(error)
-                    return res.status(500).json(error)
-                }
-                return res.render('status.ejs', {
-                    action: 'create',
-                    object: 'Game',
-                })
             })
     } else {
         return res.status(400).json({
@@ -806,84 +872,117 @@ export const bulkEntryAccessories = (database) => async (req, res) => {
             .pipe(csv.parse({ headers: true }))
             .on('error', (error) => {
                 console.error(error)
-                return res.status(500).json(error)
+                return res
+                    .status(500)
+                    .json({ success: false, message: error.message })
             })
             .on('data', (row) => {
                 accessoryList.push(row)
             })
             .on('end', async (rowCount) => {
-                console.log(`Parsed ${rowCount} rows`)
-
-                let consoleIDMap = null
                 try {
-                    consoleIDMap = await database.mapConsoleNameToConsoleIds()
-                } catch (error) {
-                    console.error(error)
-                    return res.status(500).json(error)
-                }
+                    console.log(`Parsed ${rowCount} rows`)
 
-                accessoryList.forEach((accessory) => {
-                    const entryArray = [
-                        consoleIDMap[accessory.Console.toLowerCase()],
-                        accessory.Name,
-                        accessory.Model,
-                        DERIVE_ACCESSORY_TYPE(
-                            accessory['Accessory Type'].toLowerCase()
-                        ),
-
-                        accessory['Release Date'] === ''
-                            ? null
-                            : new Date(accessory['Release Date'])
-                                  .toISOString()
-                                  .split('T')[0],
-
-                        accessory['Bought Date'] === ''
-                            ? null
-                            : new Date(accessory['Bought Date'])
-                                  .toISOString()
-                                  .split('T')[0],
-
-                        accessory.Company === '' ? null : accessory.Company,
-                        DERIVE_PRODUCT_CONDITION(
-                            accessory['Product Condition'].toLowerCase()
-                        ),
-
-                        accessory['Has Packaging'].toLowerCase() === 'yes',
-
-                        accessory['Monetary Value'] === ''
-                            ? null
-                            : parseFloat(
-                                  accessory['Monetary Value'].trim().slice(1)
-                              ),
-                        accessory.Notes,
-                    ]
-
-                    const errorVal = VALIDATE_ACCESSORY_ENTRY_ARRAY(entryArray)
-
-                    if (errorVal != null) {
-                        errors.push(errorVal)
-                    } else {
-                        entriesToAdd.push(entryArray)
+                    let consoleIDMap = null
+                    try {
+                        consoleIDMap =
+                            await database.mapConsoleNameToConsoleIds()
+                    } catch (error) {
+                        console.error(error)
+                        return res
+                            .status(500)
+                            .json({ success: false, message: error.message })
                     }
-                })
-                if (errors.length > 0) {
-                    return res.status(400).json(errors)
-                }
-                if (entriesToAdd.length === 0) {
-                    return res.status(400).json({
-                        message: 'no entries in csv',
+
+                    accessoryList.forEach((accessory) => {
+                        let entryArray = null
+                        let errorVal = null
+                        try {
+                            entryArray = [
+                                consoleIDMap[accessory.Console.toLowerCase()],
+                                accessory.Name === '' ? null : accessory.Name,
+                                accessory.Model === '' ? null : accessory.Model,
+                                DERIVE_ACCESSORY_TYPE(
+                                    accessory['Accessory Type'].toLowerCase()
+                                ),
+
+                                accessory['Release Date'] === ''
+                                    ? null
+                                    : new Date(accessory['Release Date'])
+                                          .toISOString()
+                                          .split('T')[0],
+
+                                accessory['Bought Date'] === ''
+                                    ? null
+                                    : new Date(accessory['Bought Date'])
+                                          .toISOString()
+                                          .split('T')[0],
+
+                                accessory.Company === ''
+                                    ? null
+                                    : accessory.Company,
+                                DERIVE_PRODUCT_CONDITION(
+                                    accessory['Product Condition'].toLowerCase()
+                                ),
+
+                                accessory['Has Packaging'].toLowerCase() ===
+                                    'yes',
+
+                                accessory['Monetary Value'] === ''
+                                    ? null
+                                    : parseFloat(
+                                          accessory['Monetary Value']
+                                              .trim()
+                                              .slice(1)
+                                      ),
+                                accessory.Notes,
+                            ]
+                        } catch (error) {
+                            console.error(error)
+                            errorVal = {
+                                success: false,
+                                message: error.message,
+                            }
+                        }
+
+                        if (errorVal === null) {
+                            errorVal =
+                                VALIDATE_ACCESSORY_ENTRY_ARRAY(entryArray)
+                        }
+
+                        if (errorVal != null) {
+                            errors.push(errorVal)
+                        } else {
+                            entriesToAdd.push(entryArray)
+                        }
                     })
+                    if (errors.length > 0) {
+                        return res.status(400).json(errors)
+                    }
+                    if (entriesToAdd.length === 0) {
+                        return res.status(400).json({
+                            message: 'no entries in csv',
+                        })
+                    }
+                    try {
+                        await database.bulkAccessoryEntry(entriesToAdd)
+                    } catch (error) {
+                        console.error(error)
+                        return res
+                            .status(500)
+                            .json({ success: false, message: error.message })
+                    }
+                    return res.render('status.ejs', {
+                        action: 'create',
+                        object: 'Accessory',
+                    })
+                } finally {
+                    try {
+                        await fs.promises.unlink(uploadPath)
+                    } catch (unlinkError) {
+                        console.error(unlinkError)
+                    }
                 }
-                try {
-                    await database.bulkAccessoryEntry(entriesToAdd)
-                } catch (error) {
-                    console.error(error)
-                    return res.status(500).json(error)
-                }
-                return res.render('status.ejs', {
-                    action: 'create',
-                    object: 'Accessory',
-                })
             })
     } else {
         return res.status(400).json({

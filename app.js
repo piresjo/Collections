@@ -10,6 +10,8 @@ import { fileURLToPath } from 'url'
 import makeApiRouter from './routes/api.js'
 import makeSiteRouter from './routes/index.js'
 
+import os from 'os'
+
 export default function makeApp(database) {
     const app = express()
 
@@ -24,7 +26,7 @@ export default function makeApp(database) {
     app.use(express.urlencoded({ extended: true }))
     app.use(cookieParser())
     app.use(express.static(path.join(__dirname, 'public')))
-    app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }))
+    app.use(fileUpload({ useTempFiles: true, tempFileDir: os.tmpdir() }))
 
     app.use('/', makeSiteRouter(database))
     app.use('/api', makeApiRouter(database))

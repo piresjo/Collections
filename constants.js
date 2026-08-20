@@ -281,6 +281,7 @@ export const DERIVE_PRODUCT_CONDITION = function (productConditionString) {
     }
 }
 
+// ToDo - Merge Below Two Methods Into One
 export const VALIDATE_CONSOLE_ENTRY_JSON = function (bodyVal) {
     const returnVal = null
     if (bodyVal.name == null) {
@@ -339,6 +340,7 @@ export const VALIDATE_CONSOLE_ENTRY_ARRAY = function (bodyArray) {
     return returnVal
 }
 
+// ToDo - Merge Below Two Methods Into One
 export const VALIDATE_GAME_ENTRY_JSON = function (bodyVal) {
     const returnVal = null
     if (bodyVal.name == null) {
@@ -403,6 +405,7 @@ export const VALIDATE_GAME_ENTRY_ARRAY = function (bodyArray) {
     return returnVal
 }
 
+// ToDo - Merge Below Two Methods Into One
 export const VALIDATE_ACCESSORY_ENTRY_JSON = function (bodyVal) {
     const returnVal = null
     if (bodyVal.name == null) {
