@@ -1,5 +1,7 @@
 import { describe, expect, test, vi } from 'vitest'
 import { getMockReq, getMockRes } from 'vitest-mock-express'
+import { Readable } from 'stream'
+import fs, { createReadStream } from 'fs'
 import {
     getHomePage,
     getAllConsolesSite,
@@ -23,6 +25,12 @@ import {
     addAccessorySite,
     editAccessorySite,
     deleteAccessorySite,
+    getBulkEntryConsolePage,
+    bulkEntryConsoles,
+    getBulkEntryGamePage,
+    bulkEntryGames,
+    getBulkEntryAccessoryPage,
+    bulkEntryAccessories,
 } from './index.js'
 import {
     ACCESSORY_INFO_RESPONSE,
@@ -37,6 +45,7 @@ import {
     FULL_GAME_ENTRY,
     GAME_INFO_RESPONSE,
     UPDATE_RESPONSE,
+    EXPECTED_CONSOLE_AND_ID_MAP,
 } from '../database.test.data.js'
 import {
     DERIVE_CONSOLE_TYPE_STRING,
@@ -1430,5 +1439,472 @@ describe('Delete Accessory Test', () => {
             object: 'Accessory',
             idVal: 1,
         })
+    })
+})
+
+describe('Console Bulk Entry Page Test', () => {
+    test('Console Bulk Entry Page Happy Path', async () => {
+        const req = getMockReq()
+        const { res } = getMockRes()
+
+        await getBulkEntryConsolePage(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('bulkentry.ejs', {
+            object: 'Console',
+        })
+    })
+})
+
+vi.mock('fs', async (importOriginal) => {
+    const actual = await importOriginal()
+    return {
+        ...actual,
+        default: {
+            ...actual.default,
+            createReadStream: vi.fn(),
+        },
+        createReadStream: vi.fn(),
+    }
+})
+
+describe('Console Bulk Entry Test', () => {
+    test('Bulk Entry Consoles Happy Path', async () => {
+        const csvContent =
+            'Name,Console Type,Model,Region,Release Date,Bought Date,Company,Product Condition,Has Packaging,Is Duplicate,Has Cables,Has Console,Monetary Value,Notes\n' +
+            'Atari 2600,Home,,NTSC,,,Atari,Good,No,No,Yes,Yes,,'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = { bulkConsoleEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryConsoles(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.render).toHaveBeenCalled())
+
+        expect(database.bulkConsoleEntry).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('status.ejs', {
+            action: 'create',
+            object: 'Console',
+        })
+    })
+
+    test('Bulk Entry Consoles Happy Path - Multiple Entries', async () => {
+        const csvContent =
+            'Name,Console Type,Model,Region,Release Date,Bought Date,Company,Product Condition,Has Packaging,Is Duplicate,Has Cables,Has Console,Monetary Value,Notes\n' +
+            'Atari 2600,Home,,NTSC,,,Atari,Good,No,No,Yes,Yes,,\n' +
+            'Game Boy,Handheld,,NTSC,,,Nintendo,Good,No,No,Yes,Yes,,'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = { bulkConsoleEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryConsoles(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.render).toHaveBeenCalled())
+
+        expect(database.bulkConsoleEntry).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('status.ejs', {
+            action: 'create',
+            object: 'Console',
+        })
+    })
+
+    test('Bulk Entry Consoles - No Entries', async () => {
+        const csvContent =
+            'Name,Console Type,Model,Region,Release Date,Bought Date,Company,Product Condition,Has Packaging,Is Duplicate,Has Cables,Has Console,Monetary Value,Notes'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = { bulkConsoleEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryConsoles(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.status).toHaveBeenCalled())
+
+        expect(database.bulkConsoleEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'no entries in csv',
+        })
+    })
+
+    test('Bulk Entry Consoles Happy Path - No File Uploaded', async () => {
+        const database = { bulkConsoleEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryConsoles(database)
+
+        const req = getMockReq()
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.bulkConsoleEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'no file uploaded',
+        })
+    })
+
+    test('Bulk Entry Consoles - Bad Entries', async () => {
+        const csvContent =
+            'Name,Console Type,Model,Region,Release Date,Bought Date,Company,Product Condition,Has Packaging,Is Duplicate,Has Cables,Has Console,Monetary Value,Notes\n' +
+            ',Home,,NTSC,,,Atari,,No,No,Yes,Yes,,\n' +
+            'Game Boy,,,NTSC,,,Nintendo,Good,No,No,Yes,Yes,,'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = { bulkConsoleEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryConsoles(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.json).toHaveBeenCalled())
+
+        expect(database.bulkConsoleEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith([
+            {
+                message: 'Console Needs To Have A Name',
+                success: false,
+            },
+            {
+                message: 'console_type Must Be Defined',
+                success: false,
+            },
+        ])
+    })
+})
+
+describe('Game Bulk Entry Page Test', () => {
+    test('Game Bulk Entry Page Happy Path', async () => {
+        const req = getMockReq()
+        const { res } = getMockRes()
+
+        await getBulkEntryGamePage(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('bulkentry.ejs', {
+            object: 'Game',
+        })
+    })
+})
+
+describe('Game Bulk Entry Test', () => {
+    test('Bulk Entry Games Happy Path', async () => {
+        const csvContent =
+            'Name,Edition,Release Date,Bought Date,Region,Digital,Has Game,Has Manual,Has Box,Is Duplicate,Product Condition,Monetary Value,Notes,Developer,Publisher,Console\n' +
+            'Pitfall!,,1982-01-01,2020-05-01,NTSC,No,Yes,No,No,No,Very Good,$8.99,Label wear,Activision,Activision,Atari 2600'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = {
+            bulkGameEntry: vi.fn().mockResolvedValue(),
+            mapConsoleNameToConsoleIds: vi
+                .fn()
+                .mockResolvedValue(EXPECTED_CONSOLE_AND_ID_MAP),
+        }
+        const handler = bulkEntryGames(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.render).toHaveBeenCalled())
+
+        expect(database.bulkGameEntry).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('status.ejs', {
+            action: 'create',
+            object: 'Game',
+        })
+    })
+
+    test('Bulk Entry Games Happy Path - Multiple Entries', async () => {
+        const csvContent =
+            'Name,Edition,Release Date,Bought Date,Region,Digital,Has Game,Has Manual,Has Box,Is Duplicate,Product Condition,Monetary Value,Notes,Developer,Publisher,Console\n' +
+            'Pitfall!,,1982-01-01,2020-05-01,NTSC,No,Yes,No,No,No,Very Good,$8.99,Label wear,Activision,Activision,Atari 2600\n' +
+            'Super Mario Bros.,,1985-10-18,2021-02-14,NTSC,No,Yes,Yes,Yes,No,New,$25.00,Complete in box,Nintendo,Nintendo,Nintendo Entertainment System\n' +
+            'Sonic the Hedgehog,Original,1991-06-23,2019-08-30,NTSC,No,Yes,No,No,Yes,Good,$15.50,Duplicate copy,Sonic Team,Sega,Sega Genesis'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = {
+            bulkGameEntry: vi.fn().mockResolvedValue(),
+            mapConsoleNameToConsoleIds: vi
+                .fn()
+                .mockResolvedValue(EXPECTED_CONSOLE_AND_ID_MAP),
+        }
+        const handler = bulkEntryGames(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.render).toHaveBeenCalled())
+
+        expect(database.bulkGameEntry).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('status.ejs', {
+            action: 'create',
+            object: 'Game',
+        })
+    })
+
+    test('Bulk Entry Games Happy Path - No Entries', async () => {
+        const csvContent =
+            'Name,Edition,Release Date,Bought Date,Region,Digital,Has Game,Has Manual,Has Box,Is Duplicate,Product Condition,Monetary Value,Notes,Developer,Publisher,Console'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = {
+            bulkGameEntry: vi.fn().mockResolvedValue(),
+            mapConsoleNameToConsoleIds: vi
+                .fn()
+                .mockResolvedValue(EXPECTED_CONSOLE_AND_ID_MAP),
+        }
+        const handler = bulkEntryGames(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.status).toHaveBeenCalled())
+
+        expect(database.bulkGameEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'no entries in csv',
+        })
+    })
+
+    test('Bulk Entry Games Happy Path - No File Uploaded', async () => {
+        const database = { bulkGameEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryGames(database)
+
+        const req = getMockReq()
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.bulkGameEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'no file uploaded',
+        })
+    })
+
+    test('Bulk Entry Games Happy Path - Bad Entries', async () => {
+        const csvContent =
+            'Name,Edition,Release Date,Bought Date,Region,Digital,Has Game,Has Manual,Has Box,Is Duplicate,Product Condition,Monetary Value,Notes,Developer,Publisher,Console\n' +
+            'Pitfall!,,1982-01-01,2020-05-01,,,Yes,No,No,No,Very Good,$8.99,Label wear,Activision,Activision,Atari 2600'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = {
+            bulkGameEntry: vi.fn().mockResolvedValue(),
+            mapConsoleNameToConsoleIds: vi
+                .fn()
+                .mockResolvedValue(EXPECTED_CONSOLE_AND_ID_MAP),
+        }
+        const handler = bulkEntryGames(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.json).toHaveBeenCalled())
+
+        expect(database.bulkGameEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith([
+            {
+                message: 'region Must Be Defined',
+                success: false,
+            },
+        ])
+    })
+})
+
+describe('Accessory Bulk Entry Page Test', () => {
+    test('Accessory Bulk Entry Page Happy Path', async () => {
+        const req = getMockReq()
+        const { res } = getMockRes()
+
+        await getBulkEntryAccessoryPage(req, res)
+
+        expect(res.render).toHaveBeenCalledWith('bulkentry.ejs', {
+            object: 'Accessory',
+        })
+    })
+})
+
+describe('Accessory Bulk Entry Test', () => {
+    test('Bulk Entry Accessory Happy Path', async () => {
+        const csvContent =
+            'Name,Model,Accessory Type,Release Date,Bought Date,Company,Product Condition,Has Packaging,Monetary Value,Notes,Console\n' +
+            'Atari 2600 Joystick,CX40,Controller,1977-10-01,2020-01-15,Atari,Good,No,$12.50,Works great,Atari 2600'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = {
+            bulkAccessoryEntry: vi.fn().mockResolvedValue(),
+            mapConsoleNameToConsoleIds: vi
+                .fn()
+                .mockResolvedValue(EXPECTED_CONSOLE_AND_ID_MAP),
+        }
+        const handler = bulkEntryAccessories(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.render).toHaveBeenCalled())
+
+        expect(database.bulkAccessoryEntry).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('status.ejs', {
+            action: 'create',
+            object: 'Accessory',
+        })
+    })
+
+    test('Bulk Entry Accessories Happy Path - Multiple Entries', async () => {
+        const csvContent =
+            'Name,Model,Accessory Type,Release Date,Bought Date,Company,Product Condition,Has Packaging,Monetary Value,Notes,Console\n' +
+            'Atari 2600 Joystick,CX40,Controller,1977-10-01,2020-01-15,Atari,Good,No,$12.50,Works great,Atari 2600\n' +
+            'NES Controller,NES-004,Controller,1985-10-18,2019-06-01,Nintendo,Very Good,No,$15.00,,Nintendo Entertainment System\n' +
+            'PS1 DualShock,SCPH-1200,Controller,1997-11-01,2020-07-04,Sony,Very Good,No,$22.00,Analog sticks tight,Sony Playstation'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = {
+            bulkAccessoryEntry: vi.fn().mockResolvedValue(),
+            mapConsoleNameToConsoleIds: vi
+                .fn()
+                .mockResolvedValue(EXPECTED_CONSOLE_AND_ID_MAP),
+        }
+        const handler = bulkEntryAccessories(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.render).toHaveBeenCalled())
+
+        expect(database.bulkAccessoryEntry).toHaveBeenCalled()
+        expect(res.render).toHaveBeenCalledWith('status.ejs', {
+            action: 'create',
+            object: 'Accessory',
+        })
+    })
+
+    test('Bulk Entry Accessories Happy Path - No Entries', async () => {
+        const csvContent =
+            'Name,Model,Accessory Type,Release Date,Bought Date,Company,Product Condition,Has Packaging,Monetary Value,Notes,Console'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = {
+            bulkAccessoryEntry: vi.fn().mockResolvedValue(),
+            mapConsoleNameToConsoleIds: vi
+                .fn()
+                .mockResolvedValue(EXPECTED_CONSOLE_AND_ID_MAP),
+        }
+        const handler = bulkEntryAccessories(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.status).toHaveBeenCalled())
+
+        expect(database.bulkAccessoryEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'no entries in csv',
+        })
+    })
+
+    test('Bulk Entry Accessories Happy Path - No File Uploaded', async () => {
+        const database = { bulkAccessoryEntry: vi.fn().mockResolvedValue() }
+        const handler = bulkEntryAccessories(database)
+
+        const req = getMockReq()
+        const { res } = getMockRes()
+
+        await handler(req, res)
+
+        expect(database.bulkAccessoryEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'no file uploaded',
+        })
+    })
+
+    test('Bulk Entry Accessories Happy Path - Bad Entries', async () => {
+        const csvContent =
+            'Name,Model,Accessory Type,Release Date,Bought Date,Company,Product Condition,Has Packaging,Monetary Value,Notes,Console\n' +
+            'Atari 2600 Joystick,CX40,,1977-10-01,2020-01-15,Atari,Good,No,$12.50,Works great,Atari 2600\n' +
+            'NES Controller,NES-004,Controller,1985-10-18,2019-06-01,Nintendo,Very Good,No,$15.00,,Nintendo Entertainment System\n' +
+            'PS1 DualShock,SCPH-1200,Controller,1997-11-01,2020-07-04,Sony,,No,$22.00,Analog sticks tight,Sony Playstation'
+
+        fs.createReadStream.mockReturnValue(Readable.from([csvContent]))
+
+        const database = {
+            bulkAccessoryEntry: vi.fn().mockResolvedValue(),
+            mapConsoleNameToConsoleIds: vi
+                .fn()
+                .mockResolvedValue(EXPECTED_CONSOLE_AND_ID_MAP),
+        }
+        const handler = bulkEntryAccessories(database)
+
+        const req = getMockReq({
+            files: { uploadFile: { tempFilePath: '/fake/path.csv' } },
+        })
+        const { res } = getMockRes()
+
+        await handler(req, res)
+        await vi.waitFor(() => expect(res.json).toHaveBeenCalled())
+
+        expect(database.bulkAccessoryEntry).toHaveBeenCalledTimes(0)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith([
+            {
+                message: 'accessory_type Must Be Defined',
+                success: false,
+            },
+            {
+                message: 'product_condition Must Be Defined',
+                success: false,
+            },
+        ])
     })
 })

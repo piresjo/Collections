@@ -124,4 +124,46 @@ export class Database {
         const results = await this.getConsoleInformation(idVal)
         return results.length > 0
     }
+
+    async bulkConsoleEntry(consolesToAdd) {
+        const [results] = await this.connection.query(
+            `INSERT INTO Console (name, console_type, model, region, 
+            release_date, bought_date, company, product_condition, 
+            has_packaging, is_duplicate, has_cables, has_console, 
+            monetary_value, notes) VALUES ?`,
+            [consolesToAdd]
+        )
+
+        return results
+    }
+
+    async bulkGameEntry(gamesToAdd) {
+        const [results] = await this.connection.query(
+            `INSERT INTO Game (console_id, name, edition, release_date, bought_date, region,
+            developer, publisher, digital, has_game, has_manual, has_box,
+            is_duplicate, product_condition, monetary_value, notes) VALUES ?`,
+            [gamesToAdd]
+        )
+        return results
+    }
+
+    async bulkAccessoryEntry(accessoriesToAdd) {
+        const [results] = await this.connection.query(
+            `INSERT INTO Accessory (console_id, name, model, accessory_type, 
+            release_date, bought_date, company, product_condition, has_packaging, 
+            monetary_value, notes) VALUES ?`,
+            [accessoriesToAdd]
+        )
+        return results
+    }
+
+    async mapConsoleNameToConsoleIds() {
+        const [results] = await this.connection.query(
+            `SELECT id, name FROM Console`
+        )
+        const returnMap = Object.fromEntries(
+            results.map((r) => [r.name.toLowerCase(), r.id])
+        )
+        return returnMap
+    }
 }
